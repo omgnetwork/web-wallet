@@ -37,7 +37,7 @@ function Status ({ watcherConnection, byzantineChain }) {
 
   return (
     <Box>
-      <h2>OMG Network Status</h2>
+      <h2>OMG Network</h2>
       <Info
         data={[
           {

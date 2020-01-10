@@ -8,7 +8,7 @@ import networkService from 'services/networkService';
 
 import * as styles from './Account.module.scss';
 
-function Account () {
+function Account ({ watcherConnection }) {
   const [ account, setAccount ] = useState([]);
   const [ rootBalance, setRootBalance ] = useState([]);
   const [ childBalance, setChildBalance ] = useState([]);
@@ -21,8 +21,10 @@ function Account () {
       await fetchBalances(accounts[0]);
       setLoading(false);
     }
-    initAccounts();
-  }, []);
+    if (watcherConnection) {
+      initAccounts();
+    }
+  }, [watcherConnection]);
 
   async function fetchBalances (account) {
     const balances = await networkService.getBalances(account);

@@ -5,6 +5,8 @@ import networkService from 'services/networkService';
 
 import Status from 'components/status/Status';
 import Account from 'components/account/Account';
+import Actions from 'components/actions/Actions';
+import Transactions from 'components/transactions/Transactions';
 
 import * as styles from './Home.module.scss';
 
@@ -22,7 +24,7 @@ function Home () {
     }
   }
 
-  useInterval(checkWatcherStatus, 5000);
+  useInterval(checkWatcherStatus, 10000);
 
   return (
     <div className={styles.Home}>
@@ -30,7 +32,9 @@ function Home () {
         watcherConnection={watcherConnection}
         byzantineChain={byzantineChain}
       />
-      <Account />
+      <Account watcherConnection={watcherConnection} />
+      <Actions watcherConnection={watcherConnection} />
+      <Transactions watcherConnection={watcherConnection} />
     </div>
   );
 }

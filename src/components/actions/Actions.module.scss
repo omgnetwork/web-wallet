@@ -1,0 +1,17 @@
+@import 'index.scss';
+
+.Actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  @include mobile {
+    flex-direction: column;
+  }
+  button {
+    flex: 1;
+    margin: 0 5px;
+    @include mobile {
+      margin: 5px 0;
+    }
+  }
+}
