@@ -34,12 +34,6 @@ class NetworkService {
   }
 
   async getBalances (account) {
-    const _rootEthBalance = await this.web3.eth.getBalance(account);
-    const rootchainBalance = {
-      currency: 'ETH',
-      amount: this.web3.utils.fromWei(String(_rootEthBalance), 'ether')
-    }
-
     const _childchainBalances = await this.childChain.getBalance(account);
     const childchainBalances = await Promise.all(_childchainBalances.map(
       async i => {
@@ -54,16 +48,39 @@ class NetworkService {
             currency = truncate(i.currency, 6, 4, '...');
           }
         }
-
         return {
           currency,
+          token: i.currency,
           amount: isEth ? this.web3.utils.fromWei(String(i.amount)) : i.amount
         }
       }
     ))
 
+    const rootErc20Balances = await Promise.all(childchainBalances.map(
+      async i => {
+        const isEth = i.currency === 'ETH';
+        if (!isEth) {
+          const balance = await OmgUtil.getErc20Balance({
+            web3: this.web3,
+            address: account,
+            erc20Address: i.token
+          })
+          return {
+            currency: i.currency,
+            amount: balance
+          }
+        }
+      }
+    ))
+
+    const _rootEthBalance = await this.web3.eth.getBalance(account);
+    const rootchainEthBalance = {
+      currency: 'ETH',
+      amount: this.web3.utils.fromWei(String(_rootEthBalance), 'ether')
+    }
+
     return {
-      rootchain: rootchainBalance,
+      rootchain: [rootchainEthBalance, ...rootErc20Balances.filter(i => !!i)],
       childchain: childchainBalances
     }
   }

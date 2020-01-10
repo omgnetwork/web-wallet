@@ -10,14 +10,16 @@ import * as styles from './Account.module.scss';
 
 function Account () {
   const [ account, setAccount ] = useState([]);
-  const [ rootBalance, setRootBalance ] = useState({});
+  const [ rootBalance, setRootBalance ] = useState([]);
   const [ childBalance, setChildBalance ] = useState([]);
+  const [ loading, setLoading ] = useState(true);
 
   useEffect(() => {
     async function initAccounts() {
       const accounts = await networkService.getAccounts();
       setAccount(accounts[0]);
-      fetchBalances(accounts[0]);
+      await fetchBalances(accounts[0]);
+      setLoading(false);
     }
     initAccounts();
   }, []);
@@ -39,7 +41,7 @@ function Account () {
       const balances = childBalance.map(i => {
         return {
           title: `Childchain ${i.currency} Balance`,
-          value: i.amount
+          value: Math.round(Number(i.amount)*10000)/10000
         }
       });
       return [...seperator, ...balances];
@@ -50,19 +52,29 @@ function Account () {
     }]
   }
 
+  function renderRootchainBalances () {
+    if (rootBalance.length) {
+      return rootBalance.map(i => {
+        return {
+          title: `Rootchain ${i.currency} Balance`,
+          value: Math.round(Number(i.amount)*10000)/10000
+        }
+      })
+    }
+    return []
+  }
+
   return (
     <Box>
       <h2>Account Information</h2>
       <Info
+        loading={loading}
         data={[
           {
             title: 'Wallet Address',
             value: account ? truncate(account, 6, 4, '...') : ''
           },
-          {
-            title: 'Rootchain ETH Balance',
-            value: rootBalance.currency ? `${Number(rootBalance.amount).toFixed(4)} ${rootBalance.currency}` : '0 ETH'
-          },
+          ...renderRootchainBalances(),
           ...renderChildchainBalances()
         ]}
       />

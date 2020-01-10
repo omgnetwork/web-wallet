@@ -2,7 +2,10 @@ import React from 'react';
 
 import * as styles from './Info.module.scss';
 
-function Info ({ data }) {
+function Info ({ data, loading }) {
+  if (loading) {
+    return <div>Loading...</div>
+  }
   return (
     <div className={styles.Info}>
       {data.map((i, index) => (
