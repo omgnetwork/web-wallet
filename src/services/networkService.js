@@ -2,6 +2,7 @@ import Web3 from 'web3';
 import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
 import erc20abi from 'human-standard-token-abi';
 import truncate from 'truncate-middle';
+import toBn from 'number-to-bn';
 import config from 'config';
 
 class NetworkService {
@@ -13,6 +14,9 @@ class NetworkService {
     if (window.ethereum) {
       this.web3 = new Web3(window.ethereum, null, { transactionConfirmationBlocks: 1 });
       this.rootChain = new RootChain({ web3: this.web3, plasmaContractAddress: config.plasmaFrameworkAddress });
+      const accounts = await this.web3.eth.getAccounts();
+      this.account = accounts[0];
+
       try {
         await window.ethereum.enable();
         return true;
@@ -24,13 +28,12 @@ class NetworkService {
     if (window.web3) {
       this.web3 = new Web3(window.web3.currentProvider, null, { transactionConfirmationBlocks: 1 });
       this.rootChain = new RootChain({ web3: this.web3, plasmaContractAddress: config.plasmaFrameworkAddress });
+      const accounts = await this.web3.eth.getAccounts();
+      this.account = accounts[0];
+
       return true;
     }
     return false;
-  }
-
-  getAccounts () {
-    return this.web3.eth.getAccounts();
   }
 
   async getBalances (account) {
@@ -83,6 +86,31 @@ class NetworkService {
       rootchain: [rootchainEthBalance, ...rootErc20Balances.filter(i => !!i)],
       childchain: childchainBalances
     }
+  }
+
+  async deposit (value, currency) {
+    if (currency === OmgUtil.transaction.ETH_CURRENCY) {
+      const weiAmount = this.web3.utils.toWei(String(value), 'ether');
+
+      const depositTx = OmgUtil.transaction.encodeDeposit(this.account, weiAmount, currency);
+      return this.rootChain.depositEth({
+        depositTx,
+        amount: toBn(weiAmount),
+        txOptions: { from: this.account, gas: 6000000 }
+      });
+    }
+
+    await this.rootChain.approveToken({
+      erc20Address: currency,
+      amount: value,
+      txOptions: { from: this.account, gas: 6000000 }
+    })
+
+    const depositTx = OmgUtil.transaction.encodeDeposit(this.account, value, currency);
+    return this.rootChain.depositToken({
+      depositTx,
+      txOptions: { from: this.account, gas: 6000000 }
+    })
   }
 }
 

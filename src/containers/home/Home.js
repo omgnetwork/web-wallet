@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import useInterval from 'util/useInterval';
 import networkService from 'services/networkService';
@@ -14,6 +14,10 @@ function Home () {
   const [ watcherConnection, setWatcherConnection ] = useState(false);
   const [ byzantineChain, setByzantineChain ] = useState(false);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   async function checkWatcherStatus () {
     const { byzantine_events } = await networkService.childChain.status();
     if (byzantine_events.length) {
@@ -28,12 +32,18 @@ function Home () {
 
   return (
     <div className={styles.Home}>
-      <Status
-        watcherConnection={watcherConnection}
-        byzantineChain={byzantineChain}
-      />
-      <Account watcherConnection={watcherConnection} />
       <Actions watcherConnection={watcherConnection} />
+      <div className={styles.row}>
+        <Account
+          className={styles.account}
+          watcherConnection={watcherConnection}
+        />
+        <Status
+          className={styles.status}
+          watcherConnection={watcherConnection}
+          byzantineChain={byzantineChain}
+        />
+      </div>
       <Transactions watcherConnection={watcherConnection} />
     </div>
   );

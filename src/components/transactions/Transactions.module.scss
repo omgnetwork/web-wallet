@@ -1,4 +1,11 @@
 @import 'index.scss';
 
 .Transactions {
+  .transaction {
+    border-bottom: 1px dashed $primary;
+    padding: 20px 0;
+    &:last-child {
+      border-bottom: none;
+    }
+  }
 }

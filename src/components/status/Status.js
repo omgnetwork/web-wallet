@@ -8,7 +8,7 @@ import config from 'config';
 
 import * as styles from './Status.module.scss';
 
-function Status ({ watcherConnection, byzantineChain }) {
+function Status ({ watcherConnection, byzantineChain, className }) {
   const renderChainHealth = (
     <Tooltip title='An unhealthy status will result from a ChildChain with byzantine conditions. Users should proceed cautiously until the byzantine conditions are cleared.' arrow>
       <div className={styles.Status}>
@@ -36,29 +36,31 @@ function Status ({ watcherConnection, byzantineChain }) {
   );
 
   return (
-    <Box>
-      <h2>OMG Network</h2>
-      <Info
-        data={[
-          {
-            title: 'Plasma Framework',
-            value: truncate(config.plasmaFrameworkAddress, 6, 4, '...')
-          },
-          {
-            title: 'Watcher',
-            value: config.watcherUrl
-          },
-          {
-            title: 'Watcher Status',
-            value: renderWatcherStatus
-          },
-          {
-            title: 'ChildChain Status',
-            value: watcherConnection ? renderChainHealth : ''
-          },
-        ]}
-      />
-    </Box>
+    <div className={className}>
+      <Box>
+        <h2>OMG Network Status</h2>
+        <Info
+          data={[
+            {
+              title: 'Plasma Framework Address',
+              value: truncate(config.plasmaFrameworkAddress, 6, 4, '...')
+            },
+            {
+              title: 'Watcher URL',
+              value: config.watcherUrl
+            },
+            {
+              title: 'Watcher Status',
+              value: renderWatcherStatus
+            },
+            {
+              title: 'Network Status',
+              value: watcherConnection ? renderChainHealth : ''
+            },
+          ]}
+        />
+      </Box>
+    </div>
   )
 }
 

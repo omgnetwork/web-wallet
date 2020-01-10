@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import useInterval from 'util/useInterval';
 import truncate from 'truncate-middle';
 
 import Box from 'components/box/Box';
@@ -8,7 +9,7 @@ import networkService from 'services/networkService';
 
 import * as styles from './Account.module.scss';
 
-function Account ({ watcherConnection }) {
+function Account ({ watcherConnection, className }) {
   const [ account, setAccount ] = useState([]);
   const [ rootBalance, setRootBalance ] = useState([]);
   const [ childBalance, setChildBalance ] = useState([]);
@@ -16,15 +17,16 @@ function Account ({ watcherConnection }) {
 
   useEffect(() => {
     async function initAccounts() {
-      const accounts = await networkService.getAccounts();
-      setAccount(accounts[0]);
-      await fetchBalances(accounts[0]);
+      setAccount(networkService.account);
+      await fetchBalances(networkService.account);
       setLoading(false);
     }
     if (watcherConnection) {
       initAccounts();
     }
   }, [watcherConnection]);
+
+  useInterval(() => fetchBalances(networkService.account), 5000);
 
   async function fetchBalances (account) {
     const balances = await networkService.getBalances(account);
@@ -42,14 +44,14 @@ function Account ({ watcherConnection }) {
       ];
       const balances = childBalance.map(i => {
         return {
-          title: `Childchain ${i.currency} Balance`,
+          title: `OMG Network ${i.currency} Balance`,
           value: Math.round(Number(i.amount)*10000)/10000
         }
       });
       return [...seperator, ...balances];
     }
     return [{
-      title: 'Childchain Balance',
+      title: 'OMG Network Balance',
       value: 'None'
     }]
   }
@@ -67,20 +69,22 @@ function Account ({ watcherConnection }) {
   }
 
   return (
-    <Box>
-      <h2>Account Information</h2>
-      <Info
-        loading={loading}
-        data={[
-          {
-            title: 'Wallet Address',
-            value: account ? truncate(account, 6, 4, '...') : ''
-          },
-          ...renderRootchainBalances(),
-          ...renderChildchainBalances()
-        ]}
-      />
-    </Box>
+    <div className={className}>
+      <Box>
+        <h2>Account Information</h2>
+        <Info
+          loading={loading}
+          data={[
+            {
+              title: 'Wallet Address',
+              value: account ? truncate(account, 6, 4, '...') : ''
+            },
+            ...renderRootchainBalances(),
+            ...renderChildchainBalances()
+          ]}
+        />
+      </Box>
+    </div>
   );
 }
 
