@@ -9,15 +9,46 @@ import networkService from 'services/networkService';
 import * as styles from './Account.module.scss';
 
 function Account () {
-  const [ accounts, setAccounts ] = useState([]);
+  const [ account, setAccount ] = useState([]);
+  const [ rootBalance, setRootBalance ] = useState({});
+  const [ childBalance, setChildBalance ] = useState([]);
 
   useEffect(() => {
-    async function fetchAccounts() {
+    async function initAccounts() {
       const accounts = await networkService.getAccounts();
-      setAccounts(accounts);
+      setAccount(accounts[0]);
+      fetchBalances(accounts[0]);
     }
-    fetchAccounts();
+    initAccounts();
   }, []);
+
+  async function fetchBalances (account) {
+    const balances = await networkService.getBalances(account);
+    setRootBalance(balances.rootchain);
+    setChildBalance(balances.childchain);
+  }
+
+  function renderChildchainBalances () {
+    if (childBalance.length) {
+      const seperator = [
+        {
+          title: '----',
+          value: ''
+        }
+      ];
+      const balances = childBalance.map(i => {
+        return {
+          title: `Childchain ${i.currency} Balance`,
+          value: i.amount
+        }
+      });
+      return [...seperator, ...balances];
+    }
+    return [{
+      title: 'Childchain Balance',
+      value: 'None'
+    }]
+  }
 
   return (
     <Box>
@@ -26,16 +57,13 @@ function Account () {
         data={[
           {
             title: 'Wallet Address',
-            value: accounts[0] ? truncate(accounts[0], 6, 4, '...') : ''
+            value: account ? truncate(account, 6, 4, '...') : ''
           },
           {
             title: 'Rootchain ETH Balance',
-            value: 120120
+            value: rootBalance.currency ? `${Number(rootBalance.amount).toFixed(4)} ${rootBalance.currency}` : '0 ETH'
           },
-          {
-            title: 'Childchain ETH Balance',
-            value: 52
-          }
+          ...renderChildchainBalances()
         ]}
       />
     </Box>

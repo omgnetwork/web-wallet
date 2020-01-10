@@ -1,5 +1,7 @@
 import Web3 from 'web3';
-import { ChildChain, RootChain } from '@omisego/omg-js';
+import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
+import erc20abi from 'human-standard-token-abi';
+import truncate from 'truncate-middle';
 import config from 'config';
 
 class NetworkService {
@@ -29,6 +31,41 @@ class NetworkService {
 
   getAccounts () {
     return this.web3.eth.getAccounts();
+  }
+
+  async getBalances (account) {
+    const _rootEthBalance = await this.web3.eth.getBalance(account);
+    const rootchainBalance = {
+      currency: 'ETH',
+      amount: this.web3.utils.fromWei(String(_rootEthBalance), 'ether')
+    }
+
+    const _childchainBalances = await this.childChain.getBalance(account);
+    const childchainBalances = await Promise.all(_childchainBalances.map(
+      async i => {
+        const isEth = i.currency === OmgUtil.transaction.ETH_CURRENCY
+        let currency = 'ETH';
+        if (!isEth) {
+          const tokenContract = new this.web3.eth.Contract(erc20abi, i.currency);
+          try {
+            const _currency = await tokenContract.methods.symbol().call();
+            currency = _currency || truncate(i.currency, 6, 4, '...');
+          } catch (err) {
+            currency = truncate(i.currency, 6, 4, '...');
+          }
+        }
+
+        return {
+          currency,
+          amount: isEth ? this.web3.utils.fromWei(String(i.amount)) : i.amount
+        }
+      }
+    ))
+
+    return {
+      rootchain: rootchainBalance,
+      childchain: childchainBalances
+    }
   }
 }
 
