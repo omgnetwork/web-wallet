@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 
 import useInterval from 'util/useInterval';
 import networkService from 'services/networkService';
+
 import Status from 'components/status/Status';
+import Account from 'components/account/Account';
 
 import * as styles from './Home.module.scss';
 
@@ -28,6 +30,7 @@ function Home () {
         watcherConnection={watcherConnection}
         byzantineChain={byzantineChain}
       />
+      <Account />
     </div>
   );
 }

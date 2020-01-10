@@ -1,5 +1,5 @@
 import React from 'react';
-import { truncate } from 'lodash';
+import truncate from 'truncate-middle';
 import { Tooltip } from '@material-ui/core';
 
 import Box from 'components/box/Box';
@@ -37,12 +37,12 @@ function Status ({ watcherConnection, byzantineChain }) {
 
   return (
     <Box>
-      <h2>OMG Network Wallet</h2>
+      <h2>OMG Network Status</h2>
       <Info
         data={[
           {
             title: 'Plasma Framework',
-            value: truncate(config.plasmaFrameworkAddress)
+            value: truncate(config.plasmaFrameworkAddress, 6, 4, '...')
           },
           {
             title: 'Watcher',

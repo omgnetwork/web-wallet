@@ -5,8 +5,10 @@
   flex-direction: column;
   background-color: $lightbackground;
   padding: 20px;
+  margin-bottom: 20px;
 
   @include mobile {
     padding: 10px;
+    margin-bottom: 10px;
   }
 }

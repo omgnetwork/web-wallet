@@ -26,6 +26,10 @@ class NetworkService {
     }
     return false;
   }
+
+  getAccounts () {
+    return this.web3.eth.getAccounts();
+  }
 }
 
 const networkService = new NetworkService();

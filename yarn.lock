@@ -10595,6 +10595,11 @@ trim-newlines@^1.0.0:
   dependencies:
     glob "^7.1.2"
 
+truncate-middle@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/truncate-middle/-/truncate-middle-1.0.6.tgz#17c6272ec5a469b75a82fbca38b388b61b50473b"
+  integrity sha512-oJLDTdHAk27V+JUUu1vKYezKehx/tECV0vnJ1e8JV/rvre5oLoFMaCLP53ZwiPsw4ZIJzyLoZr/TKQABnaNF6A==
+
 ts-pnp@1.1.4, ts-pnp@^1.1.2:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.1.4.tgz#ae27126960ebaefb874c6d7fa4729729ab200d90"
