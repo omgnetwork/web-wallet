@@ -1,0 +1,16 @@
+@import 'index.scss';
+
+.Info {
+  display: flex;
+  flex-direction: column;
+  .item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    @include mobile {
+      flex-direction: column;
+      margin-bottom: 10px;
+    }
+  }
+}

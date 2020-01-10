@@ -1,68 +1,34 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# react-starter-kit
 
-## Available Scripts
+This is an example client side wallet built in React.js which allows you to make interactions with the OMG network from the browser.
 
-In the project directory, you can run:
+Before you get started, make sure you have a local instance of elixir-omg running or have access to an already deployed network. Feel free to build on top of the functionalities which you see here.
 
-### `yarn start`
+NOTE: 
+- This example application is using [`omg-js v3.0.0-alpha.13`](https://github.com/omisego/omg-js)
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Initial Setup
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+Make sure you have access to a Watcher endpoint, and the address of the deployed Plasma Contract. The wallet also requires an in-browser web3 wallet like MetaMask to sign transactions.
 
-### `yarn test`
+The endpoints for production deployment can be found [here](https://github.com/omisego/dev-portal/blob/master/guides/network_endpoints.md)
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Install dependencies by running `yarn install` from the root
 
-### `yarn build`
+2. Replace the configuration in `src/config.js` with endpoints for `watcherUrl`, and `plasmaFrameworkAddress`.
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+3. Start the app by running `yarn start` from the root
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+## Running the starter-kit
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Open up your browser and navigate to `http://localhost:3000`, Make sure your Metamask is currently unlocked. You should be able to see your account balance on both Root chain and Child chain.
 
-### `yarn eject`
+From here, you can perform 3 actions:
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+1. Deposit into the OMG Network: After 12 blocks confirmations, your Rootchain balance will be updated.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+2. Transfer funds on the OMG Network: Fill in the values for the Transfer fields and click OK. Depending on network congestion, you may have to wait for a little while for the transaction to be included in a block.
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+3. Exit your funds back to Rootchain: Fill in an address that has funds in the OMG Network and click on OK, your exit period will start. Do note that the exit period will be varied depending on the deployed contract environment. After the certain amount of time has passed, you will be able to process the exit and receive your funds back.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+4. If the challenge period has passed, your exit will exist in an exit queue of that token. You can call process exits on this queue to receive your funds back.

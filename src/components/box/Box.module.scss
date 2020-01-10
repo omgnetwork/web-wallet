@@ -1,0 +1,12 @@
+@import 'index.scss';
+
+.Box {
+  display: flex;
+  flex-direction: column;
+  background-color: $lightbackground;
+  padding: 20px;
+
+  @include mobile {
+    padding: 10px;
+  }
+}

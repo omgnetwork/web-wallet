@@ -1,0 +1,24 @@
+@import 'index.scss';
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 20px;
+  @include mobile {
+    padding: 10px;
+  }
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+
+  img {
+    margin-bottom: 20px;
+    height: 80px;
+  }
+}

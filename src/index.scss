@@ -1,0 +1,38 @@
+$primary: rgb(94, 108, 130);
+$white: white;
+$red: red;
+$green: green;
+$blue: rgb(34, 118, 255);
+$background: rgb(3, 7, 13);
+$black: black;
+$lightbackground: rgb(10, 19, 32);
+
+html {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+body {
+  background-color: $background;
+  margin: 0;
+  padding: 0;
+  color: $primary;
+  font-family: 'Roboto Mono', monospace;
+}
+
+h2 {
+  margin: 0 0 10px 0;
+}
+
+@mixin mobile {
+  @media screen and (max-width: 1000px) {
+    @content
+  }
+}
+
+@mixin tablet {
+  @media screen and (max-width: 1000px) {
+    @content
+  }
+}
