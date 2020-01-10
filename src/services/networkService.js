@@ -3,6 +3,7 @@ import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
 import erc20abi from 'human-standard-token-abi';
 import truncate from 'truncate-middle';
 import toBn from 'number-to-bn';
+import JSONBigNumber from 'json-bigint';
 import config from 'config';
 
 class NetworkService {
@@ -36,7 +37,9 @@ class NetworkService {
     return false;
   }
 
-  async getBalances (account) {
+  async getBalances () {
+    if (!this.account) return;
+    const account = this.account;
     const _childchainBalances = await this.childChain.getBalance(account);
     const childchainBalances = await Promise.all(_childchainBalances.map(
       async i => {
@@ -111,6 +114,72 @@ class NetworkService {
       depositTx,
       txOptions: { from: this.account, gas: 6000000 }
     })
+  }
+
+  async transfer ({
+    recipient,
+    value,
+    currency,
+    feeValue,
+    feeToken,
+    metadata
+  }) {
+    value = currency === OmgUtil.transaction.ETH_CURRENCY
+      ? this.web3.utils.toWei(String(value))
+      : value;
+    feeValue = feeToken === OmgUtil.transaction.ETH_CURRENCY
+      ? this.web3.utils.toWei(String(value))
+      : value;
+
+    const payments = [{
+      owner: recipient,
+      currency,
+      amount: toBn(value)
+    }]
+    const fee = {
+      currency: feeToken,
+      amount: toBn(feeValue)
+    }
+    const _metadata = metadata ? OmgUtil.transaction.encodeMetadata(metadata) : OmgUtil.transaction.NULL_METADATA
+    const createdTx = await this.childChain.createTransaction({
+      owner: this.account,
+      payments,
+      fee,
+      metadata: _metadata
+    })
+
+    // if erc20 only inputs, add empty eth input to cover the fee
+    if (!createdTx.transactions[0].inputs.find(i => i.currency === OmgUtil.transaction.ETH_CURRENCY)) {
+      const utxos = await this.childChain.getUtxos(this.account)
+      const sorted = utxos
+        .filter(utxo => utxo.currency === OmgUtil.transaction.ETH_CURRENCY)
+        .sort((a, b) => toBn(b.amount).sub(toBn(a.amount)))
+      // return early if no utxos
+      if (!sorted || !sorted.length) {
+        throw new Error(`No ETH utxo available to cover the fee amount`)
+      }
+      const ethUtxo = sorted[0]
+      const emptyOutput = {
+        amount: ethUtxo.amount,
+        currency: ethUtxo.currency,
+        owner: ethUtxo.owner
+      }
+      createdTx.transactions[0].inputs.push(ethUtxo)
+      createdTx.transactions[0].outputs.push(emptyOutput)
+    }
+
+    const typedData = OmgUtil.transaction.getTypedData(createdTx.transactions[0], currency)
+    const signature = await this.web3.currentProvider.send(
+      'eth_signTypedData_v3',
+      [
+        this.web3.utils.toChecksumAddress(this.account),
+        JSONBigNumber.stringify(typedData)
+      ]
+    );
+    const signatures = new Array(createdTx.transactions[0].inputs.length).fill(signature)
+    const signedTxn = this.childChain.buildSignedTransaction(typedData, signatures)
+    const submitted = await this.childChain.submitTransaction(signedTxn)
+    return submitted
   }
 }
 

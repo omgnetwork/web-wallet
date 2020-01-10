@@ -18,9 +18,10 @@ function Actions ({ watcherConnection }) {
   return (
     <>
       <DepositModal open={depositModal} toggle={() => setDepositModal(false)} />
-      {/* <TransferModal open={transferModal} toggle={() => setTransferModal(false)} />
-      <ExitModal open={exitModal} toggle={() => setExitModal(false)} />
-      <ProcessExitsModal open={processExitsModal} toggle={() => setProcessExitsModal(false)} /> */}
+      <TransferModal open={transferModal} toggle={() => setTransferModal(false)} />
+
+      {/* <ExitModal open={exitModal} toggle={() => setExitModal(false)} /> */}
+      {/* <ProcessExitsModal open={processExitsModal} toggle={() => setProcessExitsModal(false)} /> */}
 
       <Box>
         <div className={styles.Actions}>

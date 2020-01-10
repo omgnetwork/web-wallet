@@ -44,6 +44,7 @@ const useStyles = makeStyles({
     display: 'flex',
     flex: 1,
     backgroundColor: '#0a1320',
+    borderRadius: '5px',
     margin: '10px 0'
   },
   inputRow: {
@@ -130,7 +131,7 @@ function DepositModal ({ open, toggle }) {
             )}
             {!loading && !success && (
               <>
-                <h2>Deposit into the OMG Network</h2>
+                <h2>{`Deposit ${isEth ? 'ETH' : 'ERC20'} into the OMG Network`}</h2>
                 <div className={classes.inputRow}>
                   <div>
                     <Switch
@@ -143,21 +144,23 @@ function DepositModal ({ open, toggle }) {
                     <span>ETH</span>
                   </div>
                   {!isEth && <div>You will be prompted with 2 confirmations. The first is to approve the deposit, and the second will be the actual deposit transaction.</div>}
-                  <TextField
-                    className={classes.input}
-                    InputProps={{
-                      className: classes.inputText,
-                    }}
-                    InputLabelProps={{
-                      focused: true
-                    }}
-                    id='outlined-basic'
-                    label={isEth ? 'ETH' : 'ERC20 Address'}
-                    type='numbertext'
-                    variant='outlined'
-                    value={currency}
-                    onChange={isEth ? () => {} : i => setCurrency(i.target.value)}
-                  />
+                  {!isEth && (
+                    <TextField
+                      className={classes.input}
+                      InputProps={{
+                        className: classes.inputText,
+                      }}
+                      InputLabelProps={{
+                        focused: true
+                      }}
+                      id='outlined-basic'
+                      label='ERC20 Address'
+                      type='numbertext'
+                      variant='outlined'
+                      value={currency}
+                      onChange={i => setCurrency(i.target.value)}
+                    />
+                  )}
                   <TextField
                     className={classes.input}
                     InputProps={{

@@ -26,10 +26,10 @@ function Account ({ watcherConnection, className }) {
     }
   }, [watcherConnection]);
 
-  useInterval(() => fetchBalances(networkService.account), 5000);
+  useInterval(fetchBalances, 5000);
 
-  async function fetchBalances (account) {
-    const balances = await networkService.getBalances(account);
+  async function fetchBalances () {
+    const balances = await networkService.getBalances();
     setRootBalance(balances.rootchain);
     setChildBalance(balances.childchain);
   }
