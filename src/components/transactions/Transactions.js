@@ -15,7 +15,6 @@ function Transactions ({ watcherConnection }) {
     async function fetchTransactions () {
       const transactions = await networkService.childChain.getTransactions({ address: networkService.account });
       setTransactions(transactions);
-      console.log(transactions);
       setLoading(false);
     }
     if (watcherConnection) {

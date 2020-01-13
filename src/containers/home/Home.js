@@ -13,10 +13,22 @@ import * as styles from './Home.module.scss';
 function Home () {
   const [ watcherConnection, setWatcherConnection ] = useState(false);
   const [ byzantineChain, setByzantineChain ] = useState(false);
+  const [ rootBalance, setRootBalance ] = useState([]);
+  const [ childBalance, setChildBalance ] = useState([]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  async function fetchBalances () {
+    if (watcherConnection) {
+      const balances = await networkService.getBalances();
+      if (balances) {
+        setRootBalance(balances.rootchain);
+        setChildBalance(balances.childchain);
+      }
+    }
+  }
 
   async function checkWatcherStatus () {
     const { byzantine_events } = await networkService.childChain.status();
@@ -28,15 +40,21 @@ function Home () {
     }
   }
 
-  useInterval(checkWatcherStatus, 10000);
+  useInterval(checkWatcherStatus, 3000);
+  useInterval(fetchBalances, 3000);
 
   return (
     <div className={styles.Home}>
-      <Actions watcherConnection={watcherConnection} />
+      <Actions
+        watcherConnection={watcherConnection}
+        childBalance={childBalance}
+      />
+
       <div className={styles.row}>
         <Account
           className={styles.account}
-          watcherConnection={watcherConnection}
+          childBalance={childBalance}
+          rootBalance={rootBalance}
         />
         <Status
           className={styles.status}
@@ -44,7 +62,10 @@ function Home () {
           byzantineChain={byzantineChain}
         />
       </div>
-      <Transactions watcherConnection={watcherConnection} />
+
+      <Transactions
+        watcherConnection={watcherConnection}
+      />
     </div>
   );
 }

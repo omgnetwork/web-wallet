@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import useInterval from 'util/useInterval';
+import React from 'react';
 import truncate from 'truncate-middle';
 
 import Box from 'components/box/Box';
@@ -9,31 +8,7 @@ import networkService from 'services/networkService';
 
 import * as styles from './Account.module.scss';
 
-function Account ({ watcherConnection, className }) {
-  const [ account, setAccount ] = useState([]);
-  const [ rootBalance, setRootBalance ] = useState([]);
-  const [ childBalance, setChildBalance ] = useState([]);
-  const [ loading, setLoading ] = useState(true);
-
-  useEffect(() => {
-    async function initAccounts() {
-      setAccount(networkService.account);
-      await fetchBalances(networkService.account);
-      setLoading(false);
-    }
-    if (watcherConnection) {
-      initAccounts();
-    }
-  }, [watcherConnection]);
-
-  useInterval(fetchBalances, 5000);
-
-  async function fetchBalances () {
-    const balances = await networkService.getBalances();
-    setRootBalance(balances.rootchain);
-    setChildBalance(balances.childchain);
-  }
-
+function Account ({ className, childBalance, rootBalance }) {
   function renderChildchainBalances () {
     if (childBalance.length) {
       const seperator = [
@@ -50,9 +25,15 @@ function Account ({ watcherConnection, className }) {
       });
       return [...seperator, ...balances];
     }
+    if (rootBalance.length) {
+      return [{
+        title: 'OMG Network Balance',
+        value: 'None'
+      }]
+    }
     return [{
-      title: 'OMG Network Balance',
-      value: 'None'
+      title: 'Balances',
+      value: 'Loading...'
     }]
   }
 
@@ -73,11 +54,10 @@ function Account ({ watcherConnection, className }) {
       <Box>
         <h2>Account Information</h2>
         <Info
-          loading={loading}
           data={[
             {
               title: 'Wallet Address',
-              value: account ? truncate(account, 6, 4, '...') : ''
+              value: networkService.account ? truncate(networkService.account, 6, 4, '...') : ''
             },
             ...renderRootchainBalances(),
             ...renderChildchainBalances()

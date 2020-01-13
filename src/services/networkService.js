@@ -95,7 +95,7 @@ class NetworkService {
     if (currency === OmgUtil.transaction.ETH_CURRENCY) {
       const weiAmount = this.web3.utils.toWei(String(value), 'ether');
 
-      const depositTx = OmgUtil.transaction.encodeDeposit(this.account, weiAmount, currency);
+      const depositTx = OmgUtil.transaction.encodeDeposit(this.account, toBn(weiAmount), currency);
       return this.rootChain.depositEth({
         depositTx,
         amount: toBn(weiAmount),

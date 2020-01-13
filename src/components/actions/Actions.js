@@ -9,7 +9,7 @@ import ProcessExitsModal from './modals/ProcessExitsModal';
 
 import * as styles from './Actions.module.scss';
 
-function Actions ({ watcherConnection }) {
+function Actions ({ watcherConnection, childBalance }) {
   const [ depositModal, setDepositModal ] = useState(false);
   const [ transferModal, setTransferModal ] = useState(false);
   const [ exitModal, setExitModal ] = useState(false);
@@ -33,7 +33,7 @@ function Actions ({ watcherConnection }) {
             Deposit
           </Button>
 
-          {watcherConnection && (
+          {watcherConnection && !!childBalance.length && (
             <>
               <Button
                 onClick={() => setTransferModal(true)} 
@@ -51,6 +51,7 @@ function Actions ({ watcherConnection }) {
               </Button>
             </>
           )}
+
           <Button
             onClick={() => setProcessExitsModal(true)} 
             variant='outlined'
