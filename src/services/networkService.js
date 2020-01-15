@@ -17,7 +17,6 @@ class NetworkService {
       this.rootChain = new RootChain({ web3: this.web3, plasmaContractAddress: config.plasmaFrameworkAddress });
       const accounts = await this.web3.eth.getAccounts();
       this.account = accounts[0];
-
       try {
         await window.ethereum.enable();
         return true;
@@ -31,7 +30,6 @@ class NetworkService {
       this.rootChain = new RootChain({ web3: this.web3, plasmaContractAddress: config.plasmaFrameworkAddress });
       const accounts = await this.web3.eth.getAccounts();
       this.account = accounts[0];
-
       return true;
     }
     return false;
@@ -39,23 +37,22 @@ class NetworkService {
 
   async getBalances () {
     if (!this.account) return;
-    const account = this.account;
-    const _childchainBalances = await this.childChain.getBalance(account);
+    const _childchainBalances = await this.childChain.getBalance(this.account);
     const childchainBalances = await Promise.all(_childchainBalances.map(
       async i => {
         const isEth = i.currency === OmgUtil.transaction.ETH_CURRENCY
-        let currency = 'ETH';
+        let symbol = 'ETH';
         if (!isEth) {
           const tokenContract = new this.web3.eth.Contract(erc20abi, i.currency);
           try {
-            const _currency = await tokenContract.methods.symbol().call();
-            currency = _currency || truncate(i.currency, 6, 4, '...');
+            const _symbol = await tokenContract.methods.symbol().call();
+            symbol = _symbol || truncate(i.currency, 6, 4, '...');
           } catch (err) {
-            currency = truncate(i.currency, 6, 4, '...');
+            symbol = truncate(i.currency, 6, 4, '...');
           }
         }
         return {
-          currency,
+          symbol,
           token: i.currency,
           amount: isEth ? this.web3.utils.fromWei(String(i.amount)) : i.amount
         }
@@ -64,24 +61,26 @@ class NetworkService {
 
     const rootErc20Balances = await Promise.all(childchainBalances.map(
       async i => {
-        const isEth = i.currency === 'ETH';
+        const isEth = i.symbol === 'ETH';
         if (!isEth) {
           const balance = await OmgUtil.getErc20Balance({
             web3: this.web3,
-            address: account,
+            address: this.account,
             erc20Address: i.token
           })
           return {
-            currency: i.currency,
+            symbol: i.symbol,
+            token: i.token,
             amount: balance
           }
         }
       }
     ))
 
-    const _rootEthBalance = await this.web3.eth.getBalance(account);
+    const _rootEthBalance = await this.web3.eth.getBalance(this.account);
     const rootchainEthBalance = {
-      currency: 'ETH',
+      symbol: 'ETH',
+      token: OmgUtil.transaction.ETH_CURRENCY,
       amount: this.web3.utils.fromWei(String(_rootEthBalance), 'ether')
     }
 

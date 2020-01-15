@@ -11,19 +11,12 @@ import * as styles from './Account.module.scss';
 function Account ({ className, childBalance, rootBalance }) {
   function renderChildchainBalances () {
     if (childBalance.length) {
-      const seperator = [
-        {
-          title: '----',
-          value: ''
-        }
-      ];
-      const balances = childBalance.map(i => {
+      return childBalance.map(i => {
         return {
-          title: `OMG Network ${i.currency} Balance`,
+          title: `OMG Network ${i.symbol} Balance`,
           value: Math.round(Number(i.amount)*10000)/10000
         }
       });
-      return [...seperator, ...balances];
     }
     if (rootBalance.length) {
       return [{
@@ -41,7 +34,7 @@ function Account ({ className, childBalance, rootBalance }) {
     if (rootBalance.length) {
       return rootBalance.map(i => {
         return {
-          title: `Rootchain ${i.currency} Balance`,
+          title: `Rootchain ${i.symbol} Balance`,
           value: Math.round(Number(i.amount)*10000)/10000
         }
       })

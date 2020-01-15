@@ -32,16 +32,16 @@ function Home () {
 
   async function checkWatcherStatus () {
     const { byzantine_events } = await networkService.childChain.status();
-    if (byzantine_events.length) {
-      setByzantineChain(true);
-    }
-    if (byzantine_events) {
-      setWatcherConnection(true);
-    }
+    byzantine_events.length
+      ? setByzantineChain(true)
+      : setByzantineChain(false)
+    !!byzantine_events
+      ? setWatcherConnection(true)
+      : setWatcherConnection(false)
   }
 
-  useInterval(checkWatcherStatus, 3000);
-  useInterval(fetchBalances, 3000);
+  useInterval(checkWatcherStatus, 5000);
+  useInterval(fetchBalances, 5000);
 
   return (
     <div className={styles.Home}>
