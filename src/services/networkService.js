@@ -4,7 +4,7 @@ import erc20abi from 'human-standard-token-abi';
 import truncate from 'truncate-middle';
 import BN from 'bn.js';
 import JSONBigNumber from 'json-bigint';
-import config from 'config';
+import config from 'util/config';
 
 class NetworkService {
   constructor () {
@@ -54,7 +54,7 @@ class NetworkService {
         return {
           symbol,
           token: i.currency,
-          amount: isEth ? this.web3.utils.fromWei(String(i.amount)) : i.amount
+          amount: i.amount
         }
       }
     ))
@@ -92,11 +92,10 @@ class NetworkService {
 
   async deposit (value, currency) {
     if (currency === OmgUtil.transaction.ETH_CURRENCY) {
-      const weiAmount = this.web3.utils.toWei(String(value), 'ether');
-      const depositTx = OmgUtil.transaction.encodeDeposit(this.account, new BN(weiAmount), currency);
+      const depositTx = OmgUtil.transaction.encodeDeposit(this.account, new BN(value), currency);
       return this.rootChain.depositEth({
         depositTx,
-        amount: new BN(weiAmount),
+        amount: new BN(value),
         txOptions: { from: this.account, gas: 6000000 }
       });
     }
@@ -122,13 +121,6 @@ class NetworkService {
     feeToken,
     metadata
   }) {
-    value = currency === OmgUtil.transaction.ETH_CURRENCY
-      ? this.web3.utils.toWei(String(value))
-      : value;
-    feeValue = feeToken === OmgUtil.transaction.ETH_CURRENCY
-      ? this.web3.utils.toWei(String(value))
-      : value;
-
     const payments = [{
       owner: recipient,
       currency,

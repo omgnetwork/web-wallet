@@ -2,8 +2,16 @@
 
 .Status {
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  flex-direction: column;
+  padding: 40px;
+  background-color: #1f1e23;
+  max-width: 300px;
+  flex: 1;
+  font-size: 14px;
+
+  h1 {
+    margin-bottom: 40px;
+  }
 
   .statusCircle {
     border-radius: 100%;
@@ -14,5 +22,11 @@
   }
   .healthy {
     background-color: $green;
+  }
+
+  .indicator {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
 }

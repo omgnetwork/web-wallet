@@ -1,14 +1,13 @@
 import React from 'react';
 import truncate from 'truncate-middle';
 
-import Box from 'components/box/Box';
 import Info from 'components/info/Info';
 
 import networkService from 'services/networkService';
 
 import * as styles from './Account.module.scss';
 
-function Account ({ className, childBalance, rootBalance }) {
+function Account ({ className, childBalance = [], rootBalance = [] }) {
   function renderChildchainBalances () {
     if (childBalance.length) {
       return childBalance.map(i => {
@@ -44,19 +43,17 @@ function Account ({ className, childBalance, rootBalance }) {
 
   return (
     <div className={className}>
-      <Box>
-        <h2>Account Information</h2>
-        <Info
-          data={[
-            {
-              title: 'Wallet Address',
-              value: networkService.account ? truncate(networkService.account, 6, 4, '...') : ''
-            },
-            ...renderRootchainBalances(),
-            ...renderChildchainBalances()
-          ]}
-        />
-      </Box>
+      <h2>Account</h2>
+      <Info
+        data={[
+          {
+            title: 'Wallet Address',
+            value: networkService.account ? truncate(networkService.account, 6, 4, '...') : ''
+          },
+          ...renderRootchainBalances(),
+          ...renderChildchainBalances()
+        ]}
+      />
     </div>
   );
 }

@@ -3,9 +3,10 @@ $white: white;
 $red: red;
 $green: green;
 $blue: rgb(34, 118, 255);
-$background: #03070d;
+$background: #0f0f0f;
 $black: black;
 $lightbackground: #0a1320;
+$darkgray: #26252a;
 
 html {
   ::-webkit-scrollbar {
@@ -14,11 +15,20 @@ html {
 }
 
 body {
-  background-color: $background;
   margin: 0;
   padding: 0;
   color: $primary;
+  background-color: $background;
   font-family: 'Roboto Mono', monospace;
+}
+
+h1 {
+  margin: 0;
+  white-space: pre;
+  font-family: 'Arial';
+  font-weight: 400;
+  font-size: 25px;
+  color: $blue;
 }
 
 h2 {

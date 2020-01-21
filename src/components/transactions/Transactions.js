@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 
 import networkService from 'services/networkService';
-import Box from 'components/box/Box';
 import Info from 'components/info/Info';
 
 import * as styles from './Transactions.module.scss';
@@ -23,8 +22,8 @@ function Transactions ({ watcherConnection }) {
   }, [watcherConnection])
 
   return (
-    <Box>
-      <h2>Transactions</h2>
+    <>
+      <h2>History</h2>
       {loading && <div>Loading...</div>}
       {!loading && (
         <div className={styles.Transactions}>
@@ -53,7 +52,7 @@ function Transactions ({ watcherConnection }) {
           })}
         </div>
       )}
-    </Box>
+    </>
   );
 }
 

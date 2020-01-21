@@ -2,16 +2,15 @@ import React from 'react';
 import truncate from 'truncate-middle';
 import { Tooltip } from '@material-ui/core';
 
-import Box from 'components/box/Box';
 import Info from 'components/info/Info';
-import config from 'config';
+import config from 'util/config';
 
 import * as styles from './Status.module.scss';
 
 function Status ({ watcherConnection, byzantineChain, className }) {
   const renderChainHealth = (
     <Tooltip title='An unhealthy status will result from a ChildChain with byzantine conditions. Users should proceed cautiously until the byzantine conditions are cleared.' arrow>
-      <div className={styles.Status}>
+      <div className={styles.indicator}>
         <span>{byzantineChain ? 'Unhealthy' : 'Healthy'}</span>
         <div
           className={[
@@ -24,7 +23,7 @@ function Status ({ watcherConnection, byzantineChain, className }) {
   );
 
   const renderWatcherStatus = (
-    <div className={styles.Status}>
+    <div className={styles.indicator}>
       <span>{watcherConnection ? 'Connected' : 'Error'}</span>
       <div
         className={[
@@ -36,30 +35,30 @@ function Status ({ watcherConnection, byzantineChain, className }) {
   );
 
   return (
-    <div className={className}>
-      <Box>
-        <h2>Network Status</h2>
-        <Info
-          data={[
-            {
-              title: 'Plasma Framework Address',
-              value: truncate(config.plasmaFrameworkAddress, 6, 4, '...')
-            },
-            {
-              title: 'Watcher URL',
-              value: truncate(config.watcherUrl, 15, 15, '...')
-            },
-            {
-              title: 'Watcher Status',
-              value: renderWatcherStatus
-            },
-            {
-              title: 'Network Status',
-              value: watcherConnection ? renderChainHealth : ''
-            },
-          ]}
-        />
-      </Box>
+    <div className={styles.Status}>
+      <h1>{'OMG\nNETWORK'}</h1>
+      <Info
+        data={[
+          {
+            title: 'Watcher Status',
+            value: renderWatcherStatus
+          },
+          {
+            title: 'Network Status',
+            value: watcherConnection ? renderChainHealth : ''
+          },
+          {
+            header: 'Plasma Framework Address',
+            title: truncate(config.plasmaFrameworkAddress, 10, 4, '...'),
+            value: 'copy'
+          },
+          {
+            header: 'Watcher URL', 
+            title: config.watcherUrl,
+            value: 'copy'
+          }
+        ]}
+      />
     </div>
   )
 }
