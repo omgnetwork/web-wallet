@@ -153,10 +153,10 @@ function DepositModal ({ open, toggle }) {
                       InputLabelProps={{
                         focused: true
                       }}
-                      id='outlined-basic'
+                      id='filled-basic'
                       label='ERC20 Address'
                       type='numbertext'
-                      variant='outlined'
+                      variant='filled'
                       value={currency}
                       onChange={i => setCurrency(i.target.value)}
                     />
@@ -169,10 +169,10 @@ function DepositModal ({ open, toggle }) {
                     InputLabelProps={{
                       focused: true
                     }}
-                    id='outlined-number'
+                    id='filled-number'
                     label='Amount'
                     type='number'
-                    variant='outlined'
+                    variant='filled'
                     value={value}
                     onChange={i => setValue(i.target.value)}
                   />

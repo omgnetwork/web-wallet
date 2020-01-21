@@ -15,7 +15,11 @@ The endpoints for production deployment can be found [here](https://github.com/o
 
 1. Install dependencies by running `yarn install` from the root
 
-2. Replace the configuration in `src/config.js` with endpoints for `watcherUrl`, and `plasmaFrameworkAddress`.
+2. Create a `.env` file in the root and add your configuration with endpoints for `WATCHER_URL`, and `PLASMA_FRAMEWORK`.
+```env
+REACT_APP_WATCHER_URL=<watcher_url>
+REACT_APP_PLASMA_FRAMEWORK=<plasma_framework_address>
+```
 
 3. Start the app by running `yarn start` from the root
 

@@ -2,7 +2,7 @@ import Web3 from 'web3';
 import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
 import erc20abi from 'human-standard-token-abi';
 import truncate from 'truncate-middle';
-import toBn from 'number-to-bn';
+import BN from 'bn.js';
 import JSONBigNumber from 'json-bigint';
 import config from 'config';
 
@@ -93,11 +93,10 @@ class NetworkService {
   async deposit (value, currency) {
     if (currency === OmgUtil.transaction.ETH_CURRENCY) {
       const weiAmount = this.web3.utils.toWei(String(value), 'ether');
-
-      const depositTx = OmgUtil.transaction.encodeDeposit(this.account, toBn(weiAmount), currency);
+      const depositTx = OmgUtil.transaction.encodeDeposit(this.account, new BN(weiAmount), currency);
       return this.rootChain.depositEth({
         depositTx,
-        amount: toBn(weiAmount),
+        amount: new BN(weiAmount),
         txOptions: { from: this.account, gas: 6000000 }
       });
     }
@@ -133,11 +132,11 @@ class NetworkService {
     const payments = [{
       owner: recipient,
       currency,
-      amount: toBn(value)
+      amount: new BN(value)
     }]
     const fee = {
       currency: feeToken,
-      amount: toBn(feeValue)
+      amount: new BN(feeValue)
     }
     const _metadata = metadata ? OmgUtil.transaction.encodeMetadata(metadata) : OmgUtil.transaction.NULL_METADATA
     const createdTx = await this.childChain.createTransaction({
@@ -152,7 +151,7 @@ class NetworkService {
       const utxos = await this.childChain.getUtxos(this.account)
       const sorted = utxos
         .filter(utxo => utxo.currency === OmgUtil.transaction.ETH_CURRENCY)
-        .sort((a, b) => toBn(b.amount).sub(toBn(a.amount)))
+        .sort((a, b) => new BN(b.amount).sub(new BN(a.amount)))
       // return early if no utxos
       if (!sorted || !sorted.length) {
         throw new Error(`No ETH utxo available to cover the fee amount`)

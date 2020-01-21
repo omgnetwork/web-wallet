@@ -161,101 +161,81 @@ function TransferModal ({ open, toggle }) {
                 <div className={classes.inputRow}>
                   <TextField
                     className={classes.input}
-                    InputProps={{
-                      className: classes.inputText,
-                    }}
-                    InputLabelProps={{
-                      focused: true
-                    }}
-                    id='outlined-basic'
+                    InputProps={{ className: classes.inputText }}
+                    InputLabelProps={{ focused: true }}
+                    id='filled-basic'
                     label='Recipient'
                     type='numbertext'
-                    variant='outlined'
+                    variant='filled'
                     value={recipient}
                     onChange={i => setRecipient(i.target.value)}
                   />
-                  <FormControl variant='outlined' className={classes.input}>
-                    <InputLabel id='demo-simple-select-outlined-label'>
+                  <FormControl variant='filled' className={classes.input}>
+                    <InputLabel focused id='demo-simple-select-filled-label'>
                       Currency
                     </InputLabel>
                     <Select
                       displayEmpty
-                      labelId='demo-simple-select-outlined-label'
-                      id='demo-simple-select-outlined'
+                      labelId='demo-simple-select-filled-label'
+                      id='demo-simple-select-filled'
                       value={currency}
                       color='primary'
                       onChange={e => setCurrency(e.target.value)}
-                      classes={{
-                        select: classes.select
-                      }}
+                      classes={{ select: classes.select }}
                     >
                       {ccTokens.map(i => (
-                        <MenuItem key={i.token} value={i.token}>{i.currency}</MenuItem>
+                        <MenuItem key={i.token} value={i.token}>{i.symbol}</MenuItem>
                       ))}
                     </Select>
                   </FormControl>
                   <TextField
                     className={classes.input}
-                    InputProps={{
-                      className: classes.inputText,
-                    }}
-                    InputLabelProps={{
-                      focused: true
-                    }}
-                    id='outlined-number'
+                    InputProps={{ className: classes.inputText }}
+                    InputLabelProps={{ focused: true }}
+                    id='filled-number'
                     label='Amount'
                     type='number'
-                    variant='outlined'
+                    variant='filled'
                     value={value}
                     onChange={i => setValue(i.target.value)}
                   />
-                  <FormControl variant='outlined' className={classes.input}>
-                    <InputLabel id='demo-simple-select-outlined-label'>
+                  <FormControl variant='filled' className={classes.input}>
+                    <InputLabel focused id='demo-simple-select-filled-label'>
                       Fee Currency
                     </InputLabel>
                     <Select
                       displayEmpty
-                      labelId='demo-simple-select-outlined-label'
-                      id='demo-simple-select-outlined'
+                      labelId='demo-simple-select-filled-label'
+                      id='demo-simple-select-filled'
                       value={feeToken}
                       color='primary'
                       onChange={e => setFeeToken(e.target.value)}
-                      classes={{
-                        select: classes.select
-                      }}
+                      classes={{ select: classes.select }}
                     >
                       {ccTokens.map(i => (
-                        <MenuItem key={i.token} value={i.token}>{i.currency}</MenuItem>
+                        <MenuItem key={i.token} value={i.token}>{i.symbol}</MenuItem>
                       ))}
                     </Select>
                   </FormControl>
                   <TextField
                     className={classes.input}
-                    InputProps={{
-                      className: classes.inputText,
-                    }}
-                    InputLabelProps={{
-                      focused: true
-                    }}
-                    id='outlined-number'
+                    InputProps={{ className: classes.inputText }}
+                    InputLabelProps={{ focused: true }}
+                    id='filled-number'
                     label='Fee Amount'
                     type='number'
-                    variant='outlined'
+                    variant='filled'
                     value={feeValue}
                     onChange={i => setFeeValue(i.target.value)}
                   />
                   <TextField
                     className={classes.input}
-                    InputProps={{
-                      className: classes.inputText,
-                    }}
-                    InputLabelProps={{
-                      focused: true
-                    }}
-                    id='outlined-basic'
+                    InputProps={{ className: classes.inputText }}
+                    InputLabelProps={{ focused: true }}
+                    id='filled-basic'
                     label='Metadata'
                     type='numbertext'
-                    variant='outlined'
+                    variant='filled'
                     value={metadata}
                     onChange={i => setMetadata(i.target.value)}
                   />

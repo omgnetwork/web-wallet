@@ -38,7 +38,7 @@ function Status ({ watcherConnection, byzantineChain, className }) {
   return (
     <div className={className}>
       <Box>
-        <h2>OMG Network Status</h2>
+        <h2>Network Status</h2>
         <Info
           data={[
             {
@@ -47,7 +47,7 @@ function Status ({ watcherConnection, byzantineChain, className }) {
             },
             {
               title: 'Watcher URL',
-              value: config.watcherUrl
+              value: truncate(config.watcherUrl, 15, 15, '...')
             },
             {
               title: 'Watcher Status',
