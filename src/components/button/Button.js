@@ -12,8 +12,8 @@ function Button ({ children, style, onClick, type, disabled, loading }) {
         type === 'primary' ? styles.primary : '',
         type === 'secondary' ? styles.secondary : '',
         type === 'outline' ? styles.outline : '',
+        loading ? styles.disabled : '',
         disabled ? styles.disabled : '',
-        loading ? styles.disabled : ''
       ].join(' ')}
       onClick={onClick}
     >

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { OmgUtil } from '@omisego/omg-js';
 
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
@@ -13,11 +12,11 @@ import * as styles from './DepositModal.module.scss';
 function DepositModal ({ open, toggle }) {
   const [ activeTab, setActiveTab ] = useState('ETH');
   const [ value, setValue ] = useState('');
-  const [ currency, setCurrency ] = useState(OmgUtil.transaction.ETH_CURRENCY);
+  const [ currency, setCurrency ] = useState(networkService.OmgUtil.transaction.ETH_CURRENCY);
   const [ loading, setLoading ] = useState(false);
 
   async function submit () {
-    if (value && currency) {
+    if (value > 0 && currency) {
       setLoading(true);
       try {
         await networkService.deposit(value, currency);
@@ -41,7 +40,7 @@ function DepositModal ({ open, toggle }) {
       <Tabs
         onClick={i => {
           i === 'ETH'
-            ? setCurrency(OmgUtil.transaction.ETH_CURRENCY)
+            ? setCurrency(networkService.OmgUtil.transaction.ETH_CURRENCY)
             : setCurrency('');
           setActiveTab(i)
         }}
@@ -85,6 +84,7 @@ function DepositModal ({ open, toggle }) {
           type='primary'
           style={{ flex: 0 }}
           loading={loading}
+          disabled={!value || !currency}
         >
           DEPOSIT
         </Button>

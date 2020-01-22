@@ -8,7 +8,11 @@
   padding: 15px;
   flex: 1;
   cursor: pointer;
+  transition: background-color 200ms ease-in-out;
   min-width: 150px;
+  @include mobile {
+    min-width: initial;
+  }
 }
 
 .primary {
@@ -25,6 +29,7 @@
 
 .disabled {
   pointer-events: none;
+  background-color: $primary;
 }
 
 .loading {
