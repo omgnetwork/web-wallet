@@ -1,26 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import BN from 'bn.js';
 import moment from 'moment';
 import truncate from 'truncate-middle';
 
+import ProcessExitsModal from 'containers/modals/ProcessExitsModal';
+
 import Input from 'components/input/Input';
 import Transaction from 'components/transaction/Transaction';
 import networkService from 'services/networkService';
+import useInterval from 'util/useInterval';
 import config from 'util/config';
 
 import * as styles from './Transactions.module.scss';
 
 function Transactions ({ watcherConnection, transactions = [] }) {
   const [ searchHistory, setSearchHistory ] = useState('');
-  const [ pendingExits, setPendingExits ] = useState([]);
+  const [ processExitModal, setProcessExitModal ] = useState(false);
 
-  useEffect(() => {
-    async function fetchExits () {
-      const _pendingExits = await networkService.getPendingExits();
-      setPendingExits(_pendingExits);
-    }
-    fetchExits();
-  }, []);
+  const [ pendingExits, setPendingExits ] = useState([]);
+  const [ processableExits, setProcessableExits ] = useState([]);
+  const [ exitedExits, setExitedExits ] = useState([]);
+
+  async function fetchExits () {
+    const { pending, processable, exited } = await networkService.getExits();
+    setPendingExits(pending);
+    setProcessableExits(processable);
+    setExitedExits(exited);
+  }
+
+  useInterval(fetchExits, 10000);
 
   function calculateOutput (utxo) {
     // TODO: logic to handle different currencies and to whom
@@ -34,16 +42,25 @@ function Transactions ({ watcherConnection, transactions = [] }) {
   }
 
   const _transactions = transactions.filter(i => {
-    // TODO: what do we search by
     return i.txhash.includes(searchHistory);
   })
   const _pendingExits = pendingExits.filter(i => {
-    // TODO: what do we search by
+    return i.transactionHash.includes(searchHistory);
+  })
+  const _processableExits = processableExits.filter(i => {
+    return i.transactionHash.includes(searchHistory);
+  })
+  const _exitedExits = exitedExits.filter(i => {
     return i.transactionHash.includes(searchHistory);
   })
 
   return (
     <div className={styles.container}>
+      <ProcessExitsModal
+        open={!!processExitModal}
+        utxo={processExitModal}
+        toggle={() => setProcessExitModal(false)}
+      />
       <div className={styles.section}>
         <h2 className={styles.history}>History</h2>
         <div className={styles.subTitle}>
@@ -52,19 +69,14 @@ function Transactions ({ watcherConnection, transactions = [] }) {
         <div className={styles.transactions}>
           {_transactions.map((i, index) => {
             return (
-              <a
-                href={`${config.blockExplorerUrl}/transaction/${i.txhash}`}
-                target='_blank'
-                rel='noopener noreferrer'
-              >
-                <Transaction
-                  key={index}
-                  title={truncate(i.txhash, 10, 4, '...')}
-                  subTitle={moment.unix(i.block.timestamp).format('lll')}
-                  status={calculateOutput(i)}
-                  subStatus={`Block ${i.block.blknum}`}
-                />
-              </a>
+              <Transaction
+                key={index}
+                link={`${config.blockExplorerUrl}/transaction/${i.txhash}`}
+                title={truncate(i.txhash, 10, 4, '...')}
+                subTitle={moment.unix(i.block.timestamp).format('lll')}
+                status={calculateOutput(i)}
+                subStatus={`Block ${i.block.blknum}`}
+              />
             );
           })}
         </div>
@@ -82,20 +94,41 @@ function Transactions ({ watcherConnection, transactions = [] }) {
           <span>Exits</span>
         </div>
         <div className={styles.transactions}>
+          {_processableExits.map((i, index) => {
+            return (
+              <Transaction
+                key={index}
+                link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
+                button={{
+                  onClick: () => setProcessExitModal(i),
+                  text: 'Process Exit'
+                }}
+                title={truncate(i.transactionHash, 10, 4, '...')}
+                subTitle={`Block ${i.blockNumber}`}
+              />
+            );
+          })}
           {_pendingExits.map((i, index) => {
             return (
-              <a
-                href={`${config.etherscanUrl}/tx/${i.transactionHash}`}
-                target='_blank'
-                rel='noopener noreferrer'
-              >
-                <Transaction
-                  key={index}
-                  status='Pending'
-                  title={truncate(i.transactionHash, 10, 4, '...')}
-                  subTitle={`Block ${i.blockNumber}`}
-                />
-              </a>
+              <Transaction
+                key={index}
+                link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
+                status='Pending'
+                subStatus={`Eligible to exit on ${moment.unix(i.scheduledFinalizationTime).format('lll')}`}
+                title={truncate(i.transactionHash, 10, 4, '...')}
+                subTitle={`Block ${i.blockNumber}`}
+              />
+            );
+          })}
+          {_exitedExits.map((i, index) => {
+            return (
+              <Transaction
+                key={index}
+                link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
+                status='Exited'
+                title={truncate(i.transactionHash, 10, 4, '...')}
+                subTitle={`Block ${i.blockNumber}`}
+              />
             );
           })}
         </div>

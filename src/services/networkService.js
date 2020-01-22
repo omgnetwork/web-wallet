@@ -91,6 +91,10 @@ class NetworkService {
     }
   }
 
+  getExitQueue (token) {
+    return this.rootChain.getExitQueue(token);
+  }
+
   async deposit (value, currency) {
     if (currency === OmgUtil.transaction.ETH_CURRENCY) {
       const depositTx = OmgUtil.transaction.encodeDeposit(this.account, new BN(value), currency);
@@ -177,12 +181,54 @@ class NetworkService {
     return this.childChain.getUtxos(this.account);
   }
 
-  async getPendingExits () {
+  async getExits () {
     const { contract } = await this.rootChain.getPaymentExitGame();
-    return contract.getPastEvents('ExitStarted', {
+    let startedExits = await contract.getPastEvents('ExitStarted', {
       filter: { owner: this.account },
       fromBlock: 0
     });
+
+    const _exitedExits = [];
+    for (const exit of startedExits) {
+      const isFinalized = await contract.getPastEvents('ExitFinalized', {
+        filter: { exitId: exit.returnValues.exitId.toString() },
+        fromBlock: 0
+      });
+      if (isFinalized.length) {
+        _exitedExits.push(exit);
+      }
+    }
+
+    startedExits = startedExits.filter(i => {
+      const foundMatch = _exitedExits.find(x => x.blockNumber === i.blockNumber);
+      return !foundMatch;
+    });
+
+    const _utxos = await networkService.getUtxos();
+    const _pendingExits = [];
+    for (const exit of startedExits) {
+      for (const utxo of _utxos) {
+        const { msUntilFinalization, scheduledFinalizationTime } = await this.rootChain.getExitTime({
+          exitRequestBlockNumber: exit.blockNumber,
+          submissionBlockNumber: utxo.blknum
+        });
+        if (msUntilFinalization > 0) {
+          _pendingExits.push({...exit, scheduledFinalizationTime });
+          break;
+        }
+      }
+    }
+
+    const _processableExits = startedExits.filter(i => {
+      const foundMatch = _pendingExits.find(x => x.blockNumber === i.blockNumber);
+      return !foundMatch;
+    });
+
+    return {
+      pending: _pendingExits,
+      processable: _processableExits,
+      exited: _exitedExits
+    }
   }
 
   async exitUtxo (utxoToExit) {

@@ -2,7 +2,7 @@ import React from 'react';
 
 import * as styles from './Transaction.module.scss';
 
-function Transaction ({ status, subStatus, button, title, subTitle }) {
+function Transaction ({ link, status, subStatus, button, title, subTitle }) {
 
   function renderValue () {
     if (button) {
@@ -34,10 +34,15 @@ function Transaction ({ status, subStatus, button, title, subTitle }) {
 
   return (
     <div className={styles.Transaction}>
-      <div className={styles.left}>
+      <a
+        href={link}
+        target='_blank'
+        rel='noopener noreferrer'
+        className={styles.left}
+      >
         <div>{title}</div>
         <div>{subTitle}</div>
-      </div>
+      </a>
       <div className={styles.right}>
         {renderValue()} 
       </div>
