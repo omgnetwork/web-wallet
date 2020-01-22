@@ -1,7 +1,9 @@
 import React from 'react';
 import truncate from 'truncate-middle';
 
-import Info from 'components/info/Info';
+import Copy from 'components/copy/Copy';
+import Button from 'components/button/Button';
+import { Send } from '@material-ui/icons';
 
 import networkService from 'services/networkService';
 
@@ -42,18 +44,58 @@ function Account ({ className, childBalance = [], rootBalance = [] }) {
   }
 
   return (
-    <div className={className}>
+    <div className={[styles.Account, className].join(' ')}>
       <h2>Account</h2>
-      <Info
-        data={[
-          {
-            title: 'Wallet Address',
-            value: networkService.account ? truncate(networkService.account, 6, 4, '...') : ''
-          },
-          ...renderRootchainBalances(),
-          ...renderChildchainBalances()
-        ]}
-      />
+      <div className={styles.wallet}>
+        <span>{`Wallet Address : ${networkService.account ? truncate(networkService.account, 10, 4, '...') : ''}`}</span>
+        <Copy value={networkService.account} />
+      </div>
+
+      <div className={styles.balances}>
+        <div className={styles.box}>
+          <div className={styles.header}>
+            <div className={styles.title}>
+              <span>Balance on Childchain</span>
+              <span>OMG Network</span>
+            </div>
+            <div className={styles.transfer}>
+              <Send />
+              <span>Transfer</span>
+            </div>
+          </div>
+          <div className={styles.row}>
+            <span>ETH</span>
+            <span>0.1391</span>
+          </div>
+          <div className={styles.buttons}>
+            <Button
+              onClick={console.log}
+              type='primary'
+            >
+              DEPOSIT
+            </Button>
+            <Button
+              onClick={console.log}
+              type='secondary'
+            >
+              EXIT
+            </Button>
+          </div>
+        </div>
+
+        <div className={styles.box}>
+          <div className={styles.header}>
+            <div className={styles.title}>
+              <span>Balance on Rootchain</span>
+              <span>Ethereum Network</span>
+            </div>
+          </div>
+          <div className={styles.row}>
+            <span>ETH</span>
+            <span>0.1391</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

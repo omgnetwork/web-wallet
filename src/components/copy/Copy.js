@@ -28,8 +28,8 @@ function Copy ({ value }) {
         autoHideDuration={3000}
         onClose={() => setOpen(false)}
         anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'center'
+          vertical: 'bottom',
+          horizontal: 'left'
         }}
       >
         <Alert onClose={() => setOpen(false)} severity="success">

@@ -13,5 +13,8 @@
     padding: 40px;
     background-color: $background;
     flex: 1;
+    @include mobile {
+      padding: 20px;
+    }
   }
 }

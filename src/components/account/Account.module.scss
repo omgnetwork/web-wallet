@@ -1,3 +1,83 @@
 @import 'index.scss';
 
-.Account {}
+.Account {
+  margin-bottom: 40px;
+}
+
+.wallet {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 20px;
+  span {
+    margin-right: 20px;
+  }
+}
+
+.balances {
+  display: flex;
+  flex-direction: row;
+  @include mobile {
+    flex-direction: column;
+  }
+
+  .box {
+    background-color: $gray;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    &:first-child {
+      margin-right: 20px;
+      @include mobile {
+        margin-right: 0;
+        margin-bottom: 20px;
+      }
+    }
+
+    .buttons {
+      margin: 20px -20px -20px -20px;
+      display: flex;
+      flex-direction: row;
+      button {
+        flex: 1;
+      }
+    }
+
+    .header {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      .title {
+        display: flex;
+        flex-direction: column;
+        span:first-child {
+          font-size: 10px;
+        } 
+      }
+      .transfer {
+        border-radius: 20px;
+        padding: 5px 10px;
+        border: 2px solid $blue;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        color: $blue;
+        font-size: 14px;
+        svg {
+          margin-right: 10px;
+          width: 15px;
+          height: 15px;
+        }
+      }
+    }
+
+    .row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      color: $white;
+    }
+  }
+}

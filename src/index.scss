@@ -1,8 +1,9 @@
 $primary: #5e6c82;
 $white: white;
-$red: red;
-$green: green;
-$blue: rgb(34, 118, 255);
+$red: #f76b6b;
+$yellow: #ecb937;
+$green: #20ac92;
+$blue: rgb(24, 108, 243);
 $background: #0f0f0f;
 $black: black;
 $lightbackground: #0a1320;
@@ -33,6 +34,9 @@ h1 {
 }
 
 h2 {
+  color: $white;
+  font-family: 'Arial';
+  font-weight: 100;
   margin: 0 0 10px 0;
 }
 

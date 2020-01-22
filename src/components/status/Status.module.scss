@@ -10,6 +10,7 @@
   font-size: 14px;
   @include mobile {
     max-width: 100%;
+    padding: 20px;
   }
 
   h1 {

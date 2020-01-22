@@ -1,0 +1,59 @@
+@import 'index.scss';
+
+.Transaction {
+  display: flex;
+  flex-direction: row;
+  padding: 20px;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  div:last-child {
+    margin-top: 5px;
+    font-size: 10px;
+  }
+}
+
+.statusContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  div:last-child {
+    margin-top: 5px;
+    font-size: 10px;
+  }
+}
+
+.status {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  div:last-child {
+    margin-top: 5px;
+    font-size: 10px;
+  }
+  .indicator {
+    margin-right: 5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+  }
+  .pending {
+    background-color: $yellow;
+  }
+  .exited {
+    background-color: $green;
+  }
+  .failed {
+    background-color: $red;
+  }
+}
+
+.button {
+  color: $background;
+  background-color: $blue;
+  border-radius: 20px;
+  padding: 5px 10px;
+}

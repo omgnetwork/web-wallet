@@ -1,0 +1,23 @@
+@import 'index.scss';
+
+.Button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: $white;
+  padding: 15px;
+  flex: 1;
+  cursor: pointer;
+}
+
+.primary {
+  background-color: $blue;
+}
+
+.secondary {
+  background-color: $primary;
+}
+
+.disabled {
+  pointer-events: none;
+}
