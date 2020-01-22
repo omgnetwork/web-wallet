@@ -177,6 +177,14 @@ class NetworkService {
     return this.childChain.getUtxos(this.account);
   }
 
+  async getPendingExits () {
+    const { contract } = await this.rootChain.getPaymentExitGame();
+    return contract.getPastEvents('ExitStarted', {
+      filter: { owner: this.account },
+      fromBlock: 0
+    });
+  }
+
   async exitUtxo (utxoToExit) {
     delete utxoToExit['creating_txhash'];
     delete utxoToExit['spending_txhash'];
