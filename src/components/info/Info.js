@@ -6,15 +6,15 @@ function Info ({ data }) {
   return (
     <div className={styles.Info}>
       {data.map((i, index) => (
-        <>
+        <div key={index}>
           {i.header && (
             <div className={styles.header}>{i.header}</div>
           )}
-          <div key={index} className={styles.item}>
+          <div className={styles.item}>
             <span>{i.title}</span>
             <span>{i.value}</span>
           </div>
-        </>
+        </div>
       ))}
     </div>
   );

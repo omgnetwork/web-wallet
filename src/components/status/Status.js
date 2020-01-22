@@ -3,6 +3,7 @@ import truncate from 'truncate-middle';
 import { Tooltip } from '@material-ui/core';
 
 import Info from 'components/info/Info';
+import Copy from 'components/copy/Copy';
 import config from 'util/config';
 
 import * as styles from './Status.module.scss';
@@ -50,17 +51,17 @@ function Status ({ watcherConnection, byzantineChain, className }) {
           {
             header: 'Plasma Framework Address',
             title: truncate(config.plasmaFrameworkAddress, 10, 4, '...'),
-            value: 'copy'
+            value: <Copy value={config.plasmaFrameworkAddress} />
           },
           {
             header: 'Watcher URL', 
             title: config.watcherUrl,
-            value: 'copy'
+            value: <Copy value={config.watcherUrl} />
           }
         ]}
       />
     </div>
-  )
+  );
 }
 
 export default Status;

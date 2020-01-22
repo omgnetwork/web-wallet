@@ -8,6 +8,9 @@
   max-width: 300px;
   flex: 1;
   font-size: 14px;
+  @include mobile {
+    max-width: 100%;
+  }
 
   h1 {
     margin-bottom: 40px;

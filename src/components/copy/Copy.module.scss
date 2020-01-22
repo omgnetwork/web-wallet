@@ -1,0 +1,17 @@
+@import 'index.scss';
+
+.Copy {
+  cursor: pointer;
+  background-color: $gray;
+  border-radius: 100%;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+}
