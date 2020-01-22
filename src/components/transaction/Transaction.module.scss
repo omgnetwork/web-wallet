@@ -6,6 +6,9 @@
   padding: 20px;
   background-color: $gray;
   margin-bottom: 5px;
+  @include mobile {
+    flex-direction: column;
+  }
 }
 
 .left {
@@ -16,12 +19,18 @@
     margin-top: 5px;
     font-size: 10px;
   }
+  @include mobile {
+    margin-bottom: 10px;
+  }
 }
 
 .statusContainer {
   display: flex;
   flex-direction: column;
   text-align: right;
+  @include mobile {
+    text-align: left;
+  }
   div:last-child {
     margin-top: 5px;
     font-size: 10px;
@@ -36,8 +45,12 @@
     margin-top: 5px;
     font-size: 10px;
   }
+  @include mobile {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+  }
   .indicator {
-    margin-right: 5px;
+    margin: 0 5px;
     width: 10px;
     height: 10px;
     border-radius: 100%;

@@ -10,39 +10,6 @@ import networkService from 'services/networkService';
 import * as styles from './Account.module.scss';
 
 function Account ({ className, childBalance = [], rootBalance = [] }) {
-  function renderChildchainBalances () {
-    if (childBalance.length) {
-      return childBalance.map(i => {
-        return {
-          title: `OMG Network ${i.symbol} Balance`,
-          value: Math.round(Number(i.amount)*10000)/10000
-        }
-      });
-    }
-    if (rootBalance.length) {
-      return [{
-        title: 'OMG Network Balance',
-        value: 'None'
-      }]
-    }
-    return [{
-      title: 'Balances',
-      value: 'Loading...'
-    }]
-  }
-
-  function renderRootchainBalances () {
-    if (rootBalance.length) {
-      return rootBalance.map(i => {
-        return {
-          title: `Rootchain ${i.symbol} Balance`,
-          value: Math.round(Number(i.amount)*10000)/10000
-        }
-      })
-    }
-    return []
-  }
-
   return (
     <div className={[styles.Account, className].join(' ')}>
       <h2>Account</h2>
@@ -63,10 +30,14 @@ function Account ({ className, childBalance = [], rootBalance = [] }) {
               <span>Transfer</span>
             </div>
           </div>
-          <div className={styles.row}>
-            <span>ETH</span>
-            <span>0.1391</span>
-          </div>
+          {childBalance.map((i, index) => {
+            return (
+              <div key={index} className={styles.row}>
+                <span>{i.symbol}</span>
+                <span>{i.amount}</span>
+              </div>
+            )
+          })}
           <div className={styles.buttons}>
             <Button
               onClick={console.log}
@@ -90,10 +61,15 @@ function Account ({ className, childBalance = [], rootBalance = [] }) {
               <span>Ethereum Network</span>
             </div>
           </div>
-          <div className={styles.row}>
-            <span>ETH</span>
-            <span>0.1391</span>
-          </div>
+
+          {rootBalance.map((i, index) => {
+            return (
+              <div key={index} className={styles.row}>
+                <span>{i.symbol}</span>
+                <span>{i.amount}</span>
+              </div>
+            )
+          })}
         </div>
       </div>
     </div>

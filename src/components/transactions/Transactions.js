@@ -37,6 +37,9 @@ function Transactions ({ watcherConnection }) {
   return (
     <>
       <h2>History</h2>
+      <div className={styles.subTitle}>
+        <span>Transactions</span>
+      </div>
       {loading && <div>Loading...</div>}
       {!loading && (
         <div className={styles.Transactions}>
