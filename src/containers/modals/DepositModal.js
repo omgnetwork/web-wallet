@@ -12,16 +12,16 @@ import * as styles from './DepositModal.module.scss';
 
 function DepositModal ({ open, toggle }) {
   const [ activeTab, setActiveTab ] = useState('ETH');
-  const [ loading, setLoading ] = useState(false);
-  const [ value, setValue ] = useState(1);
+  const [ value, setValue ] = useState('');
   const [ currency, setCurrency ] = useState(OmgUtil.transaction.ETH_CURRENCY);
+  const [ loading, setLoading ] = useState(false);
 
   async function submit () {
     if (value && currency) {
       setLoading(true);
       try {
         await networkService.deposit(value, currency);
-        setLoading(false);
+        handleClose();
       } catch (err) {
         console.warn(err);
         handleClose()
@@ -39,26 +39,38 @@ function DepositModal ({ open, toggle }) {
       <h2>Deposit</h2>
 
       <Tabs
-        onClick={setActiveTab}
+        onClick={i => {
+          i === 'ETH'
+            ? setCurrency(OmgUtil.transaction.ETH_CURRENCY)
+            : setCurrency('');
+          setActiveTab(i)
+        }}
         activeTab={activeTab}
         tabs={[ 'ETH', 'ERC20' ]}
       />
 
-      <Input
-        label='ERC20 Address'
-        placeholder='0x'
-        paste
-        value={currency}
-        onChange={i => setCurrency(i.target.value)}
-      />
+      {activeTab === 'ERC20' && (
+        <Input
+          label='ERC20 Address'
+          placeholder='0x'
+          paste
+          value={currency}
+          onChange={i => setCurrency(i.target.value)}
+        />
+      )}
+
       <Input
         label='Amount to deposit into the OMG Network'
         type='number'
-        unit='WEI'
+        unit={activeTab === 'ERC20' ? '' : 'WEI'}
         placeholder={0}
-        value={currency}
+        value={value}
         onChange={i => setValue(i.target.value)}
       />
+
+      {activeTab === 'ERC20' && (
+        <div className={styles.disclaimer}>*You will be prompted with 2 confirmations. The first to approve the deposit amount and the second being the actual deposit transaction.</div>
+      )}
 
       <div className={styles.buttons}>
         <Button
@@ -72,6 +84,7 @@ function DepositModal ({ open, toggle }) {
           onClick={submit}
           type='primary'
           style={{ flex: 0 }}
+          loading={loading}
         >
           DEPOSIT
         </Button>
