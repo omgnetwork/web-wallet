@@ -3,14 +3,9 @@ import React, { useState, useEffect } from 'react';
 import useInterval from 'util/useInterval';
 import networkService from 'services/networkService';
 
-import DepositModal from 'components/modals/DepositModal';
-import TransferModal from 'components/modals/TransferModal';
-import ExitModal from 'components/modals/ExitModal';
-import ProcessExitsModal from 'components/modals/ProcessExitsModal';
-
-import Status from 'components/status/Status';
-import Account from 'components/account/Account';
-import Transactions from 'components/transactions/Transactions';
+import Status from 'containers/status/Status';
+import Account from 'containers/account/Account';
+import Transactions from 'containers/transactions/Transactions';
 
 import * as styles from './Home.module.scss';
 
@@ -20,12 +15,6 @@ function Home () {
   const [ byzantineChain, setByzantineChain ] = useState(false);
   const [ balances, setBalances ] = useState({ rootchain: [], childchain: [] });
   const [ transactions, setTransactions ] = useState([]);
-
-  // modal state
-  const [ depositModal, setDepositModal ] = useState(false);
-  const [ transferModal, setTransferModal ] = useState(false);
-  const [ exitModal, setExitModal ] = useState(false);
-  const [ processExitsModal, setProcessExitsModal ] = useState(false);
 
   // data fetch
   useInterval(checkWatcherStatus, 5000);
@@ -62,30 +51,23 @@ function Home () {
   }
 
   return (
-    <>
-      {/* <DepositModal open={depositModal} toggle={() => setDepositModal(false)} />
-      <TransferModal open={transferModal} toggle={() => setTransferModal(false)} />
-      <ExitModal open={exitModal} toggle={() => setExitModal(false)} />
-      <ProcessExitsModal open={processExitsModal} toggle={() => setProcessExitsModal(false)} /> */}
+    <div className={styles.Home}>
+      <Status
+        watcherConnection={watcherConnection}
+        byzantineChain={byzantineChain}
+      />
 
-      <div className={styles.Home}>
-        <Status
-          watcherConnection={watcherConnection}
-          byzantineChain={byzantineChain}
+      <div className={styles.main}>
+        <Account
+          childBalance={balances.childchain}
+          rootBalance={balances.rootchain}
         />
-
-        <div className={styles.main}>
-          <Account
-            childBalance={balances.childchain}
-            rootBalance={balances.rootchain}
-          />
-
-          <Transactions
-            watcherConnection={watcherConnection}
-          />
-        </div>
+        <Transactions
+          transactions={transactions}
+          watcherConnection={watcherConnection}
+        />
       </div>
-    </>
+    </div>
   );
 }
 
