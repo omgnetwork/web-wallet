@@ -1,42 +1,28 @@
 import React, { useState } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { FileCopyOutlined } from '@material-ui/icons';
-import { Snackbar } from '@material-ui/core';
-import MuiAlert from '@material-ui/lab/Alert';
+
+import Alert from 'components/alert/Alert';
 
 import * as styles from './Copy.module.scss';
 
 function Copy ({ value }) {
   const [ open, setOpen ] = useState(false);
-  
-  function Alert (props) {
-    return <MuiAlert elevation={6} variant='filled' {...props} />;
-  }
 
   return (
-    <>
+    <div className={styles.Copy}>
       <CopyToClipboard
         text={value}
         onCopy={() => setOpen(true)}
       >
-        <div className={styles.Copy}>
+        <div className={styles.icon}>
           <FileCopyOutlined />
         </div>
       </CopyToClipboard>
-      <Snackbar
-        open={open}
-        autoHideDuration={3000}
-        onClose={() => setOpen(false)}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left'
-        }}
-      >
-        <Alert onClose={() => setOpen(false)} severity="success">
-          Copied to clipboard! 
-        </Alert>
-      </Snackbar>
-    </>
+      <Alert open={open} onClose={() => setOpen(false)}>
+        Copied to clipboard! 
+      </Alert>
+    </div>
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import Alert from 'components/alert/Alert';
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
 import Input from 'components/input/Input';
@@ -13,7 +14,9 @@ function DepositModal ({ open, toggle }) {
   const [ activeTab, setActiveTab ] = useState('ETH');
   const [ value, setValue ] = useState('');
   const [ currency, setCurrency ] = useState(networkService.OmgUtil.transaction.ETH_CURRENCY);
+  
   const [ loading, setLoading ] = useState(false);
+  const [ errorOpen, setErrorOpen ] = useState(false);
 
   async function submit () {
     if (value > 0 && currency) {
@@ -23,7 +26,8 @@ function DepositModal ({ open, toggle }) {
         handleClose();
       } catch (err) {
         console.warn(err);
-        handleClose()
+        setLoading(false);
+        setErrorOpen(err.message);
       }
     }
   }
@@ -35,6 +39,10 @@ function DepositModal ({ open, toggle }) {
 
   return (
     <Modal open={open} onClose={handleClose}>
+      <Alert type='error' duration={null} open={!!errorOpen} onClose={() => setErrorOpen(false)}>
+        {`Oops! Something went wrong! ${errorOpen}`}
+      </Alert>
+
       <h2>Deposit</h2>
 
       <Tabs

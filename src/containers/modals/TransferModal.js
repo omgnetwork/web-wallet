@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import Alert from 'components/alert/Alert';
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
 import Input from 'components/input/Input';
@@ -9,16 +10,22 @@ import networkService from 'services/networkService';
 
 import * as styles from './TransferModal.module.scss';
 
-function TransferModal ({ open, toggle }) {
+function TransferModal ({ open, toggle, balances = [] }) {
   const [ currency, setCurrency ] = useState(networkService.OmgUtil.transaction.ETH_CURRENCY);
   const [ value, setValue ] = useState(0);
   const [ feeToken, setFeeToken ] = useState(networkService.OmgUtil.transaction.ETH_CURRENCY);
   const [ feeValue, setFeeValue ] = useState(0);
   const [ recipient, setRecipient ] = useState('');
   const [ metadata, setMetadata ] = useState('');
-  
+
+  const [ errorOpen, setErrorOpen ] = useState(false);
   const [ loading, setLoading ] = useState(false);
-  const [ success, setSuccess ] = useState(false);
+
+  const selectOptions = balances.map(i => ({
+    title: i.symbol,
+    value: i.token,
+    subTitle: `Balance: ${i.amount}`
+  }))
 
   async function submit () {
     if (
@@ -38,23 +45,32 @@ function TransferModal ({ open, toggle }) {
           feeToken,
           metadata
         });
-        setLoading(false);
-        setSuccess(true);
+        handleClose();
       } catch (err) {
         console.warn(err);
-        handleClose()
+        setLoading(false);
+        setErrorOpen(err.message);
       }
     }
   }
 
   function handleClose () {
-    toggle();
-    setSuccess(false);
+    setCurrency(networkService.OmgUtil.transaction.ETH_CURRENCY);
+    setValue(0);
+    setFeeToken(networkService.OmgUtil.transaction.ETH_CURRENCY);
+    setFeeValue(0);
+    setRecipient('');
+    setMetadata('');
     setLoading(false);
+    toggle();
   }
 
   return (
     <Modal open={open} onClose={handleClose}>
+      <Alert type='error' duration={null} open={!!errorOpen} onClose={() => setErrorOpen(false)}>
+        {`Oops! Something went wrong! ${errorOpen}`}
+      </Alert>
+
       <h2>Transfer</h2>
 
       <div className={styles.address}>
@@ -74,10 +90,7 @@ function TransferModal ({ open, toggle }) {
         placeholder={0}
         value={value}
         onChange={i => setValue(i.target.value)}
-        selectOptions={[
-          { title: 'ETH', value: networkService.OmgUtil.transaction.ETH_CURRENCY, subTitle: `Balance: ${'134019'}` },
-          { title: 'WETH', value: '0xc341', subTitle: `Balance: ${'1515159'}` },
-        ]}
+        selectOptions={selectOptions}
         onSelect={i => setCurrency(i.target.value)}
         selectValue={currency}
       />
@@ -87,10 +100,7 @@ function TransferModal ({ open, toggle }) {
         placeholder={0}
         value={feeValue}
         onChange={i => setFeeValue(i.target.value)}
-        selectOptions={[
-          { title: 'ETH', value: networkService.OmgUtil.transaction.ETH_CURRENCY, subTitle: `Balance: ${'134019'}` },
-          { title: 'WETH', value: '0xc341', subTitle: `Balance: ${'1515159'}` },
-        ]}
+        selectOptions={selectOptions}
         onSelect={i => setFeeToken(i.target.value)}
         selectValue={feeToken}
       />

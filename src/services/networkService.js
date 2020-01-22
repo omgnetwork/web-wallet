@@ -170,7 +170,28 @@ class NetworkService {
     const signatures = new Array(createdTx.transactions[0].inputs.length).fill(signature)
     const signedTxn = this.childChain.buildSignedTransaction(typedData, signatures)
     const submitted = await this.childChain.submitTransaction(signedTxn)
-    return submitted
+    return submitted;
+  }
+
+  async getUtxos () {
+    return this.childChain.getUtxos(this.account);
+  }
+
+  async exitUtxo (utxoToExit) {
+    const exitData = await this.childChain.getExitData(utxoToExit)
+    const hasToken = await this.rootChain.hasToken(utxoToExit.currency)
+    if (!hasToken) {
+      await this.rootChain.addToken({
+        token: utxoToExit.currency,
+        txOptions: { from: this.account, gas: 6000000 }
+      });
+    }
+    return this.rootChain.startStandardExit({
+      utxoPos: exitData.utxo_pos,
+      outputTx: exitData.txbytes,
+      inclusionProof: exitData.proof,
+      txOptions: { from: this.account, gas: 6000000 }
+    });
   }
 }
 

@@ -27,14 +27,14 @@ function InputSelect ({
             key={index}
             value={i.value}
           >
-            {i.title} {i.subTitle}
+            {i.title} - {i.subTitle}
           </option>
         ))}
       </select>
       <div className={styles.selected}>
         <div className={styles.details}>
-          <div className={styles.title}>{selected.title}</div>
-          <div className={styles.subTitle}>{selected.subTitle}</div>
+          <div className={styles.title}>{selected ? selected.title : ''}</div>
+          <div className={styles.subTitle}>{selected ? selected.subTitle : ''}</div>
         </div>
         <KeyboardArrowDown />
       </div>

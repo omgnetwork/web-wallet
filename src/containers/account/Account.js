@@ -20,9 +20,19 @@ function Account ({ className, childBalance = [], rootBalance = [] }) {
 
   return (
     <>
-      <DepositModal open={depositModal} toggle={() => setDepositModal(false)} />
-      <TransferModal open={transferModal} toggle={() => setTransferModal(false)} />
-      <ExitModal open={exitModal} toggle={() => setExitModal(false)} />
+      <DepositModal
+        open={depositModal}
+        toggle={() => setDepositModal(false)}
+      />
+      <TransferModal
+        open={transferModal}
+        toggle={() => setTransferModal(false)}
+        balances={childBalance}
+      />
+      <ExitModal
+        open={exitModal}
+        toggle={() => setExitModal(false)}
+      />
 
       <div className={[styles.Account, className].join(' ')}>
         <h2>Account</h2>

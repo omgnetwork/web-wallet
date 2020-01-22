@@ -2,9 +2,8 @@
 
 .selectContainer {
   height: 46px;
-  margin: -10px;
+  margin: -10px -10px -10px 0;
   position: relative;
-  width: 150px;
 
   .select {
     border: none;
@@ -20,7 +19,6 @@
     top: 0;
     bottom: 0;
     opacity: 0;
-    width: 150px;
   }
 
   .selected {
@@ -35,8 +33,10 @@
     .details {
       text-align: right;
       margin-right: 10px;
+      font-size: 12px;
       .subTitle {
-        font-size: 10px;
+        font-size: 9px;
+        white-space: nowrap;
       }
     }
   }
