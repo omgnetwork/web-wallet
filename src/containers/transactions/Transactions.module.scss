@@ -1,6 +1,40 @@
 @import 'index.scss';
 
-.Transactions {
+.container {
+  display: flex;
+  flex-direction: row;
+  @include mobile {
+    flex-direction: column;
+  }
+}
+
+.section {
+  .history {
+    margin-top: 20px;
+  }
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  &:first-child {
+    margin-right: 20px;
+    @include mobile {
+      margin-right: 0;
+      margin-bottom: 20px;
+    }
+  }
+}
+
+.searchBar {
+  & > div {
+    border: none !important;
+    border-bottom: 2px solid $gray !important;
+  }
+  input {
+    background-color: $background !important;
+  }
+}
+
+.transactions {
   .transaction {
     border-bottom: 1px dashed $primary;
     padding: 20px 0;

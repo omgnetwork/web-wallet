@@ -33,7 +33,7 @@ function ExitModal ({ open, toggle }) {
     if (selectedUTXO) {
       setLoading(true);
       try {
-        // DO EXIT
+        await networkService.exitUtxo(selectedUTXO);
         handleClose();
       } catch (err) {
         console.warn(err);
@@ -88,9 +88,7 @@ function ExitModal ({ open, toggle }) {
                 </div>
 
                 <div className={styles.check}>
-                  {selectedUTXO === i && (
-                    <Check color='white' />
-                  )}
+                  {selectedUTXO === i && <Check />}
                 </div>
               </div>
             </div>

@@ -178,8 +178,10 @@ class NetworkService {
   }
 
   async exitUtxo (utxoToExit) {
-    const exitData = await this.childChain.getExitData(utxoToExit)
-    const hasToken = await this.rootChain.hasToken(utxoToExit.currency)
+    delete utxoToExit['creating_txhash'];
+    delete utxoToExit['spending_txhash'];
+    const exitData = await this.childChain.getExitData(utxoToExit);
+    const hasToken = await this.rootChain.hasToken(utxoToExit.currency);
     if (!hasToken) {
       await this.rootChain.addToken({
         token: utxoToExit.currency,

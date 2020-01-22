@@ -11,7 +11,8 @@ function Input ({
   unit,
   value,
   onChange,
-  paste
+  paste,
+  className
 }) {
   async function handlePaste () {
     const text = await navigator.clipboard.readText();
@@ -21,8 +22,8 @@ function Input ({
   }
 
   return (
-    <div className={styles.Input}>
-      <div className={styles.label}>{label}</div>
+    <div className={[styles.Input, className].join(' ')}>
+      {label && <div className={styles.label}>{label}</div>}
       <div className={styles.field}>
         {icon && <Search className={styles.icon} />}
         <input
