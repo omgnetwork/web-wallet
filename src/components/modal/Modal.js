@@ -17,7 +17,8 @@ const useStyles = makeStyles({
     backgroundColor: '#36353d',
     padding: '20px',
     border: 'none',
-    outline: 'none'
+    outline: 'none',
+    width: '500px'
   }
 });
 

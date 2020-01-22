@@ -8,6 +8,7 @@
   padding: 15px;
   flex: 1;
   cursor: pointer;
+  min-width: 150px;
 }
 
 .primary {
@@ -16,6 +17,10 @@
 
 .secondary {
   background-color: $primary;
+}
+
+.outline {
+  border: 1px solid $primary;
 }
 
 .disabled {

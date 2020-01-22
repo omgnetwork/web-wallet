@@ -24,6 +24,19 @@ body {
   font-family: 'Roboto Mono', monospace;
 }
 
+input {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 14px;
+  border: none;
+  outline: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 h1 {
   margin: 0;
   white-space: pre;

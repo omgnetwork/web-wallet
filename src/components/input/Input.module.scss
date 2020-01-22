@@ -1,0 +1,40 @@
+@import 'index.scss';
+
+.Input {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+
+  .label {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .field {
+    padding: 10px;
+    border: 2px solid $primary;
+    transition: all 200ms ease-in-out;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    &:focus-within {
+      border: 2px solid $blue;
+    }
+    .icon {
+      margin-right: 10px;
+    }
+    .input {
+      flex: 1;
+      background-color: $gray;
+      color: $white;
+    }
+    .unit {
+      margin-left: 10px;
+    }
+    .paste {
+      color: $blue;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+  }
+}
