@@ -1,0 +1,43 @@
+@import 'index.scss';
+
+.selectContainer {
+  height: 46px;
+  margin: -10px;
+  position: relative;
+  width: 150px;
+
+  .select {
+    border: none;
+    outline: none;
+    border-radius: 0;
+    padding-right: 10px;
+    -webkit-appearance: none;
+    -webkit-border-radius: 0px;
+    background-color: $gray;
+    color: $primary;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    opacity: 0;
+    width: 150px;
+  }
+
+  .selected {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    height: 46px;
+    margin-right: 10px;
+
+    .details {
+      text-align: right;
+      margin-right: 10px;
+      .subTitle {
+        font-size: 10px;
+      }
+    }
+  }
+}

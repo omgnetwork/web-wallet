@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
 import Input from 'components/input/Input';
+import InputSelect from 'components/inputselect/InputSelect';
 
 import networkService from 'services/networkService';
 
@@ -66,6 +67,32 @@ function TransferModal ({ open, toggle }) {
         paste
         value={recipient}
         onChange={i => setRecipient(i.target.value)}
+      />
+
+      <InputSelect
+        label='Amount to transfer'
+        placeholder={0}
+        value={value}
+        onChange={i => setValue(i.target.value)}
+        selectOptions={[
+          { title: 'ETH', value: networkService.OmgUtil.transaction.ETH_CURRENCY, subTitle: `Balance: ${'134019'}` },
+          { title: 'WETH', value: '0xc341', subTitle: `Balance: ${'1515159'}` },
+        ]}
+        onSelect={i => setCurrency(i.target.value)}
+        selectValue={currency}
+      />
+
+      <InputSelect
+        label='Fee'
+        placeholder={0}
+        value={feeValue}
+        onChange={i => setFeeValue(i.target.value)}
+        selectOptions={[
+          { title: 'ETH', value: networkService.OmgUtil.transaction.ETH_CURRENCY, subTitle: `Balance: ${'134019'}` },
+          { title: 'WETH', value: '0xc341', subTitle: `Balance: ${'1515159'}` },
+        ]}
+        onSelect={i => setFeeToken(i.target.value)}
+        selectValue={feeToken}
       />
 
       <Input
