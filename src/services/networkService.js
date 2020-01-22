@@ -9,6 +9,7 @@ import config from 'util/config';
 class NetworkService {
   constructor () {
     this.childChain = new ChildChain({ watcherUrl: config.watcherUrl });
+    this.OmgUtil = OmgUtil;
   }
 
   async enableNetwork () {

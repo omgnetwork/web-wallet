@@ -58,7 +58,7 @@ function Account ({ className, childBalance = [], rootBalance = [] }) {
               <span>Balance on Childchain</span>
               <span>OMG Network</span>
             </div>
-            <div className={styles.transfer}>
+            <div onClick={console.log} className={styles.transfer}>
               <Send />
               <span>Transfer</span>
             </div>
