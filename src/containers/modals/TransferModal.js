@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import Alert from 'components/alert/Alert';
+import { selectLoading } from 'selectors/loadingSelector';
+import { transfer } from 'actions/networkAction';
+
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
 import Input from 'components/input/Input';
@@ -11,15 +14,15 @@ import networkService from 'services/networkService';
 import * as styles from './TransferModal.module.scss';
 
 function TransferModal ({ open, toggle, balances = [] }) {
+  const dispatch = useDispatch();
   const [ currency, setCurrency ] = useState(networkService.OmgUtil.transaction.ETH_CURRENCY);
-  const [ value, setValue ] = useState(0);
+  const [ value, setValue ] = useState('');
   const [ feeToken, setFeeToken ] = useState(networkService.OmgUtil.transaction.ETH_CURRENCY);
-  const [ feeValue, setFeeValue ] = useState(0);
+  const [ feeValue, setFeeValue ] = useState('');
   const [ recipient, setRecipient ] = useState('');
   const [ metadata, setMetadata ] = useState('');
 
-  const [ errorOpen, setErrorOpen ] = useState(false);
-  const [ loading, setLoading ] = useState(false);
+  const loading = useSelector(selectLoading(['TRANSFER/CREATE']));
 
   const selectOptions = balances.map(i => ({
     title: i.symbol,
@@ -33,45 +36,36 @@ function TransferModal ({ open, toggle, balances = [] }) {
       feeValue > 0 &&
       currency &&
       feeToken &&
-      recipient
+      networkService.web3.utils.isAddress(recipient)
     ) {
-      setLoading(true);
       try {
-        const receipt = await networkService.transfer({
+        await dispatch(transfer({
           recipient,
           value,
           currency,
           feeValue,
           feeToken,
           metadata
-        });
-        console.log(receipt);
+        }))
         handleClose();
       } catch (err) {
         console.warn(err);
-        setLoading(false);
-        setErrorOpen(err.message);
       }
     }
   }
 
   function handleClose () {
     setCurrency(networkService.OmgUtil.transaction.ETH_CURRENCY);
-    setValue(0);
+    setValue('');
     setFeeToken(networkService.OmgUtil.transaction.ETH_CURRENCY);
-    setFeeValue(0);
+    setFeeValue('');
     setRecipient('');
     setMetadata('');
-    setLoading(false);
     toggle();
   }
 
   return (
     <Modal open={open} onClose={handleClose}>
-      <Alert type='error' duration={null} open={!!errorOpen} onClose={() => setErrorOpen(false)}>
-        {`Oops! Something went wrong! ${errorOpen}`}
-      </Alert>
-
       <h2>Transfer</h2>
 
       <div className={styles.address}>
@@ -131,7 +125,8 @@ function TransferModal ({ open, toggle, balances = [] }) {
             !feeValue ||
             !currency ||
             !feeToken ||
-            !recipient
+            !recipient ||
+            !networkService.web3.utils.isAddress(recipient)
           }
         >
           TRANSFER

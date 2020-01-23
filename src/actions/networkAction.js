@@ -49,3 +49,10 @@ export function getExitQueue (currency) {
     () => networkService.getExitQueue(currency)
   );
 }
+
+export function transfer (data) {
+  return createAction(
+    'TRANSFER/CREATE',
+    () => networkService.transfer(data)
+  );
+}

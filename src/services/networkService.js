@@ -200,7 +200,6 @@ class NetworkService {
         filter: { exitId: exit.returnValues.exitId.toString() },
         fromBlock: 0
       });
-      console.log(isFinalized);
       if (isFinalized.length) {
         exitedExits.push(exit);
       }
