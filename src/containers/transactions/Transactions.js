@@ -5,35 +5,25 @@ import moment from 'moment';
 import truncate from 'truncate-middle';
 
 import { selectChildchainTransactions } from 'selectors/transactionSelector';
+import { selectPendingExits, selectProcessableExits, selectExitedExits } from 'selectors/exitSelector';
 
 import ProcessExitsModal from 'containers/modals/ProcessExitsModal';
 
 import Input from 'components/input/Input';
 import Transaction from 'components/transaction/Transaction';
 import networkService from 'services/networkService';
-import useInterval from 'util/useInterval';
 import config from 'util/config';
 
 import * as styles from './Transactions.module.scss';
 
 function Transactions () {
   const ccTransactions = useSelector(selectChildchainTransactions);
+  const pendingExits = useSelector(selectPendingExits);
+  const processableExits = useSelector(selectProcessableExits);
+  const exitedExits = useSelector(selectExitedExits);
 
   const [ searchHistory, setSearchHistory ] = useState('');
   const [ processExitModal, setProcessExitModal ] = useState(false);
-
-  const [ pendingExits, setPendingExits ] = useState([]);
-  const [ processableExits, setProcessableExits ] = useState([]);
-  const [ exitedExits, setExitedExits ] = useState([]);
-
-  async function fetchExits () {
-    const { pending, processable, exited } = await networkService.getExits();
-    setPendingExits(pending);
-    setProcessableExits(processable);
-    setExitedExits(exited);
-  }
-
-  useInterval(fetchExits, 10000);
 
   function calculateOutput (utxo) {
     // TODO: logic to handle different currencies and to whom

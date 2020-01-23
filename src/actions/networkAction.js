@@ -22,6 +22,13 @@ export function fetchTransactions () {
   );
 }
 
+export function fetchExits () {
+  return createAction(
+    'EXIT/GETALL',
+    () => networkService.getExits()
+  );
+}
+
 export function deposit (value, currency) {
   return createAction(
     'RC_TRANSACTION/DEPOSIT',

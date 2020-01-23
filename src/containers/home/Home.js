@@ -1,8 +1,13 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { checkWatcherStatus, fetchBalances, fetchTransactions } from 'actions/networkAction';
 import useInterval from 'util/useInterval';
+import {
+  checkWatcherStatus,
+  fetchBalances,
+  fetchTransactions,
+  fetchExits
+} from 'actions/networkAction';
 
 import Status from 'containers/status/Status';
 import Account from 'containers/account/Account';
@@ -21,6 +26,7 @@ function Home () {
   useInterval(() => dispatch(checkWatcherStatus()), POLL_INTERVAL);
   useInterval(() => dispatch(fetchBalances()), POLL_INTERVAL);
   useInterval(() => dispatch(fetchTransactions()), POLL_INTERVAL);
+  useInterval(() => dispatch(fetchExits()), POLL_INTERVAL);
 
   return (
     <div className={styles.Home}>
