@@ -8,13 +8,13 @@
 
   @include mobile {
     flex-direction: column;
+    max-height: initial;
   }
 
   .main {
     padding: 40px;
     background-color: $background;
     flex: 1;
-    max-height: 100vh;
     overflow: auto;
     @include mobile {
       padding: 20px;

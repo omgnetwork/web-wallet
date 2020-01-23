@@ -180,6 +180,21 @@ class NetworkService {
     return this.childChain.getUtxos(this.account);
   }
 
+  async getDeposits () {
+    const { contract: ethVault } = await this.rootChain.getEthVault();
+    const { contract: erc20Vault } = await this.rootChain.getErc20Vault();
+
+    const ethDeposits = await ethVault.getPastEvents('DepositCreated', {
+      filter: { depositor: this.account },
+      fromBlock: 0
+    });
+    const erc20Deposits = await erc20Vault.getPastEvents('DepositCreated', {
+      filter: { depositor: this.account },
+      fromBlock: 0
+    });
+    return { eth: ethDeposits, erc20: erc20Deposits };
+  }
+
   async getExits () {
     const { contract } = await this.rootChain.getPaymentExitGame();
     let allExits = await contract.getPastEvents('ExitStarted', {

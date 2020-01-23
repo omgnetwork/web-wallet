@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { orderBy } from 'lodash';
 import { useSelector } from 'react-redux';
 import BN from 'bn.js';
 import moment from 'moment';
 import truncate from 'truncate-middle';
 
-import { selectChildchainTransactions, selectDeposits } from 'selectors/transactionSelector';
+import { selectChildchainTransactions, selectEthDeposits, selectErc20Deposits } from 'selectors/transactionSelector';
 import { selectPendingExits, selectExitedExits } from 'selectors/exitSelector';
 
 import ProcessExitsModal from 'containers/modals/ProcessExitsModal';
@@ -17,8 +18,13 @@ import config from 'util/config';
 import * as styles from './Transactions.module.scss';
 
 function Transactions () {
-  const transactions = useSelector(selectChildchainTransactions);
-  const deposits = useSelector(selectDeposits);
+  const unorderedTransactions = useSelector(selectChildchainTransactions);
+  const transactions = orderBy(unorderedTransactions, i => i.block.timestamp, 'desc');
+
+  const ethDeposits = useSelector(selectEthDeposits);
+  const erc20Deposits = useSelector(selectErc20Deposits);
+  const allDeposits = [...ethDeposits, ...erc20Deposits];
+  const deposits = orderBy(allDeposits, i => i.blockNumber, 'desc');
 
   const pendingExits = useSelector(selectPendingExits);
   const exitedExits = useSelector(selectExitedExits);
@@ -57,41 +63,9 @@ function Transactions () {
         utxo={processExitModal}
         toggle={() => setProcessExitModal(false)}
       />
-      <div className={styles.section}>
-        <h2 className={styles.history}>History</h2>
-        <div className={styles.subTitle}>
-          <span>Transactions</span>
-        </div>
-        <div className={styles.transactions}>
-          {_deposit.map((i, index) => {
-            return (
-              <Transaction
-                key={index}
-                type='Deposit'
-                link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
-                title={truncate(i.transactionHash, 10, 4, '...')}
-                subStatus={`Block ${i.blockNumber}`}
-              />
-            );
-          })}
-        </div>
-        <div className={styles.transactions}>
-          {_transactions.map((i, index) => {
-            return (
-              <Transaction
-                key={index}
-                link={`${config.blockExplorerUrl}/transaction/${i.txhash}`}
-                title={truncate(i.txhash, 10, 4, '...')}
-                subTitle={moment.unix(i.block.timestamp).format('lll')}
-                status={calculateOutput(i)}
-                subStatus={`Block ${i.block.blknum}`}
-              />
-            );
-          })}
-        </div>
-      </div>
 
-      <div className={styles.section}>
+      <div className={styles.header}>
+        <h2 className={styles.history}>History</h2>
         <Input
           icon
           placeholder='Search history'
@@ -99,35 +73,91 @@ function Transactions () {
           onChange={i => setSearchHistory(i.target.value)}
           className={styles.searchBar}
         />
-        <div className={styles.subTitle}>
-          <span>Exits</span>
+      </div>
+
+      <div className={styles.data}>
+        <div className={styles.section}>
+          <div className={styles.subTitle}>
+            <span>Deposits</span>
+          </div>
+          <div className={styles.transactionSection}>
+            <div className={styles.transactions}>
+              {!_deposit.length && (
+                <div className={styles.disclaimer}>No deposit history.</div>
+              )}
+              {_deposit.map((i, index) => {
+                return (
+                  <Transaction
+                    key={index}
+                    link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
+                    title={truncate(i.transactionHash, 10, 4, '...')}
+                    subTitle={truncate(i.returnValues.token, 10, 4, '...')}
+                    status={`${i.returnValues.amount}`}
+                    subStatus={`Block ${i.blockNumber}`}
+                  />
+                );
+              })}
+            </div>
+          </div>
+
+          <div className={styles.subTitle}>
+            <span>Exits</span>
+          </div>
+          <div className={styles.transactionSection}>
+            <div className={styles.transactions}>
+              {(!_pendingExits.length || !_exitedExits.length) && (
+                <div className={styles.disclaimer}>No exit history.</div>
+              )}
+              {_pendingExits.map((i, index) => {
+                return (
+                  <Transaction
+                    key={index}
+                    link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
+                    button={{
+                      onClick: () => setProcessExitModal(i),
+                      text: 'Process Exit'
+                    }}
+                    title={truncate(i.transactionHash, 10, 4, '...')}
+                    subTitle={`Block ${i.blockNumber}`}
+                  />
+                );
+              })}
+              {_exitedExits.map((i, index) => {
+                return (
+                  <Transaction
+                    key={index}
+                    link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
+                    status='Exited'
+                    title={truncate(i.transactionHash, 10, 4, '...')}
+                    subTitle={`Block ${i.blockNumber}`}
+                  />
+                );
+              })}
+            </div>
+          </div>
         </div>
-        <div className={styles.transactions}>
-          {_pendingExits.map((i, index) => {
-            return (
-              <Transaction
-                key={index}
-                link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
-                button={{
-                  onClick: () => setProcessExitModal(i),
-                  text: 'Process Exit'
-                }}
-                title={truncate(i.transactionHash, 10, 4, '...')}
-                subTitle={`Block ${i.blockNumber}`}
-              />
-            );
-          })}
-          {_exitedExits.map((i, index) => {
-            return (
-              <Transaction
-                key={index}
-                link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
-                status='Exited'
-                title={truncate(i.transactionHash, 10, 4, '...')}
-                subTitle={`Block ${i.blockNumber}`}
-              />
-            );
-          })}
+
+        <div className={styles.section}>
+          <div className={styles.subTitle}>
+            <span>Transactions</span>
+          </div>
+          <div className={styles.transactions}>
+            {!_transactions.length && (
+              <div className={styles.disclaimer}>No transaction history.</div>
+            )}
+            {_transactions.map((i, index) => {
+              return (
+                <Transaction
+                  key={index}
+                  link={`${config.blockExplorerUrl}/transaction/${i.txhash}`}
+                  title={truncate(i.txhash, 10, 4, '...')}
+                  subTitle={moment.unix(i.block.timestamp).format('lll')}
+                  status={calculateOutput(i)}
+                  subStatus={`Block ${i.block.blknum}`}
+                />
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

@@ -18,7 +18,7 @@ function ProcessExitsModal ({ open, toggle, utxo }) {
   const [ currency, setCurrency ] = useState(networkService.OmgUtil.transaction.ETH_CURRENCY);  
   const [ maxExits, setMaxExits ] = useState(20);
 
-  const loading = useSelector(selectLoading(['EXIT/PROCESS']));
+  const loading = useSelector(selectLoading(['QUEUE/PROCESS']));
   const queue = useSelector(selectQueue(currency));
 
   useEffect(() => {

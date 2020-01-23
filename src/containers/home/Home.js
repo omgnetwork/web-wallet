@@ -6,7 +6,8 @@ import {
   checkWatcherStatus,
   fetchBalances,
   fetchTransactions,
-  fetchExits
+  fetchExits,
+  fetchDeposits
 } from 'actions/networkAction';
 
 import Status from 'containers/status/Status';
@@ -15,7 +16,7 @@ import Transactions from 'containers/transactions/Transactions';
 
 import * as styles from './Home.module.scss';
 
-const POLL_INTERVAL = 5000;
+const POLL_INTERVAL = 10000;
 
 function Home () {
   const dispatch = useDispatch();
@@ -25,8 +26,9 @@ function Home () {
 
   useInterval(() => dispatch(checkWatcherStatus()), POLL_INTERVAL);
   useInterval(() => dispatch(fetchBalances()), POLL_INTERVAL);
-  useInterval(() => dispatch(fetchTransactions()), POLL_INTERVAL);
+  useInterval(() => dispatch(fetchDeposits()), POLL_INTERVAL);
   useInterval(() => dispatch(fetchExits()), POLL_INTERVAL);
+  useInterval(() => dispatch(fetchTransactions()), POLL_INTERVAL);
 
   return (
     <div className={styles.Home}>

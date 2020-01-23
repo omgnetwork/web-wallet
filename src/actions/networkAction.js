@@ -22,6 +22,13 @@ export function fetchTransactions () {
   );
 }
 
+export function fetchDeposits () {
+  return createAction(
+    'DEPOSIT/GETALL',
+    () => networkService.getDeposits()
+  );
+}
+
 export function fetchExits () {
   return createAction(
     'EXIT/GETALL',
