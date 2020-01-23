@@ -1,12 +1,23 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { forOwn } from 'lodash';
 
+import { clearError } from 'actions/errorAction';
 import networkService from 'services/networkService';
+import { selectAllErrors } from 'selectors/errorSelector';
+
 import Home from 'containers/home/Home';
+import Alert from 'components/alert/Alert';
 
 import * as styles from './App.module.scss';
 
 function App () {
+  const dispatch = useDispatch();
+  const errors = useSelector(selectAllErrors());
+
   const [ loading, setLoading ] = useState(true);
+  const [ error, setError ] = useState({});
+  const [ isError, setIsError ] = useState(false);
 
   useEffect(() => {
     async function checkNetwork() {
@@ -17,6 +28,18 @@ function App () {
     }
     checkNetwork()
   }, []);
+
+  useEffect(() => {
+    forOwn(errors, function(value, key) {
+      if (!!value) {
+        setError({ [key]: value });
+        setIsError(true);
+      } else {
+        setError({});
+        setIsError(false);
+      }
+    })
+  }, [errors, dispatch]);
 
   function renderLoading () {
     return (
@@ -33,6 +56,15 @@ function App () {
         ? renderLoading()
         : <Home />
       }
+
+      <Alert
+        type='error'
+        duration={5000}
+        open={isError}
+        onClose={() => dispatch(clearError(error))}
+      >
+        {`Oops! Something went wrong! ${isError ? Object.values(error)[0] : ''}`}
+      </Alert>
     </div>
   );
 }

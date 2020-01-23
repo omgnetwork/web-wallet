@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import Alert from 'components/alert/Alert';
+import { selectLoading } from 'selectors/loadingSelector';
+import { deposit } from 'actions/networkAction';
+
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
 import Input from 'components/input/Input';
@@ -11,39 +14,26 @@ import networkService from 'services/networkService';
 import * as styles from './DepositModal.module.scss';
 
 function DepositModal ({ open, toggle }) {
+  const dispatch = useDispatch();
+  const loading = useSelector(selectLoading(['TRANSACTION/DEPOSIT']));
+
   const [ activeTab, setActiveTab ] = useState('ETH');
   const [ value, setValue ] = useState('');
   const [ currency, setCurrency ] = useState(networkService.OmgUtil.transaction.ETH_CURRENCY);
   
-  const [ loading, setLoading ] = useState(false);
-  const [ errorOpen, setErrorOpen ] = useState(false);
-
   async function submit () {
     if (value > 0 && currency) {
-      setLoading(true);
       try {
-        const receipt = await networkService.deposit(value, currency);
-        console.log(receipt);
-        handleClose();
-      } catch (err) {
+        await dispatch(deposit(value, currency));
+        toggle();
+      } catch(err) {
         console.warn(err);
-        setLoading(false);
-        setErrorOpen(err.message);
       }
     }
   }
 
-  function handleClose () {
-    toggle();
-    setLoading(false);
-  }
-
   return (
-    <Modal open={open} onClose={handleClose}>
-      <Alert type='error' duration={null} open={!!errorOpen} onClose={() => setErrorOpen(false)}>
-        {`Oops! Something went wrong! ${errorOpen}`}
-      </Alert>
-
+    <Modal open={open} onClose={toggle}>
       <h2>Deposit</h2>
 
       <Tabs
@@ -82,7 +72,7 @@ function DepositModal ({ open, toggle }) {
 
       <div className={styles.buttons}>
         <Button
-          onClick={handleClose}
+          onClick={toggle}
           type='outline'
           style={{ flex: 0 }}
         >
