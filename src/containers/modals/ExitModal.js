@@ -69,6 +69,9 @@ function ExitModal ({ open, toggle }) {
       />
 
       <div className={styles.list}>
+        {!utxos.length && (
+          <div className={styles.disclaimer}>You do not have any UTXOs on the OMG Network.</div>
+        )}
         {_utxos.map((i, index) => {
           return (
             <div

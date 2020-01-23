@@ -43,7 +43,7 @@ function Account () {
       <div className={styles.Account}>
         <h2>Account</h2>
         <div className={styles.wallet}>
-          <span>{`Wallet Address : ${networkService.account ? truncate(networkService.account, 10, 4, '...') : ''}`}</span>
+          <span className={styles.address}>{`Wallet Address : ${networkService.account ? truncate(networkService.account, 10, 4, '...') : ''}`}</span>
           <Copy value={networkService.account} />
         </div>
 
@@ -69,7 +69,7 @@ function Account () {
               return (
                 <div key={index} className={styles.row}>
                   <div className={styles.token}>
-                    <span>{i.symbol}</span>
+                    <span className={styles.symbol}>{i.symbol}</span>
                     <Copy light value={i.token} />
                   </div>
                   <span>{i.amount}</span>
@@ -86,6 +86,7 @@ function Account () {
               <Button
                 onClick={() => setExitModal(true)}
                 type='secondary'
+                disabled={!childBalance.length}
               >
                 EXIT
               </Button>
@@ -104,7 +105,7 @@ function Account () {
               return (
                 <div key={index} className={styles.row}>
                   <div className={styles.token}>
-                    <span>{i.symbol}</span>
+                    <span className={styles.symbol}>{i.symbol}</span>
                     <Copy light value={i.token} />
                   </div>
                   <span>{i.amount}</span>

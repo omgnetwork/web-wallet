@@ -9,7 +9,7 @@
   flex-direction: row;
   align-items: center;
   margin-bottom: 20px;
-  span {
+  .address {
     margin-right: 20px;
   }
 }
@@ -90,7 +90,7 @@
         display: flex;
         flex-direction: row;
         align-items: center;
-        span {
+        .symbol {
           margin-right: 10px;
         }
       }

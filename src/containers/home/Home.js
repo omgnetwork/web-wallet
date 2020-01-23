@@ -15,7 +15,7 @@ import Transactions from 'containers/transactions/Transactions';
 
 import * as styles from './Home.module.scss';
 
-const POLL_INTERVAL = 10000;
+const POLL_INTERVAL = 5000;
 
 function Home () {
   const dispatch = useDispatch();

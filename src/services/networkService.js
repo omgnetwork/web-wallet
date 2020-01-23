@@ -98,28 +98,22 @@ class NetworkService {
   }
 
   async getExitQueue (currency) {
-    return { currency, queue: 20 }
+    const _queue = await this.rootChain.getExitQueue(currency);
+    const queue = _queue.length;
+    return { currency, queue }
   }
 
   async deposit (value, currency) {
-    if (currency === OmgUtil.transaction.ETH_CURRENCY) {
-      const depositTx = OmgUtil.transaction.encodeDeposit(this.account, new BN(value), currency);
-      return this.rootChain.depositEth({
-        depositTx,
-        amount: new BN(value),
+    if (currency !== OmgUtil.transaction.ETH_CURRENCY) {
+      await this.rootChain.approveToken({
+        erc20Address: currency,
+        amount: value,
         txOptions: { from: this.account, gas: 6000000 }
-      });
+      })
     }
-
-    await this.rootChain.approveToken({
-      erc20Address: currency,
-      amount: value,
-      txOptions: { from: this.account, gas: 6000000 }
-    })
-
-    const depositTx = OmgUtil.transaction.encodeDeposit(this.account, value, currency);
-    return this.rootChain.depositToken({
-      depositTx,
+    return this.rootChain.deposit({
+      amount: new BN(value),
+      ...currency !== OmgUtil.transaction.ETH_CURRENCY ? { currency } : {},
       txOptions: { from: this.account, gas: 6000000 }
     })
   }
@@ -141,12 +135,11 @@ class NetworkService {
       currency: feeToken,
       amount: new BN(feeValue)
     }
-    const _metadata = metadata ? OmgUtil.transaction.encodeMetadata(metadata) : OmgUtil.transaction.NULL_METADATA
     const createdTx = await this.childChain.createTransaction({
       owner: this.account,
       payments,
       fee,
-      metadata: _metadata
+      metadata
     })
 
     // if erc20 only inputs, add empty eth input to cover the fee
@@ -169,7 +162,7 @@ class NetworkService {
       createdTx.transactions[0].outputs.push(emptyOutput)
     }
 
-    const typedData = OmgUtil.transaction.getTypedData(createdTx.transactions[0], currency)
+    const typedData = OmgUtil.transaction.getTypedData(createdTx.transactions[0], config.plasmaFrameworkAddress)
     const signature = await this.web3.currentProvider.send(
       'eth_signTypedData_v3',
       [
