@@ -33,14 +33,13 @@ function Transactions () {
   const [ processExitModal, setProcessExitModal ] = useState(false);
 
   function calculateOutput (utxo) {
-    // TODO: logic to handle different currencies and to whom
     const total = utxo.outputs.reduce((prev, curr) => {
-      if (curr.owner !== networkService.account && curr.currency === networkService.OmgUtil.transaction.ETH_CURRENCY) {
+      if (curr.owner !== networkService.account) {
         return prev.add(new BN(curr.amount))
       }
       return prev;
     }, new BN(0));
-    return `${total.toString()} wei`;
+    return `${total.toString()}`;
   }
 
   const _transactions = transactions.filter(i => {
