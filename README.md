@@ -19,6 +19,8 @@ The endpoints for production deployment can be found [here](https://github.com/o
 ```env
 REACT_APP_WATCHER_URL=<watcher_url>
 REACT_APP_PLASMA_FRAMEWORK=<plasma_framework_address>
+REACT_APP_BLOCKEXPLORER_URL=<block_explorer_url>
+REACT_APP_ETHERSCAN_URL=<etherscan_url>
 ```
 
 3. Start the app by running `yarn start` from the root

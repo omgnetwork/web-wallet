@@ -85,7 +85,7 @@ function Status () {
       </div>
       <div>
         <a
-          href='https://github.com/omisego/js-starter-kit'
+          href='https://github.com/omisego/react-starter-kit'
           target='_blank'
           rel='noopener noreferrer'
           className={styles.github}
