@@ -15,9 +15,16 @@ export function fetchBalances () {
   );
 }
 
+export function fetchTransactions () {
+  return createAction(
+    'CC_TRANSACTION/GETALL',
+    () => networkService.getAllTransactions()
+  );
+}
+
 export function deposit (value, currency) {
   return createAction(
-    'TRANSACTION/DEPOSIT',
+    'RC_TRANSACTION/DEPOSIT',
     () => networkService.deposit(value, currency)
   );
 }

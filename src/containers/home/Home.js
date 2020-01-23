@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { checkWatcherStatus, fetchBalances } from 'actions/networkAction';
+import { checkWatcherStatus, fetchBalances, fetchTransactions } from 'actions/networkAction';
 import useInterval from 'util/useInterval';
 
 import Status from 'containers/status/Status';
@@ -10,25 +10,17 @@ import Transactions from 'containers/transactions/Transactions';
 
 import * as styles from './Home.module.scss';
 
+const POLL_INTERVAL = 5000;
+
 function Home () {
   const dispatch = useDispatch();
-
-  const [ transactions, setTransactions ] = useState([]);
-  
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  useInterval(() => dispatch(checkWatcherStatus()), 5000);
-  useInterval(() => dispatch(fetchBalances()), 5000);
-  // useInterval(fetchTransactions, 5000);
-
-  // async function fetchTransactions () {
-  //   if (watcherConnection) {
-  //     const _transactions = await networkService.childChain.getTransactions({ address: networkService.account });
-  //     setTransactions(_transactions);
-  //   }
-  // }
+  useInterval(() => dispatch(checkWatcherStatus()), POLL_INTERVAL);
+  useInterval(() => dispatch(fetchBalances()), POLL_INTERVAL);
+  useInterval(() => dispatch(fetchTransactions()), POLL_INTERVAL);
 
   return (
     <div className={styles.Home}>
@@ -36,9 +28,7 @@ function Home () {
 
       <div className={styles.main}>
         <Account/>
-        <Transactions
-          transactions={transactions}
-        />
+        <Transactions/>
       </div>
     </div>
   );

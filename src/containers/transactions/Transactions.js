@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import BN from 'bn.js';
 import moment from 'moment';
 import truncate from 'truncate-middle';
+
+import { selectChildchainTransactions } from 'selectors/transactionSelector';
 
 import ProcessExitsModal from 'containers/modals/ProcessExitsModal';
 
@@ -13,7 +16,9 @@ import config from 'util/config';
 
 import * as styles from './Transactions.module.scss';
 
-function Transactions ({ transactions = [] }) {
+function Transactions () {
+  const ccTransactions = useSelector(selectChildchainTransactions);
+
   const [ searchHistory, setSearchHistory ] = useState('');
   const [ processExitModal, setProcessExitModal ] = useState(false);
 
@@ -41,7 +46,7 @@ function Transactions ({ transactions = [] }) {
     return `${total.toString()} wei`;
   }
 
-  const _transactions = transactions.filter(i => {
+  const _transactions = ccTransactions.filter(i => {
     return i.txhash.includes(searchHistory);
   })
   const _pendingExits = pendingExits.filter(i => {

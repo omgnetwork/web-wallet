@@ -15,7 +15,7 @@ import * as styles from './DepositModal.module.scss';
 
 function DepositModal ({ open, toggle }) {
   const dispatch = useDispatch();
-  const loading = useSelector(selectLoading(['TRANSACTION/DEPOSIT']));
+  const loading = useSelector(selectLoading(['RC_TRANSACTION/DEPOSIT']));
 
   const [ activeTab, setActiveTab ] = useState('ETH');
   const [ value, setValue ] = useState('');

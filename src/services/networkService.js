@@ -39,6 +39,10 @@ class NetworkService {
     return this.childChain.status();
   }
 
+  async getAllTransactions () {
+    return this.childChain.getTransactions({ address: this.account });
+  }
+
   async getBalances () {
     const _childchainBalances = await this.childChain.getBalance(this.account);
     const childchainBalances = await Promise.all(_childchainBalances.map(
