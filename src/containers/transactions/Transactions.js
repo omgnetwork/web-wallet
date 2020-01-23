@@ -13,7 +13,7 @@ import config from 'util/config';
 
 import * as styles from './Transactions.module.scss';
 
-function Transactions ({ watcherConnection, transactions = [] }) {
+function Transactions ({ transactions = [] }) {
   const [ searchHistory, setSearchHistory ] = useState('');
   const [ processExitModal, setProcessExitModal ] = useState(false);
 

@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
 import { Send } from '@material-ui/icons';
+
+import { selectChildchainBalance, selectRootchainBalance } from 'selectors/balanceSelector';
 
 import DepositModal from 'containers/modals/DepositModal';
 import TransferModal from 'containers/modals/TransferModal';
@@ -13,7 +16,10 @@ import networkService from 'services/networkService';
 
 import * as styles from './Account.module.scss';
 
-function Account ({ className, childBalance = [], rootBalance = [] }) {
+function Account () {
+  const childBalance = useSelector(selectChildchainBalance);
+  const rootBalance = useSelector(selectRootchainBalance);
+
   const [ depositModal, setDepositModal ] = useState(false);
   const [ transferModal, setTransferModal ] = useState(false);
   const [ exitModal, setExitModal ] = useState(false);
@@ -34,7 +40,7 @@ function Account ({ className, childBalance = [], rootBalance = [] }) {
         toggle={() => setExitModal(false)}
       />
 
-      <div className={[styles.Account, className].join(' ')}>
+      <div className={styles.Account}>
         <h2>Account</h2>
         <div className={styles.wallet}>
           <span>{`Wallet Address : ${networkService.account ? truncate(networkService.account, 10, 4, '...') : ''}`}</span>

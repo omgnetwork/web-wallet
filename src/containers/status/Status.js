@@ -1,7 +1,10 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
 import { Tooltip } from '@material-ui/core';
 import { Dvr, GitHub } from '@material-ui/icons';
+
+import { selectConnection, selectByzantine } from 'selectors/statusSelector';
 
 import Info from 'components/info/Info';
 import Copy from 'components/copy/Copy';
@@ -9,7 +12,10 @@ import config from 'util/config';
 
 import * as styles from './Status.module.scss';
 
-function Status ({ watcherConnection, byzantineChain, className }) {
+function Status () {
+  const watcherConnection = useSelector(selectConnection);
+  const byzantineChain = useSelector(selectByzantine);
+
   const renderChainHealth = (
     <Tooltip title='An unhealthy status will result from a ChildChain with byzantine conditions. Users should proceed cautiously until the byzantine conditions are cleared.' arrow>
       <div className={styles.indicator}>
@@ -26,7 +32,7 @@ function Status ({ watcherConnection, byzantineChain, className }) {
 
   const renderWatcherStatus = (
     <div className={styles.indicator}>
-      <span>{watcherConnection ? 'Connected' : 'Error'}</span>
+      <span>{watcherConnection ? 'Connected' : 'None'}</span>
       <div
         className={[
           styles.statusCircle,
