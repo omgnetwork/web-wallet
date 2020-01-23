@@ -54,7 +54,13 @@ function Account () {
                 <span>Balance on Childchain</span>
                 <span>OMG Network</span>
               </div>
-              <div onClick={() => setTransferModal(true)} className={styles.transfer}>
+              <div
+                onClick={() => setTransferModal(true)}
+                className={[
+                  styles.transfer,
+                  !childBalance.length ? styles.disabled : ''
+                ].join(' ')}
+              >
                 <Send />
                 <span>Transfer</span>
               </div>

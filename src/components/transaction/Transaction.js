@@ -2,7 +2,7 @@ import React from 'react';
 
 import * as styles from './Transaction.module.scss';
 
-function Transaction ({ link, status, subStatus, button, title, subTitle }) {
+function Transaction ({ link, status, subStatus, button, title, subTitle, type }) {
 
   function renderValue () {
     if (button) {
@@ -21,11 +21,12 @@ function Transaction ({ link, status, subStatus, button, title, subTitle }) {
           <div
             className={[
               styles.indicator,
+              type === 'Deposit' ? styles.exited : '',
               status === 'Pending' ? styles.pending : '',
               status === 'Exited' ? styles.exited : '',
               status === 'Failed' ? styles.failed : ''
             ].join(' ')} />
-          <span>{status}</span>
+          <span>{type || status}</span>
         </div>
         <div>{subStatus}</div>
       </div>

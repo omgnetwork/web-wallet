@@ -97,8 +97,8 @@ class NetworkService {
     }
   }
 
-  getExitQueue (token) {
-    return this.rootChain.getExitQueue(token);
+  async getExitQueue (currency) {
+    return { currency, queue: 20 }
   }
 
   async deposit (value, currency) {
@@ -189,51 +189,31 @@ class NetworkService {
 
   async getExits () {
     const { contract } = await this.rootChain.getPaymentExitGame();
-    let startedExits = await contract.getPastEvents('ExitStarted', {
+    let allExits = await contract.getPastEvents('ExitStarted', {
       filter: { owner: this.account },
       fromBlock: 0
     });
 
-    const _exitedExits = [];
-    for (const exit of startedExits) {
+    const exitedExits = [];
+    for (const exit of allExits) {
       const isFinalized = await contract.getPastEvents('ExitFinalized', {
         filter: { exitId: exit.returnValues.exitId.toString() },
         fromBlock: 0
       });
+      console.log(isFinalized);
       if (isFinalized.length) {
-        _exitedExits.push(exit);
+        exitedExits.push(exit);
       }
     }
 
-    startedExits = startedExits.filter(i => {
-      const foundMatch = _exitedExits.find(x => x.blockNumber === i.blockNumber);
-      return !foundMatch;
-    });
-
-    const _utxos = await networkService.getUtxos();
-    const _pendingExits = [];
-    for (const exit of startedExits) {
-      for (const utxo of _utxos) {
-        const { msUntilFinalization, scheduledFinalizationTime } = await this.rootChain.getExitTime({
-          exitRequestBlockNumber: exit.blockNumber,
-          submissionBlockNumber: utxo.blknum
-        });
-        if (msUntilFinalization > 0) {
-          _pendingExits.push({...exit, scheduledFinalizationTime });
-          break;
-        }
-      }
-    }
-
-    const _processableExits = startedExits.filter(i => {
-      const foundMatch = _pendingExits.find(x => x.blockNumber === i.blockNumber);
+    const pendingExits = allExits.filter(i => {
+      const foundMatch = exitedExits.find(x => x.blockNumber === i.blockNumber);
       return !foundMatch;
     });
 
     return {
-      pending: _pendingExits,
-      processable: _processableExits,
-      exited: _exitedExits
+      pending: pendingExits,
+      exited: exitedExits
     }
   }
 
@@ -254,6 +234,15 @@ class NetworkService {
       inclusionProof: exitData.proof,
       txOptions: { from: this.account, gas: 6000000 }
     });
+  }
+
+  async processExits (maxExits, currency) {
+    return this.rootChain.processExits({
+      token: currency,
+      exitId: 0,
+      maxExitsToProcess: maxExits,
+      txOptions: { from: this.account, gas: 6000000 }
+    })
   }
 }
 

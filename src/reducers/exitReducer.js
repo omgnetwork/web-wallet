@@ -1,6 +1,5 @@
 const initialState = {
   pending: [],
-  processable: [],
   exited: []
 };
 

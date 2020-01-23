@@ -4,8 +4,8 @@ import BN from 'bn.js';
 import moment from 'moment';
 import truncate from 'truncate-middle';
 
-import { selectChildchainTransactions } from 'selectors/transactionSelector';
-import { selectPendingExits, selectProcessableExits, selectExitedExits } from 'selectors/exitSelector';
+import { selectChildchainTransactions, selectDeposits } from 'selectors/transactionSelector';
+import { selectPendingExits, selectExitedExits } from 'selectors/exitSelector';
 
 import ProcessExitsModal from 'containers/modals/ProcessExitsModal';
 
@@ -18,8 +18,9 @@ import * as styles from './Transactions.module.scss';
 
 function Transactions () {
   const ccTransactions = useSelector(selectChildchainTransactions);
+  const deposits = useSelector(selectDeposits);
+
   const pendingExits = useSelector(selectPendingExits);
-  const processableExits = useSelector(selectProcessableExits);
   const exitedExits = useSelector(selectExitedExits);
 
   const [ searchHistory, setSearchHistory ] = useState('');
@@ -36,18 +37,18 @@ function Transactions () {
     return `${total.toString()} wei`;
   }
 
-  const _transactions = ccTransactions.filter(i => {
+  const _cctransactions = ccTransactions.filter(i => {
     return i.txhash.includes(searchHistory);
-  })
+  });
+  const _deposit = deposits.filter(i => {
+    return i.transactionHash.includes(searchHistory);
+  });
   const _pendingExits = pendingExits.filter(i => {
     return i.transactionHash.includes(searchHistory);
-  })
-  const _processableExits = processableExits.filter(i => {
-    return i.transactionHash.includes(searchHistory);
-  })
+  });
   const _exitedExits = exitedExits.filter(i => {
     return i.transactionHash.includes(searchHistory);
-  })
+  });
 
   return (
     <div className={styles.container}>
@@ -62,7 +63,20 @@ function Transactions () {
           <span>Transactions</span>
         </div>
         <div className={styles.transactions}>
-          {_transactions.map((i, index) => {
+          {_deposit.map((i, index) => {
+            return (
+              <Transaction
+                key={index}
+                type='Deposit'
+                link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
+                title={truncate(i.transactionHash, 10, 4, '...')}
+                subStatus={`Block ${i.blockNumber}`}
+              />
+            );
+          })}
+        </div>
+        <div className={styles.transactions}>
+          {_cctransactions.map((i, index) => {
             return (
               <Transaction
                 key={index}
@@ -89,7 +103,7 @@ function Transactions () {
           <span>Exits</span>
         </div>
         <div className={styles.transactions}>
-          {_processableExits.map((i, index) => {
+          {_pendingExits.map((i, index) => {
             return (
               <Transaction
                 key={index}
@@ -98,18 +112,6 @@ function Transactions () {
                   onClick: () => setProcessExitModal(i),
                   text: 'Process Exit'
                 }}
-                title={truncate(i.transactionHash, 10, 4, '...')}
-                subTitle={`Block ${i.blockNumber}`}
-              />
-            );
-          })}
-          {_pendingExits.map((i, index) => {
-            return (
-              <Transaction
-                key={index}
-                link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
-                status='Pending'
-                subStatus={`Eligible to exit on ${moment.unix(i.scheduledFinalizationTime).format('lll')}`}
                 title={truncate(i.transactionHash, 10, 4, '...')}
                 subTitle={`Block ${i.blockNumber}`}
               />

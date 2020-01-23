@@ -31,7 +31,21 @@ export function fetchExits () {
 
 export function deposit (value, currency) {
   return createAction(
-    'RC_TRANSACTION/DEPOSIT',
+    'DEPOSIT/CREATE',
     () => networkService.deposit(value, currency)
+  );
+}
+
+export function processExits (maxExits, currency) {
+  return createAction(
+    'QUEUE/PROCESS',
+    () => networkService.processExits(maxExits, currency)
+  );
+}
+
+export function getExitQueue (currency) {
+  return createAction(
+    'QUEUE/LENGTH',
+    () => networkService.getExitQueue(currency)
   );
 }

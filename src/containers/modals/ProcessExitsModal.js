@@ -1,58 +1,60 @@
 import React, { useState, useEffect } from 'react';
-import truncate from 'truncate-middle';
+import { useDispatch, useSelector } from 'react-redux';
 
-import Alert from 'components/alert/Alert';
+import { selectLoading } from 'selectors/loadingSelector';
+import { selectQueue } from 'selectors/queueSelector';
+import { processExits, getExitQueue } from 'actions/networkAction';
+import networkService from 'services/networkService';
+
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
 import Input from 'components/input/Input';
 
-import networkService from 'services/networkService';
-
 import * as styles from './ProcessExitsModal.module.scss';
 
 function ProcessExitsModal ({ open, toggle, utxo }) {
-  const [ maxExits, setMaxExits ] = useState();
-  const [ queueLength, setQueueLength ] = useState();
+  const dispatch = useDispatch();
 
-  const [ errorOpen, setErrorOpen ] = useState(false);
-  const [ loading, setLoading ] = useState(false);
+  const [ currency, setCurrency ] = useState(networkService.OmgUtil.transaction.ETH_CURRENCY);  
+  const [ maxExits, setMaxExits ] = useState(20);
 
-  // useEffect(() => {
-  //   async function fetchExitQueue () {
-  //     const queue = await networkService.getExitQueue();
-  //     setQueueLength(queue.length);
-  //   }
-  //   if (open) {
-  //     fetchExitQueue();
-  //   }
-  // }, [open]);
+  const loading = useSelector(selectLoading(['EXIT/PROCESS']));
+  const queue = useSelector(selectQueue(currency));
+
+  useEffect(() => {
+    if (currency && networkService.web3.utils.isAddress(currency)) {
+      dispatch(getExitQueue(currency));
+    }
+  }, [currency, dispatch]);
 
   async function submit () {
-    if (maxExits) {
-      setLoading(true);
+    if (maxExits > 0) {
       try {
-        // await networkService.processExits(maxExits);
+        await dispatch(processExits(maxExits, currency));
         handleClose();
       } catch (err) {
         console.warn(err);
-        setLoading(false);
-        setErrorOpen(err.message);
       }
     }
   }
 
   function handleClose () {
-    setLoading(false);
+    setCurrency(networkService.OmgUtil.transaction.ETH_CURRENCY);
+    setMaxExits(queue);
     toggle();
   }
 
   return (
     <Modal open={open} onClose={handleClose}>
-      <Alert type='error' duration={null} open={!!errorOpen} onClose={() => setErrorOpen(false)}>
-        {`Oops! Something went wrong! ${errorOpen}`}
-      </Alert>
-
       <h2>Process Exits</h2>
+
+      <Input
+        label='Currency'
+        placeholder='0x'
+        paste
+        value={currency}
+        onChange={i => setCurrency(i.target.value)}
+      />
 
       <Input
         label='Max exits to process'
@@ -61,6 +63,10 @@ function ProcessExitsModal ({ open, toggle, utxo }) {
         value={maxExits}
         onChange={i => setMaxExits(i.target.value)}
       />
+
+      <div className={styles.disclaimer}>
+        {`Current exit queue : ${queue ? queue : 0}`}
+      </div>
 
       <div className={styles.buttons}>
         <Button
@@ -75,7 +81,7 @@ function ProcessExitsModal ({ open, toggle, utxo }) {
           type='primary'
           style={{ flex: 0 }}
           loading={loading}
-          disabled={!maxExits}
+          disabled={!maxExits > 0 || !currency || !networkService.web3.utils.isAddress(currency)}
         >
           PROCESS EXITS
         </Button>
