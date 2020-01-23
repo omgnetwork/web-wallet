@@ -29,15 +29,15 @@ function TransferModal ({ open, toggle, balances = [] }) {
 
   async function submit () {
     if (
-      value &&
-      feeValue &&
+      value > 0 &&
+      feeValue > 0 &&
       currency &&
       feeToken &&
       recipient
     ) {
       setLoading(true);
       try {
-        await networkService.transfer({
+        const receipt = await networkService.transfer({
           recipient,
           value,
           currency,
@@ -45,6 +45,7 @@ function TransferModal ({ open, toggle, balances = [] }) {
           feeToken,
           metadata
         });
+        console.log(receipt);
         handleClose();
       } catch (err) {
         console.warn(err);

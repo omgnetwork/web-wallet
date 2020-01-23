@@ -3,6 +3,7 @@
 .Status {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   padding: 40px;
   background-color: #1f1e23;
   max-width: 300px;
@@ -32,5 +33,30 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+  }
+
+  .icon {
+    cursor: pointer;
+    background-color: $gray;
+    border-radius: 100%;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    svg {
+      width: 12px;
+      height: 12px;
+    }
+  }
+
+  .github {
+    cursor: pointer;
+    color: $gray;
+    svg {
+      width: 40px;
+      height: 40px;
+    }
   }
 }

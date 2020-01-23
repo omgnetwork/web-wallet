@@ -16,28 +16,26 @@ class NetworkService {
     if (window.ethereum) {
       this.web3 = new Web3(window.ethereum, null, { transactionConfirmationBlocks: 1 });
       this.rootChain = new RootChain({ web3: this.web3, plasmaContractAddress: config.plasmaFrameworkAddress });
-      const accounts = await this.web3.eth.getAccounts();
-      this.account = accounts[0];
       try {
         await window.ethereum.enable();
+        const accounts = await this.web3.eth.getAccounts();
+        this.account = accounts[0];
         return true;
       } catch {
         return false;
       }
-    }
-
-    if (window.web3) {
+    } else if (window.web3) {
       this.web3 = new Web3(window.web3.currentProvider, null, { transactionConfirmationBlocks: 1 });
       this.rootChain = new RootChain({ web3: this.web3, plasmaContractAddress: config.plasmaFrameworkAddress });
       const accounts = await this.web3.eth.getAccounts();
       this.account = accounts[0];
       return true;
+    } else {
+      return false;
     }
-    return false;
   }
 
   async getBalances () {
-    if (!this.account) return;
     const _childchainBalances = await this.childChain.getBalance(this.account);
     const childchainBalances = await Promise.all(_childchainBalances.map(
       async i => {

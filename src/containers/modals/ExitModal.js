@@ -33,7 +33,8 @@ function ExitModal ({ open, toggle }) {
     if (selectedUTXO) {
       setLoading(true);
       try {
-        await networkService.exitUtxo(selectedUTXO);
+        const receipt = await networkService.exitUtxo(selectedUTXO);
+        console.log(receipt);
         handleClose();
       } catch (err) {
         console.warn(err);

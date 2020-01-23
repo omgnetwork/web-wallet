@@ -22,7 +22,8 @@ function DepositModal ({ open, toggle }) {
     if (value > 0 && currency) {
       setLoading(true);
       try {
-        await networkService.deposit(value, currency);
+        const receipt = await networkService.deposit(value, currency);
+        console.log(receipt);
         handleClose();
       } catch (err) {
         console.warn(err);

@@ -1,6 +1,7 @@
 import React from 'react';
 import truncate from 'truncate-middle';
 import { Tooltip } from '@material-ui/core';
+import { Dvr, GitHub } from '@material-ui/icons';
 
 import Info from 'components/info/Info';
 import Copy from 'components/copy/Copy';
@@ -37,29 +38,55 @@ function Status ({ watcherConnection, byzantineChain, className }) {
 
   return (
     <div className={styles.Status}>
-      <h1>{'OMG\nNETWORK'}</h1>
-      <Info
-        data={[
-          {
-            title: 'Watcher Status',
-            value: renderWatcherStatus
-          },
-          {
-            title: 'Network Status',
-            value: watcherConnection ? renderChainHealth : ''
-          },
-          {
-            header: 'Plasma Framework Address',
-            title: truncate(config.plasmaFrameworkAddress, 10, 4, '...'),
-            value: <Copy value={config.plasmaFrameworkAddress} />
-          },
-          {
-            header: 'Watcher URL', 
-            title: config.watcherUrl,
-            value: <Copy value={config.watcherUrl} />
-          }
-        ]}
-      />
+      <div>
+        <h1>{'OMG\nNETWORK'}</h1>
+        <Info
+          data={[
+            {
+              title: 'Watcher Status',
+              value: renderWatcherStatus
+            },
+            {
+              title: 'Network Status',
+              value: watcherConnection ? renderChainHealth : ''
+            },
+            {
+              header: 'Plasma Framework Address',
+              title: truncate(config.plasmaFrameworkAddress, 10, 4, '...'),
+              value: <Copy value={config.plasmaFrameworkAddress} />
+            },
+            {
+              header: 'Watcher URL', 
+              title: config.watcherUrl,
+              value: <Copy value={config.watcherUrl} />
+            },
+            {
+              header: 'Block Explorer', 
+              title: config.blockExplorerUrl,
+              value: (
+                <a
+                  href={config.blockExplorerUrl}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className={styles.icon}
+                >
+                  <Dvr />
+                </a>
+              )
+            }
+          ]}
+        />
+      </div>
+      <div>
+        <a
+          href='https://github.com/omisego/js-starter-kit'
+          target='_blank'
+          rel='noopener noreferrer'
+          className={styles.github}
+        >
+          <GitHub />
+        </a>
+      </div>
     </div>
   );
 }
