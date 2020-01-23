@@ -68,7 +68,10 @@ function Account () {
             {childBalance.map((i, index) => {
               return (
                 <div key={index} className={styles.row}>
-                  <span>{i.symbol}</span>
+                  <div className={styles.token}>
+                    <span>{i.symbol}</span>
+                    <Copy light value={i.token} />
+                  </div>
                   <span>{i.amount}</span>
                 </div>
               )
@@ -100,7 +103,10 @@ function Account () {
             {rootBalance.map((i, index) => {
               return (
                 <div key={index} className={styles.row}>
-                  <span>{i.symbol}</span>
+                  <div className={styles.token}>
+                    <span>{i.symbol}</span>
+                    <Copy light value={i.token} />
+                  </div>
                   <span>{i.amount}</span>
                 </div>
               )

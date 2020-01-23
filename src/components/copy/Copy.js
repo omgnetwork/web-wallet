@@ -6,7 +6,7 @@ import Alert from 'components/alert/Alert';
 
 import * as styles from './Copy.module.scss';
 
-function Copy ({ value }) {
+function Copy ({ value, light }) {
   const [ open, setOpen ] = useState(false);
 
   return (
@@ -15,7 +15,11 @@ function Copy ({ value }) {
         text={value}
         onCopy={() => setOpen(true)}
       >
-        <div className={styles.icon}>
+        <div
+          className={[
+            styles.icon,
+            light ? styles.light : ''
+          ].join(' ')}>
           <FileCopyOutlined />
         </div>
       </CopyToClipboard>
