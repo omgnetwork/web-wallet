@@ -3,7 +3,7 @@ import { combineReducers } from 'redux';
 import loadingReducer from './loadingReducer';
 import errorReducer from './errorReducer';
 import depositReducer from './depositReducer';
-import ccTransactionReducer from './ccTransactionReducer';
+import transactionReducer from './transactionReducer';
 import statusReducer from './statusReducer';
 import balanceReducer from './balanceReducer';
 import exitReducer from './exitReducer';
@@ -13,7 +13,7 @@ const rootReducer = combineReducers({
   loading: loadingReducer,
   error: errorReducer,
   deposit: depositReducer,
-  ccTransaction: ccTransactionReducer,
+  transaction: transactionReducer,
   status: statusReducer,
   balance: balanceReducer,
   exit: exitReducer,

@@ -17,7 +17,7 @@ import config from 'util/config';
 import * as styles from './Transactions.module.scss';
 
 function Transactions () {
-  const ccTransactions = useSelector(selectChildchainTransactions);
+  const transactions = useSelector(selectChildchainTransactions);
   const deposits = useSelector(selectDeposits);
 
   const pendingExits = useSelector(selectPendingExits);
@@ -37,7 +37,7 @@ function Transactions () {
     return `${total.toString()} wei`;
   }
 
-  const _cctransactions = ccTransactions.filter(i => {
+  const _transactions = transactions.filter(i => {
     return i.txhash.includes(searchHistory);
   });
   const _deposit = deposits.filter(i => {
@@ -76,7 +76,7 @@ function Transactions () {
           })}
         </div>
         <div className={styles.transactions}>
-          {_cctransactions.map((i, index) => {
+          {_transactions.map((i, index) => {
             return (
               <Transaction
                 key={index}

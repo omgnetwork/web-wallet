@@ -17,7 +17,7 @@ export function fetchBalances () {
 
 export function fetchTransactions () {
   return createAction(
-    'CC_TRANSACTION/GETALL',
+    'TRANSACTION/GETALL',
     () => networkService.getAllTransactions()
   );
 }
@@ -26,6 +26,13 @@ export function fetchExits () {
   return createAction(
     'EXIT/GETALL',
     () => networkService.getExits()
+  );
+}
+
+export function exitUtxo (utxo) {
+  return createAction(
+    'EXIT/CREATE',
+    () => networkService.exitUtxo(utxo)
   );
 }
 

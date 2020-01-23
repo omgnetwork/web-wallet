@@ -1,9 +1,5 @@
 export function selectChildchainTransactions (state) {
-  return Object.values(state.ccTransaction);
-}
-
-export function selectRootchainTransactions (state) {
-  return Object.values(state.rcTransaction);
+  return Object.values(state.transaction);
 }
 
 export function selectDeposits (state) {

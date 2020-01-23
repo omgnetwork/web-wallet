@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
 import { Check } from '@material-ui/icons';
 
-import Alert from 'components/alert/Alert';
+import { selectLoading } from 'selectors/loadingSelector';
+import { exitUtxo } from 'actions/networkAction';
+
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
 import Input from 'components/input/Input';
@@ -12,12 +15,12 @@ import networkService from 'services/networkService';
 import * as styles from './ExitModal.module.scss';
 
 function ExitModal ({ open, toggle }) {
+  const dispatch = useDispatch();
+  const loading = useSelector(selectLoading(['EXIT/CREATE']));
+
   const [ selectedUTXO, setSelectedUTXO ] = useState();
   const [ searchUTXO, setSearchUTXO ] = useState('');
   const [ utxos, setUtxos ] = useState([]);
-
-  const [ errorOpen, setErrorOpen ] = useState(false);
-  const [ loading, setLoading ] = useState(false);
 
   useEffect(() => {
     async function fetchUTXOS () {
@@ -31,15 +34,11 @@ function ExitModal ({ open, toggle }) {
 
   async function submit () {
     if (selectedUTXO) {
-      setLoading(true);
       try {
-        const receipt = await networkService.exitUtxo(selectedUTXO);
-        console.log(receipt);
+        await dispatch(exitUtxo(selectedUTXO));
         handleClose();
       } catch (err) {
         console.warn(err);
-        setLoading(false);
-        setErrorOpen(err.message);
       }
     }
   }
@@ -47,17 +46,12 @@ function ExitModal ({ open, toggle }) {
   function handleClose () {
     setSelectedUTXO();
     setSearchUTXO('');
-    setLoading(false);
     toggle();
   }
 
   const _utxos = utxos.filter(i => i.currency.includes(searchUTXO));
   return (
     <Modal open={open} onClose={handleClose}>
-      <Alert type='error' duration={null} open={!!errorOpen} onClose={() => setErrorOpen(false)}>
-        {`Oops! Something went wrong! ${errorOpen}`}
-      </Alert>
-
       <h2>Start Standard Exit</h2>
 
       <Input
