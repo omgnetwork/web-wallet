@@ -3,12 +3,22 @@ $white: white;
 $red: #f76b6b;
 $yellow: #ecb937;
 $green: #20ac92;
-$blue: rgb(24, 108, 243);
+$blue: #186cf3;
 $background: #0f0f0f;
 $black: black;
 $lightbackground: #0a1320;
 $darkgray: #26252a;
 $gray: #36353d;
+
+@font-face {
+  font-family: 'Messina';
+  src: url(./fonts/MessinaRegular.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'MessinaMono';
+  src: url(./fonts/MessinaMono.woff) format('woff');
+}
 
 a {
   color: inherit;
@@ -20,11 +30,11 @@ body {
   padding: 0;
   color: $primary;
   background-color: $background;
-  font-family: 'Roboto Mono', monospace;
+  font-family: 'MessinaMono', monospace;
 }
 
 input {
-  font-family: 'Roboto Mono', monospace;
+  font-family: 'MessinaMono', monospace;
   font-size: 14px;
   border: none;
   outline: none;
@@ -39,7 +49,7 @@ input::-webkit-inner-spin-button {
 h1 {
   margin: 0;
   white-space: pre;
-  font-family: 'Arial';
+  font-family: 'Messina';
   font-weight: 400;
   font-size: 25px;
   color: $blue;
@@ -47,7 +57,7 @@ h1 {
 
 h2 {
   color: $white;
-  font-family: 'Arial';
+  font-family: 'Messina';
   font-weight: 100;
   margin: 0 0 10px 0;
 }

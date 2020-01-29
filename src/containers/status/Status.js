@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
 import { Tooltip } from '@material-ui/core';
 import { Dvr, GitHub } from '@material-ui/icons';
+import omg_network from './omg_network.svg';
 
 import { selectConnection, selectByzantine } from 'selectors/statusSelector';
 
@@ -45,7 +46,7 @@ function Status () {
   return (
     <div className={styles.Status}>
       <div>
-        <h1>{'OMG\nNETWORK'}</h1>
+        <img className={styles.logo} src={omg_network} alt='omg-network' />
         <Info
           data={[
             {
