@@ -6,10 +6,14 @@
 }
 
 .header {
+  h2 {
+    margin-bottom: 0;
+  }
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 10px;
   @include mobile {
     flex-direction: column;
     align-items: flex-start;
@@ -38,8 +42,6 @@
 }
 
 .transactionSection {
-  height: 300px;
-  overflow: auto;
   margin-bottom: 20px;
 }
 
@@ -50,6 +52,7 @@
 }
 
 .searchBar {
+  margin-bottom: 0;
   & > div {
     border: none !important;
     border-bottom: 2px solid $gray !important;
@@ -78,7 +81,7 @@
   align-items: center;
   justify-content: space-between;
 
-  margin-bottom: 20px;
+  margin-bottom: 31px;
   span {
     margin-right: 20px;
   }

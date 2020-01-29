@@ -2,9 +2,9 @@ import React from 'react';
 
 import * as styles from './Tabs.module.scss';
 
-function Tabs ({ tabs, activeTab, onClick }) {
+function Tabs ({ tabs, activeTab, onClick, className }) {
   return (
-    <div className={styles.Tabs}>
+    <div className={[styles.Tabs, className].join(' ')}>
       {tabs.map((i, index) => {
         return (
           <div

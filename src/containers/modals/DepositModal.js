@@ -44,6 +44,7 @@ function DepositModal ({ open, toggle }) {
       <h2>Deposit</h2>
 
       <Tabs
+        className={styles.tabs}
         onClick={i => {
           i === 'ETH'
             ? setCurrency(networkService.OmgUtil.transaction.ETH_CURRENCY)

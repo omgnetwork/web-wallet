@@ -20,6 +20,9 @@
   height: 250px;
   overflow-y: scroll;
   .utxo {
+    &:last-child {
+      border-bottom: none;
+    }
     font-size: 12px;
     display: flex;
     flex-direction: row;

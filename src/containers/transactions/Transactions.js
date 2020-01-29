@@ -7,13 +7,14 @@ import truncate from 'truncate-middle';
 
 import { selectChildchainTransactions, selectEthDeposits, selectErc20Deposits } from 'selectors/transactionSelector';
 import { selectPendingExits, selectExitedExits } from 'selectors/exitSelector';
+import networkService from 'services/networkService';
+import config from 'util/config';
 
 import ProcessExitsModal from 'containers/modals/ProcessExitsModal';
 
+import Tabs from 'components/tabs/Tabs';
 import Input from 'components/input/Input';
 import Transaction from 'components/transaction/Transaction';
-import networkService from 'services/networkService';
-import config from 'util/config';
 
 import * as styles from './Transactions.module.scss';
 
@@ -31,6 +32,7 @@ function Transactions () {
 
   const [ searchHistory, setSearchHistory ] = useState('');
   const [ processExitModal, setProcessExitModal ] = useState(false);
+  const [ activeTab, setActiveTab ] = useState('Transactions');
 
   function calculateOutputAmount (utxo) {
     if (utxo.status === 'Pending') {
@@ -79,30 +81,62 @@ function Transactions () {
 
       <div className={styles.data}>
         <div className={styles.section}>
-          <div className={styles.subTitle}>
-            <span>Deposits</span>
-          </div>
-          <div className={styles.transactionSection}>
+          <Tabs
+            onClick={setActiveTab}
+            activeTab={activeTab}
+            tabs={[ 'Transactions', 'Deposits' ]}
+          />
+
+          {activeTab === 'Transactions' && (
             <div className={styles.transactions}>
-              {!_deposit.length && (
-                <div className={styles.disclaimer}>No deposit history.</div>
+              {!_transactions.length && (
+                <div className={styles.disclaimer}>No transaction history.</div>
               )}
-              {_deposit.map((i, index) => {
+              {_transactions.map((i, index) => {
                 return (
                   <Transaction
                     key={index}
-                    link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
-                    title={truncate(i.transactionHash, 10, 4, '...')}
-                    subTitle={`Token: ${truncate(i.returnValues.token, 10, 4, '...')}`}
-                    status={i.status === 'Pending' ? 'Pending' : `${i.returnValues.amount}`}
-                    statusPercentage={i.pendingPercentage}
-                    subStatus={`Block ${i.blockNumber}`}
+                    link={
+                      i.status === 'Pending'
+                        ? undefined
+                        : `${config.blockExplorerUrl}/transaction/${i.txhash}`
+                    }
+                    title={`${truncate(i.txhash, 10, 4, '...')}`}
+                    midTitle={i.metadata ? i.metadata : undefined}
+                    subTitle={moment.unix(i.block.timestamp).format('lll')}
+                    status={calculateOutputAmount(i)}
+                    subStatus={`Block ${i.block.blknum}`}
                   />
                 );
               })}
             </div>
-          </div>
+          )}
 
+          {activeTab === 'Deposits' && (
+            <div className={styles.transactionSection}>
+              <div className={styles.transactions}>
+                {!_deposit.length && (
+                  <div className={styles.disclaimer}>No deposit history.</div>
+                )}
+                {_deposit.map((i, index) => {
+                  return (
+                    <Transaction
+                      key={index}
+                      link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
+                      title={truncate(i.transactionHash, 10, 4, '...')}
+                      subTitle={`Token: ${truncate(i.returnValues.token, 10, 4, '...')}`}
+                      status={i.status === 'Pending' ? 'Pending' : `${i.returnValues.amount}`}
+                      statusPercentage={i.pendingPercentage}
+                      subStatus={`Block ${i.blockNumber}`}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className={styles.section}>
           <div className={styles.subTitle}>
             <span>Exits</span>
             {!!_pendingExits.length && (
@@ -143,30 +177,6 @@ function Transactions () {
                 );
               })}
             </div>
-          </div>
-        </div>
-
-        <div className={styles.section}>
-          <div className={styles.subTitle}>
-            <span>Transactions</span>
-          </div>
-          <div className={styles.transactions}>
-            {!_transactions.length && (
-              <div className={styles.disclaimer}>No transaction history.</div>
-            )}
-            {_transactions.map((i, index) => {
-              return (
-                <Transaction
-                  key={index}
-                  link={`${config.blockExplorerUrl}/transaction/${i.txhash}`}
-                  title={`${truncate(i.txhash, 10, 4, '...')}`}
-                  midTitle={i.metadata ? i.metadata : undefined}
-                  subTitle={moment.unix(i.block.timestamp).format('lll')}
-                  status={calculateOutputAmount(i)}
-                  subStatus={`Block ${i.block.blknum}`}
-                />
-              );
-            })}
           </div>
         </div>
       </div>

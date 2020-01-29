@@ -44,11 +44,12 @@ function Transaction ({
     );
   }
 
+  const Resolved = link ? 'a' : 'div';
   return (
     <div className={styles.Transaction}>
-      <a
+      <Resolved
         href={link}
-        target='_blank'
+        target={'_blank'}
         rel='noopener noreferrer'
         className={styles.left}
       >
@@ -57,7 +58,7 @@ function Transaction ({
           <div className={styles.midTitle}>{midTitle}</div>
         )}
         <div>{subTitle}</div>
-      </a>
+      </Resolved>
       <div className={styles.right}>
         {renderValue()} 
       </div>
