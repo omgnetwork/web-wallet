@@ -47,10 +47,10 @@ function Transactions () {
   }
 
   const _transactions = transactions.filter(i => {
-    return i.txhash.includes(searchHistory);
+    return i.txhash.includes(searchHistory) || i.metadata.toLowerCase().includes(searchHistory);
   });
   const _deposit = deposits.filter(i => {
-    return i.transactionHash.includes(searchHistory);
+    return i.transactionHash.includes(searchHistory) || i.returnValues.token.includes(searchHistory);
   });
   const _pendingExits = pendingExits.filter(i => {
     return i.transactionHash.includes(searchHistory);
@@ -73,7 +73,7 @@ function Transactions () {
           icon
           placeholder='Search history'
           value={searchHistory}
-          onChange={i => setSearchHistory(i.target.value)}
+          onChange={i => setSearchHistory(i.target.value.toLowerCase())}
           className={styles.searchBar}
         />
       </div>
@@ -94,8 +94,9 @@ function Transactions () {
                     key={index}
                     link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
                     title={truncate(i.transactionHash, 10, 4, '...')}
-                    subTitle={truncate(i.returnValues.token, 10, 4, '...')}
+                    subTitle={`Token: ${truncate(i.returnValues.token, 10, 4, '...')}`}
                     status={i.status === 'Pending' ? 'Pending' : `${i.returnValues.amount}`}
+                    statusPercentage={i.pendingPercentage}
                     subStatus={`Block ${i.blockNumber}`}
                   />
                 );

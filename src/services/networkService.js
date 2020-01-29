@@ -208,7 +208,8 @@ class NetworkService {
     });
     const ethDeposits = _ethDeposits.map(i => {
       const status = ethBlockNumber - i.blockNumber >= depositFinality ? 'Confirmed' : 'Pending';
-      return { ...i, status }
+      const pendingPercentage = (ethBlockNumber - i.blockNumber) / depositFinality;
+      return { ...i, status, pendingPercentage: (pendingPercentage * 100).toFixed() }
     });
 
     const _erc20Deposits = await erc20Vault.getPastEvents('DepositCreated', {
@@ -217,7 +218,8 @@ class NetworkService {
     });
     const erc20Deposits = _erc20Deposits.map(i => {
       const status = ethBlockNumber - i.blockNumber >= depositFinality ? 'Confirmed' : 'Pending';
-      return { ...i, status }
+      const pendingPercentage = (ethBlockNumber - i.blockNumber) / depositFinality;
+      return { ...i, status, pendingPercentage: (pendingPercentage * 100).toFixed() }
     });
 
     return { eth: ethDeposits, erc20: erc20Deposits };

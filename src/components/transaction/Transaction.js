@@ -5,6 +5,7 @@ import * as styles from './Transaction.module.scss';
 function Transaction ({
   link,
   status,
+  statusPercentage,
   subStatus,
   button,
   title,
@@ -31,8 +32,12 @@ function Transaction ({
               status === 'Pending' ? styles.pending : '',
               status === 'Exited' ? styles.exited : '',
               status === 'Failed' ? styles.failed : ''
-            ].join(' ')} />
-          <span>{status}</span>
+            ].join(' ')}
+          />
+            <span>{status}</span>
+            {status === 'Pending' && statusPercentage && (
+              <span className={styles.percentage}>{`(${statusPercentage}%)`}</span>
+            )}
         </div>
         <div>{subStatus}</div>
       </div>
