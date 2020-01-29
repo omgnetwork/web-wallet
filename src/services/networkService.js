@@ -134,43 +134,29 @@ class NetworkService {
     feeToken,
     metadata
   }) {
+    const _utxos = await this.childChain.getUtxos(this.account);
+    const utxos = orderBy(_utxos, i => i.amount, 'desc');
+
+    const _metadata = metadata
+      ? OmgUtil.transaction.encodeMetadata(metadata)
+      : OmgUtil.transaction.NULL_METADATA;
     const payments = [{
       owner: recipient,
       currency,
       amount: new BN(value)
-    }]
+    }];
     const fee = {
       currency: feeToken,
       amount: new BN(feeValue)
-    }
-    const createdTx = await this.childChain.createTransaction({
-      owner: this.account,
+    };
+    const txBody = OmgUtil.transaction.createTransactionBody({
+      fromAddress: this.account,
+      fromUtxos: utxos,
       payments,
       fee,
-      metadata
-    })
-
-    // if erc20 only inputs, add empty eth input to cover the fee
-    if (!createdTx.transactions[0].inputs.find(i => i.currency === OmgUtil.transaction.ETH_CURRENCY)) {
-      const utxos = await this.childChain.getUtxos(this.account)
-      const sorted = utxos
-        .filter(utxo => utxo.currency === OmgUtil.transaction.ETH_CURRENCY)
-        .sort((a, b) => new BN(b.amount).sub(new BN(a.amount)))
-      // return early if no utxos
-      if (!sorted || !sorted.length) {
-        throw new Error(`No ETH utxo available to cover the fee amount`)
-      }
-      const ethUtxo = sorted[0]
-      const emptyOutput = {
-        amount: ethUtxo.amount,
-        currency: ethUtxo.currency,
-        owner: ethUtxo.owner
-      }
-      createdTx.transactions[0].inputs.push(ethUtxo)
-      createdTx.transactions[0].outputs.push(emptyOutput)
-    }
-
-    const typedData = OmgUtil.transaction.getTypedData(createdTx.transactions[0], config.plasmaFrameworkAddress)
+      metadata: _metadata
+    });
+    const typedData = OmgUtil.transaction.getTypedData(txBody, config.plasmaFrameworkAddress);
     const signature = await this.web3.currentProvider.send(
       'eth_signTypedData_v3',
       [
@@ -178,9 +164,9 @@ class NetworkService {
         JSONBigNumber.stringify(typedData)
       ]
     );
-    const signatures = new Array(createdTx.transactions[0].inputs.length).fill(signature)
-    const signedTxn = this.childChain.buildSignedTransaction(typedData, signatures)
-    const submittedTransaction = await this.childChain.submitTransaction(signedTxn)
+    const signatures = new Array(txBody.inputs.length).fill(signature);
+    const signedTxn = this.childChain.buildSignedTransaction(typedData, signatures);
+    const submittedTransaction = await this.childChain.submitTransaction(signedTxn);
     return {
       ...submittedTransaction,
       block: {

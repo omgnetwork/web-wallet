@@ -52,7 +52,9 @@ function ExitModal ({ open, toggle }) {
     toggle();
   }
 
-  const _utxos = utxos.filter(i => i.currency.includes(searchUTXO));
+  const _utxos = utxos
+    .filter(i => i.currency.includes(searchUTXO))
+    .filter(i => i);
   return (
     <Modal open={open} onClose={handleClose}>
       <h2>Start Standard Exit</h2>
