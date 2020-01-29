@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
 import { Check } from '@material-ui/icons';
 
-import { selectPendingExits } from 'selectors/exitSelector';
 import { selectLoading } from 'selectors/loadingSelector';
 import { exitUtxo } from 'actions/networkAction';
 
@@ -18,8 +17,6 @@ import * as styles from './ExitModal.module.scss';
 function ExitModal ({ open, toggle }) {
   const dispatch = useDispatch();
   const loading = useSelector(selectLoading(['EXIT/CREATE']));
-  const pendingExits = useSelector(selectPendingExits);
-  const isPending = pendingExits.some(i => i.status === 'Pending');
 
   const [ selectedUTXO, setSelectedUTXO ] = useState();
   const [ searchUTXO, setSearchUTXO ] = useState('');
@@ -99,6 +96,8 @@ function ExitModal ({ open, toggle }) {
         })}
       </div>
 
+      <div className={styles.disclaimer}>*Note that while an exit transaction is pending, starting further exits and transfers will be temporarily blocked until the exit transaction is confirmed.</div>
+
       <div className={styles.buttons}>
         <Button
           onClick={handleClose}
@@ -111,7 +110,7 @@ function ExitModal ({ open, toggle }) {
           onClick={submit}
           type='primary'
           style={{ flex: 0 }}
-          loading={loading || isPending}
+          loading={loading}
           disabled={!selectedUTXO}
         >
           SUBMIT EXIT

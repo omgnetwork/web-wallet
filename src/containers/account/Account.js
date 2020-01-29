@@ -4,6 +4,7 @@ import truncate from 'truncate-middle';
 import { Send } from '@material-ui/icons';
 
 import { selectChildchainBalance, selectRootchainBalance } from 'selectors/balanceSelector';
+import { selectPendingExits } from 'selectors/exitSelector';
 
 import DepositModal from 'containers/modals/DepositModal';
 import TransferModal from 'containers/modals/TransferModal';
@@ -19,6 +20,8 @@ import * as styles from './Account.module.scss';
 function Account () {
   const childBalance = useSelector(selectChildchainBalance);
   const rootBalance = useSelector(selectRootchainBalance);
+  const pendingExits = useSelector(selectPendingExits);
+  const isPending = pendingExits.some(i => i.status === 'Pending');
 
   const [ depositModal, setDepositModal ] = useState(false);
   const [ transferModal, setTransferModal ] = useState(false);
@@ -58,7 +61,9 @@ function Account () {
                 onClick={() => setTransferModal(true)}
                 className={[
                   styles.transfer,
-                  !childBalance.length ? styles.disabled : ''
+                  !childBalance.length || isPending 
+                    ? styles.disabled
+                    : ''
                 ].join(' ')}
               >
                 <Send />
@@ -86,7 +91,10 @@ function Account () {
               <Button
                 onClick={() => setExitModal(true)}
                 type='secondary'
-                disabled={!childBalance.length}
+                disabled={
+                  !childBalance.length ||
+                  isPending
+                }
               >
                 EXIT
               </Button>

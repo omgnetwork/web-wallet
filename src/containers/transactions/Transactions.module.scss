@@ -30,8 +30,6 @@
 }
 
 .section {
-  display: flex;
-  flex-direction: column;
   flex: 1;
   &:first-child {
     margin-right: 20px;
