@@ -1,5 +1,7 @@
 # react-starter-kit
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/21aadcdd-99f2-4ddd-be65-7797c0ca1cdc/deploy-status)](https://app.netlify.com/sites/omgnetwork-browser-wallet/deploys)
+
 This is an example client side wallet built in React.js which allows you to make interactions with the OMG network from the browser.
 
 Before you get started, make sure you have a local instance of elixir-omg running or have access to an already deployed network. Feel free to build on top of the functionalities which you see here.
