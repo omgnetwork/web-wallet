@@ -91,7 +91,7 @@ function Transactions () {
                     link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
                     title={truncate(i.transactionHash, 10, 4, '...')}
                     subTitle={truncate(i.returnValues.token, 10, 4, '...')}
-                    status={`${i.returnValues.amount}`}
+                    status={i.status === 'Pending' ? 'Pending' : `${i.returnValues.amount}`}
                     subStatus={`Block ${i.blockNumber}`}
                   />
                 );
@@ -104,7 +104,7 @@ function Transactions () {
           </div>
           <div className={styles.transactionSection}>
             <div className={styles.transactions}>
-              {(!_pendingExits.length || !_exitedExits.length) && (
+              {(!_pendingExits.length && !_exitedExits.length) && (
                 <div className={styles.disclaimer}>No exit history.</div>
               )}
               {_pendingExits.map((i, index) => {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { selectByzantine } from 'selectors/statusSelector';
 import { selectLoading } from 'selectors/loadingSelector';
 import { selectQueue } from 'selectors/queueSelector';
 import { processExits, getExitQueue } from 'actions/networkAction';
@@ -14,6 +15,7 @@ import * as styles from './ProcessExitsModal.module.scss';
 
 function ProcessExitsModal ({ open, toggle, utxo }) {
   const dispatch = useDispatch();
+  const byzantineChain = useSelector(selectByzantine);
 
   const [ currency, setCurrency ] = useState(networkService.OmgUtil.transaction.ETH_CURRENCY);  
   const [ maxExits, setMaxExits ] = useState(20);
@@ -81,7 +83,13 @@ function ProcessExitsModal ({ open, toggle, utxo }) {
           type='primary'
           style={{ flex: 0 }}
           loading={loading}
-          disabled={!maxExits > 0 || !currency || !networkService.web3.utils.isAddress(currency)}
+          disabled={
+            !maxExits > 0 ||
+            !currency ||
+            !networkService.web3.utils.isAddress(currency) ||
+            queue < 1 ||
+            byzantineChain
+          }
         >
           PROCESS EXITS
         </Button>

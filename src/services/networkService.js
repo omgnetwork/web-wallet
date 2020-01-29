@@ -181,17 +181,29 @@ class NetworkService {
   }
 
   async getDeposits () {
+    const depositFinality = 10;
     const { contract: ethVault } = await this.rootChain.getEthVault();
     const { contract: erc20Vault } = await this.rootChain.getErc20Vault();
+    const ethBlockNumber = await this.web3.eth.getBlockNumber();
 
-    const ethDeposits = await ethVault.getPastEvents('DepositCreated', {
+    const _ethDeposits = await ethVault.getPastEvents('DepositCreated', {
       filter: { depositor: this.account },
       fromBlock: 0
     });
-    const erc20Deposits = await erc20Vault.getPastEvents('DepositCreated', {
+    const ethDeposits = _ethDeposits.map(i => {
+      const status = ethBlockNumber - i.blockNumber >= depositFinality ? 'Confirmed' : 'Pending';
+      return { ...i, status }
+    });
+
+    const _erc20Deposits = await erc20Vault.getPastEvents('DepositCreated', {
       filter: { depositor: this.account },
       fromBlock: 0
     });
+    const erc20Deposits = _erc20Deposits.map(i => {
+      const status = ethBlockNumber - i.blockNumber >= depositFinality ? 'Confirmed' : 'Pending';
+      return { ...i, status }
+    });
+
     return { eth: ethDeposits, erc20: erc20Deposits };
   }
 

@@ -104,7 +104,7 @@ function TransferModal ({ open, toggle, balances = [] }) {
         label='Metadata'
         placeholder='-'
         value={metadata}
-        onChange={i => setMetadata(i.target.value)}
+        onChange={i => setMetadata(i.target.value || '')}
       />
 
       <div className={styles.buttons}>
@@ -121,8 +121,8 @@ function TransferModal ({ open, toggle, balances = [] }) {
           style={{ flex: 0 }}
           loading={loading}
           disabled={
-            !value ||
-            !feeValue ||
+            value < 1 ||
+            feeValue < 1 ||
             !currency ||
             !feeToken ||
             !recipient ||

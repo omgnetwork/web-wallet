@@ -32,8 +32,15 @@ function DepositModal ({ open, toggle }) {
     }
   }
 
+  function handleClose () {
+    setActiveTab('ETH')
+    setValue('')
+    setCurrency(networkService.OmgUtil.transaction.ETH_CURRENCY)
+    toggle()
+  }
+
   return (
-    <Modal open={open} onClose={toggle}>
+    <Modal open={open} onClose={handleClose}>
       <h2>Deposit</h2>
 
       <Tabs
@@ -72,7 +79,7 @@ function DepositModal ({ open, toggle }) {
 
       <div className={styles.buttons}>
         <Button
-          onClick={toggle}
+          onClick={handleClose}
           type='outline'
           style={{ flex: 0 }}
         >
@@ -83,7 +90,10 @@ function DepositModal ({ open, toggle }) {
           type='primary'
           style={{ flex: 0 }}
           loading={loading}
-          disabled={!value || !currency}
+          disabled={
+            value < 1 ||
+            !currency
+          }
         >
           DEPOSIT
         </Button>
