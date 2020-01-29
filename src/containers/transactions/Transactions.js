@@ -69,7 +69,7 @@ function Transactions () {
       />
 
       <div className={styles.header}>
-        <h2 className={styles.history}>History</h2>
+        <h2>History</h2>
         <Input
           icon
           placeholder='Search history'
