@@ -226,6 +226,8 @@ class NetworkService {
   }
 
   async getExits () {
+    const finality = 12;
+    const ethBlockNumber = await this.web3.eth.getBlockNumber();
     const { contract } = await this.rootChain.getPaymentExitGame();
     let allExits = await contract.getPastEvents('ExitStarted', {
       filter: { owner: this.account },
@@ -243,10 +245,16 @@ class NetworkService {
       }
     }
 
-    const pendingExits = allExits.filter(i => {
-      const foundMatch = exitedExits.find(x => x.blockNumber === i.blockNumber);
-      return !foundMatch;
-    });
+    const pendingExits = allExits
+      .filter(i => {
+        const foundMatch = exitedExits.find(x => x.blockNumber === i.blockNumber);
+        return !foundMatch;
+      })
+      .map(i => {
+        const status = ethBlockNumber - i.blockNumber >= finality ? 'Confirmed' : 'Pending';
+        const pendingPercentage = (ethBlockNumber - i.blockNumber) / finality;
+        return { ...i, status, pendingPercentage: (pendingPercentage * 100).toFixed() }
+      });
 
     return {
       pending: pendingExits,

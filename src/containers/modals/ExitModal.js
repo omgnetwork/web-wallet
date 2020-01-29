@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
 import { Check } from '@material-ui/icons';
 
+import { selectPendingExits } from 'selectors/exitSelector';
 import { selectLoading } from 'selectors/loadingSelector';
 import { exitUtxo } from 'actions/networkAction';
 
@@ -17,6 +18,8 @@ import * as styles from './ExitModal.module.scss';
 function ExitModal ({ open, toggle }) {
   const dispatch = useDispatch();
   const loading = useSelector(selectLoading(['EXIT/CREATE']));
+  const pendingExits = useSelector(selectPendingExits);
+  const isPending = pendingExits.some(i => i.status === 'Pending');
 
   const [ selectedUTXO, setSelectedUTXO ] = useState();
   const [ searchUTXO, setSearchUTXO ] = useState('');
@@ -106,7 +109,7 @@ function ExitModal ({ open, toggle }) {
           onClick={submit}
           type='primary'
           style={{ flex: 0 }}
-          loading={loading}
+          loading={loading || isPending}
           disabled={!selectedUTXO}
         >
           SUBMIT EXIT

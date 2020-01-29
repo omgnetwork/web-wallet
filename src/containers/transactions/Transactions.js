@@ -26,8 +26,8 @@ function Transactions () {
   const allDeposits = [...ethDeposits, ...erc20Deposits];
   const deposits = orderBy(allDeposits, i => i.blockNumber, 'desc');
 
-  const pendingExits = useSelector(selectPendingExits);
-  const exitedExits = useSelector(selectExitedExits);
+  const pendingExits = orderBy(useSelector(selectPendingExits), i => i.blockNumber, 'desc');
+  const exitedExits = orderBy(useSelector(selectExitedExits), i => i.blockNumber, 'desc');
 
   const [ searchHistory, setSearchHistory ] = useState('');
   const [ processExitModal, setProcessExitModal ] = useState(false);
@@ -62,8 +62,7 @@ function Transactions () {
   return (
     <div className={styles.container}>
       <ProcessExitsModal
-        open={!!processExitModal}
-        utxo={processExitModal}
+        open={processExitModal}
         toggle={() => setProcessExitModal(false)}
       />
 
@@ -106,6 +105,14 @@ function Transactions () {
 
           <div className={styles.subTitle}>
             <span>Exits</span>
+            {!!_pendingExits.length && (
+              <div
+                onClick={() => setProcessExitModal(true)}
+                className={styles.processExitButton}
+              >
+                Process Exits
+              </div>
+            )}
           </div>
           <div className={styles.transactionSection}>
             <div className={styles.transactions}>
@@ -117,10 +124,8 @@ function Transactions () {
                   <Transaction
                     key={index}
                     link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
-                    button={{
-                      onClick: () => setProcessExitModal(i),
-                      text: 'Process Exit'
-                    }}
+                    status={i.status === 'Pending' ? 'Pending' : 'Exit Started'}
+                    statusPercentage={i.pendingPercentage}
                     title={truncate(i.transactionHash, 10, 4, '...')}
                     subTitle={`Block ${i.blockNumber}`}
                   />

@@ -73,8 +73,22 @@
 }
 
 .subTitle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
   margin-bottom: 20px;
   span {
     margin-right: 20px;
   }
+}
+
+.processExitButton {
+  color: $background;
+  background-color: $blue;
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-size: 12px;
+  cursor: pointer;
 }

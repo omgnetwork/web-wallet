@@ -13,7 +13,7 @@ import Input from 'components/input/Input';
 
 import * as styles from './ProcessExitsModal.module.scss';
 
-function ProcessExitsModal ({ open, toggle, utxo }) {
+function ProcessExitsModal ({ open, toggle }) {
   const dispatch = useDispatch();
   const byzantineChain = useSelector(selectByzantine);
 
