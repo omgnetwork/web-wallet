@@ -154,7 +154,7 @@ function Transactions () {
                   key={index}
                   link={`${config.blockExplorerUrl}/transaction/${i.txhash}`}
                   title={`${truncate(i.txhash, 10, 4, '...')}`}
-                  midTitle={`metadata: ${i.metadata}`}
+                  midTitle={i.metadata ? i.metadata : undefined}
                   subTitle={moment.unix(i.block.timestamp).format('lll')}
                   status={calculateOutputAmount(i)}
                   subStatus={`Block ${i.block.blknum}`}

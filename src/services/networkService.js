@@ -1,4 +1,5 @@
 import Web3 from 'web3';
+import { orderBy } from 'lodash';
 import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
 import erc20abi from 'human-standard-token-abi';
 import truncate from 'truncate-middle';
@@ -99,8 +100,8 @@ class NetworkService {
     }
 
     return {
-      rootchain: [rootchainEthBalance, ...rootErc20Balances.filter(i => !!i)],
-      childchain: childchainBalances
+      rootchain: orderBy([rootchainEthBalance, ...rootErc20Balances.filter(i => !!i)], i => i.token),
+      childchain: orderBy(childchainBalances, i => i.token)
     }
   }
 
@@ -186,6 +187,7 @@ class NetworkService {
         blknum: submittedTransaction.blknum,
         timestamp: Math.round((new Date()).getTime() / 1000)
       },
+      metadata,
       status: 'Pending'
     };
   }

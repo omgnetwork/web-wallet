@@ -101,7 +101,7 @@ function TransferModal ({ open, toggle, balances = [] }) {
       />
 
       <Input
-        label='Metadata'
+        label='Message'
         placeholder='-'
         value={metadata}
         onChange={i => setMetadata(i.target.value || '')}
@@ -126,6 +126,7 @@ function TransferModal ({ open, toggle, balances = [] }) {
             !currency ||
             !feeToken ||
             !recipient ||
+            !metadata ||
             !networkService.web3.utils.isAddress(recipient)
           }
         >
