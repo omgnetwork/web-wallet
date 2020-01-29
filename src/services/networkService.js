@@ -40,7 +40,14 @@ class NetworkService {
   }
 
   async getAllTransactions () {
-    return this.childChain.getTransactions({ address: this.account });
+    const rawTransactions = await this.childChain.getTransactions({ address: this.account });
+    const transactions = rawTransactions.map(i => {
+      return {
+        ...i,
+        metadata: OmgUtil.transaction.decodeMetadata(i.metadata)
+      }
+    })
+    return transactions;
   }
 
   async getBalances () {
@@ -172,8 +179,15 @@ class NetworkService {
     );
     const signatures = new Array(createdTx.transactions[0].inputs.length).fill(signature)
     const signedTxn = this.childChain.buildSignedTransaction(typedData, signatures)
-    const submitted = await this.childChain.submitTransaction(signedTxn)
-    return submitted;
+    const submittedTransaction = await this.childChain.submitTransaction(signedTxn)
+    return {
+      ...submittedTransaction,
+      block: {
+        blknum: submittedTransaction.blknum,
+        timestamp: Math.round((new Date()).getTime() / 1000)
+      },
+      status: 'Pending'
+    };
   }
 
   async getUtxos () {

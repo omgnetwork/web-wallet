@@ -32,7 +32,11 @@ function Transactions () {
   const [ searchHistory, setSearchHistory ] = useState('');
   const [ processExitModal, setProcessExitModal ] = useState(false);
 
-  function calculateOutput (utxo) {
+  function calculateOutputAmount (utxo) {
+    if (utxo.status === 'Pending') {
+      return 'Pending'
+    }
+
     const total = utxo.outputs.reduce((prev, curr) => {
       if (curr.owner !== networkService.account) {
         return prev.add(new BN(curr.amount))
@@ -149,9 +153,10 @@ function Transactions () {
                 <Transaction
                   key={index}
                   link={`${config.blockExplorerUrl}/transaction/${i.txhash}`}
-                  title={truncate(i.txhash, 10, 4, '...')}
+                  title={`${truncate(i.txhash, 10, 4, '...')}`}
+                  midTitle={`metadata: ${i.metadata}`}
                   subTitle={moment.unix(i.block.timestamp).format('lll')}
-                  status={calculateOutput(i)}
+                  status={calculateOutputAmount(i)}
                   subStatus={`Block ${i.block.blknum}`}
                 />
               );

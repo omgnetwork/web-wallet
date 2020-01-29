@@ -2,8 +2,15 @@ import React from 'react';
 
 import * as styles from './Transaction.module.scss';
 
-function Transaction ({ link, status, subStatus, button, title, subTitle }) {
-
+function Transaction ({
+  link,
+  status,
+  subStatus,
+  button,
+  title,
+  midTitle,
+  subTitle
+}) {
   function renderValue () {
     if (button) {
       return (
@@ -41,6 +48,9 @@ function Transaction ({ link, status, subStatus, button, title, subTitle }) {
         className={styles.left}
       >
         <div>{title}</div>
+        {midTitle && (
+          <div className={styles.midTitle}>{midTitle}</div>
+        )}
         <div>{subTitle}</div>
       </a>
       <div className={styles.right}>
