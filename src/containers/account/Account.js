@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
 import { Send } from '@material-ui/icons';
 
+import { selectLastSync } from 'selectors/statusSelector';
 import { selectChildchainBalance, selectRootchainBalance } from 'selectors/balanceSelector';
 import { selectPendingExits } from 'selectors/exitSelector';
 
@@ -18,10 +19,13 @@ import networkService from 'services/networkService';
 import * as styles from './Account.module.scss';
 
 function Account () {
+  const lastSync = useSelector(selectLastSync);
   const childBalance = useSelector(selectChildchainBalance);
   const rootBalance = useSelector(selectRootchainBalance);
   const pendingExits = useSelector(selectPendingExits);
+
   const isPending = pendingExits.some(i => i.status === 'Pending');
+  const isStalled = lastSync > 30;
 
   const [ depositModal, setDepositModal ] = useState(false);
   const [ transferModal, setTransferModal ] = useState(false);
@@ -61,7 +65,7 @@ function Account () {
                 onClick={() => setTransferModal(true)}
                 className={[
                   styles.transfer,
-                  !childBalance.length || isPending 
+                  !childBalance.length || isPending || isStalled
                     ? styles.disabled
                     : ''
                 ].join(' ')}

@@ -37,7 +37,13 @@ class NetworkService {
   }
 
   async checkStatus () {
-    return this.childChain.status();
+    const { byzantine_events, last_seen_eth_block_timestamp } = await this.childChain.status();
+    const currentUnix = Math.round((new Date()).getTime() / 1000);
+    return {
+      connection: !!byzantine_events,
+      byzantine: !!byzantine_events.length,
+      secondsSinceLastSync: currentUnix - last_seen_eth_block_timestamp
+    }
   }
 
   async getAllTransactions () {
