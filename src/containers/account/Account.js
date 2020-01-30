@@ -25,7 +25,7 @@ function Account () {
   const pendingExits = useSelector(selectPendingExits);
 
   const isPending = pendingExits.some(i => i.status === 'Pending');
-  const isStalled = lastSync > 30;
+  const isStalled = lastSync > 20;
 
   const [ depositModal, setDepositModal ] = useState(false);
   const [ transferModal, setTransferModal ] = useState(false);
@@ -89,6 +89,7 @@ function Account () {
               <Button
                 onClick={() => setDepositModal(true)}
                 type='primary'
+                disabled={isStalled}
               >
                 DEPOSIT
               </Button>
@@ -97,7 +98,8 @@ function Account () {
                 type='secondary'
                 disabled={
                   !childBalance.length ||
-                  isPending
+                  isPending ||
+                  isStalled
                 }
               >
                 EXIT

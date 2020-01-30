@@ -42,7 +42,8 @@ class NetworkService {
     return {
       connection: !!byzantine_events,
       byzantine: !!byzantine_events.length,
-      secondsSinceLastSync: currentUnix - last_seen_eth_block_timestamp
+      secondsSinceLastSync: currentUnix - last_seen_eth_block_timestamp,
+      lastSeenBlock: last_seen_eth_block_timestamp
     }
   }
 

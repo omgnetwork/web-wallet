@@ -29,7 +29,7 @@
 
 .disabled {
   pointer-events: none;
-  background-color: $primary;
+  filter: brightness(30%);
 }
 
 .loading {

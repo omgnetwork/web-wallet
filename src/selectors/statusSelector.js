@@ -9,3 +9,7 @@ export function selectByzantine (state) {
 export function selectLastSync (state) {
   return state.status.secondsSinceLastSync;
 }
+
+export function selectLastSeenBlock (state) {
+  return state.status.lastSeenBlock;
+}

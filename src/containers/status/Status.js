@@ -1,11 +1,12 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
+import moment from 'moment';
 import { Tooltip } from '@material-ui/core';
 import { Dvr, GitHub } from '@material-ui/icons';
 import omg_network from './omg_network.svg';
 
-import { selectConnection, selectByzantine, selectLastSync } from 'selectors/statusSelector';
+import { selectConnection, selectByzantine, selectLastSync, selectLastSeenBlock } from 'selectors/statusSelector';
 
 import Info from 'components/info/Info';
 import Copy from 'components/copy/Copy';
@@ -17,6 +18,7 @@ function Status () {
   const watcherConnection = useSelector(selectConnection);
   const byzantineChain = useSelector(selectByzantine);
   const lastSync = useSelector(selectLastSync);
+  const lastSeenBlock = useSelector(selectLastSeenBlock);
 
   const renderChainHealth = (
     <Tooltip
@@ -41,14 +43,14 @@ function Status () {
 
   function renderWatcherStatus () {
     let message = 'Connected';
-    if (lastSync > 30) {
+    if (lastSync > 20) {
       message = 'Stalled'
     }
     return (
       <Tooltip
         title={
           message === 'Stalled'
-            ? 'A stalled status indicates that the Watcher is out of sync with the rootchain. Transactions will not be reflected and users should proceed cautiously.'
+            ? `A stalled status indicates that the Watcher is out of sync with the rootchain. Transactions will not be reflected so users will not be allowed to make new transactions. Last synced rootchain block was ${moment.unix(lastSeenBlock).fromNow()}.`
             : ''
         }
         arrow
