@@ -42,7 +42,10 @@ function Status () {
   );
 
   function renderWatcherStatus () {
-    let message = 'Connected';
+    let message = '';
+    if (lastSync <= 20) {
+      message = 'Connected'
+    }
     if (lastSync > 20) {
       message = 'Stalled'
     }
@@ -60,7 +63,8 @@ function Status () {
           <div
             className={[
               styles.statusCircle,
-              message === 'Connected' ? styles.healthy : ''
+              message === 'Connected' ? styles.healthy : '',
+              message === 'Stalled' ? styles.unhealthy : ''
             ].join(' ')}
           />
         </div>

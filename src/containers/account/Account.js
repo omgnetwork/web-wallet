@@ -25,7 +25,7 @@ function Account () {
   const pendingExits = useSelector(selectPendingExits);
 
   const isPending = pendingExits.some(i => i.status === 'Pending');
-  const isStalled = lastSync > 20;
+  const isStalled = lastSync ? lastSync > 20 : true;
 
   const [ depositModal, setDepositModal ] = useState(false);
   const [ transferModal, setTransferModal ] = useState(false);
