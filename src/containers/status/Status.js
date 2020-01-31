@@ -43,10 +43,10 @@ function Status () {
 
   function renderWatcherStatus () {
     let message = '';
-    if (lastSync <= 20) {
+    if (lastSync <= config.checkSyncInterval) {
       message = 'Connected'
     }
-    if (lastSync > 20) {
+    if (lastSync > config.checkSyncInterval) {
       message = 'Stalled'
     }
     return (

@@ -15,10 +15,11 @@ Make sure you have access to a Watcher endpoint, and the address of the deployed
 
 2. Create a `.env` file in the root and add your configuration.
 ```env
-REACT_APP_WATCHER_URL=<watcher_url>
-REACT_APP_PLASMA_FRAMEWORK=<plasma_framework_address>
-REACT_APP_BLOCKEXPLORER_URL=<block_explorer_url>
-REACT_APP_ETHERSCAN_URL=<etherscan_url>
+REACT_APP_WATCHER_URL=        the watcher url
+REACT_APP_PLASMA_FRAMEWORK=   the plasma framework contract address
+REACT_APP_BLOCKEXPLORER_URL=  the block explorer url 
+REACT_APP_ETHERSCAN_URL=      the etherscan url 
+REACT_APP_SYNC_INTERVAL=      max seconds watcher has to sync to ethereum before considered stalled
 ```
 
 3. Start the app by running `yarn start` from the root directory.

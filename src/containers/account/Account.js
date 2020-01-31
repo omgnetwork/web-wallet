@@ -13,6 +13,7 @@ import ExitModal from 'containers/modals/ExitModal';
 
 import Copy from 'components/copy/Copy';
 import Button from 'components/button/Button';
+import config from 'util/config';
 
 import networkService from 'services/networkService';
 
@@ -25,7 +26,7 @@ function Account () {
   const pendingExits = useSelector(selectPendingExits);
 
   const isPending = pendingExits.some(i => i.status === 'Pending');
-  const isStalled = lastSync ? lastSync > 20 : true;
+  const isStalled = lastSync ? lastSync > config.checkSyncInterval : true;
 
   const [ depositModal, setDepositModal ] = useState(false);
   const [ transferModal, setTransferModal ] = useState(false);
