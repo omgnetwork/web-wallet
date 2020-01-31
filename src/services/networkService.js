@@ -133,6 +133,48 @@ class NetworkService {
     })
   }
 
+  async mergeUtxos (utxos) {
+    const _metadata = 'Merge UTXOs'
+    const payments = [{
+      owner: this.account,
+      currency: utxos[0].currency,
+      amount: utxos.reduce((prev, curr) => {
+        return prev.add(new BN(curr.amount))
+      }, new BN(0))
+    }];
+    const fee = {
+      currency: OmgUtil.transaction.ETH_CURRENCY,
+      amount: 0
+    };
+    const txBody = OmgUtil.transaction.createTransactionBody({
+      fromAddress: this.account,
+      fromUtxos: utxos,
+      payments,
+      fee,
+      metadata: OmgUtil.transaction.encodeMetadata(_metadata)
+    });
+    const typedData = OmgUtil.transaction.getTypedData(txBody, config.plasmaFrameworkAddress);
+    const signature = await this.web3.currentProvider.send(
+      'eth_signTypedData_v3',
+      [
+        this.web3.utils.toChecksumAddress(this.account),
+        JSONBigNumber.stringify(typedData)
+      ]
+    );
+    const signatures = new Array(txBody.inputs.length).fill(signature);
+    const signedTxn = this.childChain.buildSignedTransaction(typedData, signatures);
+    const submittedTransaction = await this.childChain.submitTransaction(signedTxn);
+    return {
+      ...submittedTransaction,
+      block: {
+        blknum: submittedTransaction.blknum,
+        timestamp: Math.round((new Date()).getTime() / 1000)
+      },
+      metadata: _metadata,
+      status: 'Pending'
+    };
+  }
+
   async transfer ({
     recipient,
     value,
@@ -143,7 +185,6 @@ class NetworkService {
   }) {
     const _utxos = await this.childChain.getUtxos(this.account);
     const utxos = orderBy(_utxos, i => i.amount, 'desc');
-
     const _metadata = metadata
       ? OmgUtil.transaction.encodeMetadata(metadata)
       : OmgUtil.transaction.NULL_METADATA;

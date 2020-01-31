@@ -70,3 +70,10 @@ export function transfer (data) {
     () => networkService.transfer(data)
   );
 }
+
+export function mergeUtxos (utxos) {
+  return createAction(
+    'TRANSFER/CREATE',
+    () => networkService.mergeUtxos(utxos)
+  );
+}

@@ -49,6 +49,11 @@
       flex-direction: row;
       justify-content: space-between;
       margin-bottom: 20px;
+      .actions {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
       .title {
         display: flex;
         flex-direction: column;
@@ -70,6 +75,9 @@
           margin-right: 10px;
           width: 15px;
           height: 15px;
+        }
+        &:first-child {
+          margin-right: 10px;
         }
       }
       .disabled {

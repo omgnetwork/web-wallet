@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
-import { Send } from '@material-ui/icons';
+import { Send, MergeType } from '@material-ui/icons';
 
 import { selectLastSync } from 'selectors/statusSelector';
 import { selectChildchainBalance, selectRootchainBalance } from 'selectors/balanceSelector';
@@ -10,6 +10,7 @@ import { selectPendingExits } from 'selectors/exitSelector';
 import DepositModal from 'containers/modals/DepositModal';
 import TransferModal from 'containers/modals/TransferModal';
 import ExitModal from 'containers/modals/ExitModal';
+import MergeModal from 'containers/modals/MergeModal';
 
 import Copy from 'components/copy/Copy';
 import Button from 'components/button/Button';
@@ -31,6 +32,7 @@ function Account () {
   const [ depositModal, setDepositModal ] = useState(false);
   const [ transferModal, setTransferModal ] = useState(false);
   const [ exitModal, setExitModal ] = useState(false);
+  const [ mergeModal, setMergeModal ] = useState(false);
 
   return (
     <>
@@ -47,6 +49,10 @@ function Account () {
         open={exitModal}
         toggle={() => setExitModal(false)}
       />
+      <MergeModal
+        open={mergeModal}
+        toggle={() => setMergeModal(false)}
+      />
 
       <div className={styles.Account}>
         <h2>Account</h2>
@@ -62,17 +68,31 @@ function Account () {
                 <span>Balance on Childchain</span>
                 <span>OMG Network</span>
               </div>
-              <div
-                onClick={() => setTransferModal(true)}
-                className={[
-                  styles.transfer,
-                  !childBalance.length || isPending || isStalled
-                    ? styles.disabled
-                    : ''
-                ].join(' ')}
-              >
-                <Send />
-                <span>Transfer</span>
+              <div className={styles.actions}>
+                <div
+                  onClick={() => setMergeModal(true)}
+                  className={[
+                    styles.transfer,
+                    !childBalance.length || isPending || isStalled
+                      ? styles.disabled
+                      : ''
+                  ].join(' ')}
+                >
+                  <MergeType />
+                  <span>Merge</span>
+                </div>
+                <div
+                  onClick={() => setTransferModal(true)}
+                  className={[
+                    styles.transfer,
+                    !childBalance.length || isPending || isStalled
+                      ? styles.disabled
+                      : ''
+                  ].join(' ')}
+                >
+                  <Send />
+                  <span>Transfer</span>
+                </div>
               </div>
             </div>
             {childBalance.map((i, index) => {
