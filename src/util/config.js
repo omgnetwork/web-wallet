@@ -3,5 +3,5 @@ export default {
   plasmaFrameworkAddress: process.env.REACT_APP_PLASMA_FRAMEWORK || '0xc673e4ffcb8464faff908a6804fe0e635af0ea2f',
   blockExplorerUrl: process.env.REACT_APP_BLOCKEXPLORER_URL || '',
   etherscanUrl: process.env.REACT_APP_ETHERSCAN_URL || 'https://ropsten.etherscan.io',
-  checkSyncInterval: process.env.REACT_APP_SYNC_INTERVAL || 30
+  checkSyncInterval: process.env.REACT_APP_SYNC_INTERVAL || 60
 }
