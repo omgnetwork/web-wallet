@@ -108,7 +108,7 @@ function MergeModal ({ open, toggle }) {
         })}
       </div>
 
-      <div className={styles.disclaimer}>You can only select a maximum of 4 UTXOs to merge at once.</div>
+      <div className={styles.disclaimer}>You can select a maximum of 4 UTXOs to merge at once.</div>
 
       <div className={styles.buttons}>
         <Button
