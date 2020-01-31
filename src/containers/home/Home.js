@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
+import config from 'util/config';
 import useInterval from 'util/useInterval';
 import {
   checkWatcherStatus,
@@ -16,7 +17,7 @@ import Transactions from 'containers/transactions/Transactions';
 
 import * as styles from './Home.module.scss';
 
-const POLL_INTERVAL = 5000;
+const POLL_INTERVAL = config.pollInterval * 1000;
 
 function Home () {
   const dispatch = useDispatch();

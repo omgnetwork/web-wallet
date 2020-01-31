@@ -20,6 +20,7 @@ REACT_APP_PLASMA_FRAMEWORK=   the plasma framework contract address
 REACT_APP_BLOCKEXPLORER_URL=  the block explorer url 
 REACT_APP_ETHERSCAN_URL=      the etherscan url 
 REACT_APP_SYNC_INTERVAL=      max seconds watcher has to sync to ethereum before considered stalled
+REACT_APP_POLL_INTERVAL=      number of seconds to poll account data
 ```
 
 3. Start the app by running `yarn start` from the root directory.
