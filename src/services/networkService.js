@@ -113,8 +113,7 @@ class NetworkService {
   }
 
   async getExitQueue (currency) {
-    const _queue = await this.rootChain.getExitQueue(currency);
-    const queue = _queue.length;
+    const queue = await this.rootChain.getExitQueue(currency);
     return { currency, queue }
   }
 

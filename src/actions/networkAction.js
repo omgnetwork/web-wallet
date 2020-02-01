@@ -59,7 +59,7 @@ export function processExits (maxExits, currency) {
 
 export function getExitQueue (currency) {
   return createAction(
-    'QUEUE/LENGTH',
+    'QUEUE/GET',
     () => networkService.getExitQueue(currency)
   );
 }

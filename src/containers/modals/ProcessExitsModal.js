@@ -42,7 +42,7 @@ function ProcessExitsModal ({ open, toggle }) {
 
   function handleClose () {
     setCurrency(networkService.OmgUtil.transaction.ETH_CURRENCY);
-    setMaxExits(queue);
+    setMaxExits(queue ? queue.length : 0);
     toggle();
   }
 
@@ -67,7 +67,7 @@ function ProcessExitsModal ({ open, toggle }) {
       />
 
       <div className={styles.disclaimer}>
-        {`Current exit queue : ${queue ? queue : 0}`}
+        {`Current exit queue : ${queue ? queue.length : 0}`}
       </div>
 
       <div className={styles.buttons}>
@@ -87,7 +87,7 @@ function ProcessExitsModal ({ open, toggle }) {
             !maxExits > 0 ||
             !currency ||
             !networkService.web3.utils.isAddress(currency) ||
-            queue < 1 ||
+            (queue && queue.length < 1) ||
             byzantineChain
           }
         >
