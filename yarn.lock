@@ -1232,39 +1232,41 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@omisego/omg-js-childchain@^3.0.0-alpha.14":
-  version "3.0.0-alpha.14"
-  resolved "https://registry.yarnpkg.com/@omisego/omg-js-childchain/-/omg-js-childchain-3.0.0-alpha.14.tgz#5284df53d0d62203ff6ca96321b309909e9c6e33"
-  integrity sha512-cAUVvWV5FzpU4KcyVUAOzepebisYXVXmz4LaT+8gGl+DEs2GjHj638j4XinCpZhqKb3GC0jZ2LxwamwBThTnYw==
+"@omisego/omg-js-childchain@^3.0.0-alpha.16":
+  version "3.0.0-alpha.16"
+  resolved "https://registry.yarnpkg.com/@omisego/omg-js-childchain/-/omg-js-childchain-3.0.0-alpha.16.tgz#a7722ac7de239231e8b755760c85de4071ed8217"
+  integrity sha512-G5aK+eq3ZHHodArbcZhJ5LTMmC66AQDb+keE7OOWGiqRdXuuJrCR6+wUyXHYkpoh3zB9a52v00L5TRgYg7F1dw==
   dependencies:
     "@hapi/joi" "^16.1.8"
-    "@omisego/omg-js-util" "^3.0.0-alpha.14"
+    "@omisego/omg-js-util" "^3.0.0-alpha.16"
     bn.js "^5.0.0"
     debug "^4.0.1"
     json-bigint "git+https://git@github.com/omisego/json-bigint.git"
     request "^2.88.0"
     request-promise-native "^1.0.7"
     rlp "^2.1.0"
+    web3-utils "^1.2.5"
 
-"@omisego/omg-js-rootchain@^3.0.0-alpha.14":
-  version "3.0.0-alpha.14"
-  resolved "https://registry.yarnpkg.com/@omisego/omg-js-rootchain/-/omg-js-rootchain-3.0.0-alpha.14.tgz#2834811349aa3453c5544cd26d292a863253957d"
-  integrity sha512-0jpg7mCkivyLXyA0z/g0YgeZIz7DgYu1b5h95JkkTwGxovToyPD41vZ+OoaB4eVfoOhho0KFPUrG91z8zfLmjw==
+"@omisego/omg-js-rootchain@^3.0.0-alpha.16":
+  version "3.0.0-alpha.16"
+  resolved "https://registry.yarnpkg.com/@omisego/omg-js-rootchain/-/omg-js-rootchain-3.0.0-alpha.16.tgz#2a96cafada7293dace2d5df087236c0e406df1c7"
+  integrity sha512-2U8r58u3xoA4KK7E+G3F8MVEwDEBDfKBxri1tk9KhsMpMuPREe4Bfk4ayQzBsC1Kpecp1ddyCtwBLySAC1zTOg==
   dependencies:
     "@hapi/joi" "^16.1.8"
-    "@omisego/omg-js-util" "^3.0.0-alpha.14"
+    "@omisego/omg-js-util" "^3.0.0-alpha.16"
     bn.js "^5.0.0"
     debug "^4.0.1"
     human-standard-token-abi "^2.0.0"
     web3-utils "^1.2.3"
 
-"@omisego/omg-js-util@^3.0.0-alpha.14":
-  version "3.0.0-alpha.14"
-  resolved "https://registry.yarnpkg.com/@omisego/omg-js-util/-/omg-js-util-3.0.0-alpha.14.tgz#7a64af2f194a65191e80c2ad0c744bc06f276f18"
-  integrity sha512-1r1UUkvOnq9eDz0n8OfBEaw5bKC6GRiqrdIxKJbh6mTTwyRcWBmmm+VW4iXZDZzyhVZjivhyCT85b0iAUtZEmw==
+"@omisego/omg-js-util@^3.0.0-alpha.16":
+  version "3.0.0-alpha.16"
+  resolved "https://registry.yarnpkg.com/@omisego/omg-js-util/-/omg-js-util-3.0.0-alpha.16.tgz#4275c90db721e70faac808a4ed58e611d7deeec1"
+  integrity sha512-1YpUM70t0S1bPqP07a7fWsiz8eFLD812NUipuv7+Pt5tEkrU9eqcZkCjGwrroCpdVDzJKLOz4ZByqSWNsCSLWA==
   dependencies:
     eth-sig-util "^2.1.1"
     ethereumjs-util "^6.0.0"
+    human-standard-token-abi "^2.0.0"
     js-sha3 "^0.8.0"
     lodash "^4.17.15"
     number-to-bn "^1.7.0"
@@ -1272,14 +1274,14 @@
     rlp "^2.2.2"
     web3-utils "^1.2.1"
 
-"@omisego/omg-js@^3.0.0-alpha.14":
-  version "3.0.0-alpha.14"
-  resolved "https://registry.yarnpkg.com/@omisego/omg-js/-/omg-js-3.0.0-alpha.14.tgz#4b4742bc2dc4227666a4dc566579084b791f34df"
-  integrity sha512-ZyfGRVpdSfDIoA2yj1zGiHwhqqcgHqdmuHzWlk1N/7G+5SVlg8wQ8ha5VjBTFPOkXYB4XVd66AUvWp/3hqsN+g==
+"@omisego/omg-js@^3.0.0-alpha.16":
+  version "3.0.0-alpha.16"
+  resolved "https://registry.yarnpkg.com/@omisego/omg-js/-/omg-js-3.0.0-alpha.16.tgz#1c07a978c19ac7d55f881568af8793384a00a370"
+  integrity sha512-WXJL5+rYv2PRjwYV1q53l2oz8QzjPaa18NS73wcsc/K3DZ0L5hzCmiDECZfujjtFn7BAK8Qw1IWS25WO3D31Wg==
   dependencies:
-    "@omisego/omg-js-childchain" "^3.0.0-alpha.14"
-    "@omisego/omg-js-rootchain" "^3.0.0-alpha.14"
-    "@omisego/omg-js-util" "^3.0.0-alpha.14"
+    "@omisego/omg-js-childchain" "^3.0.0-alpha.16"
+    "@omisego/omg-js-rootchain" "^3.0.0-alpha.16"
+    "@omisego/omg-js-util" "^3.0.0-alpha.16"
 
 "@svgr/babel-plugin-add-jsx-attribute@^4.2.0":
   version "4.2.0"
@@ -11287,6 +11289,20 @@ web3-utils@^1.2.1, web3-utils@^1.2.3:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.2.4.tgz#96832a39a66b05bf8862a5b0bdad2799d709d951"
   integrity sha512-+S86Ip+jqfIPQWvw2N/xBQq5JNqCO0dyvukGdJm8fEWHZbckT4WxSpHbx+9KLEWY4H4x9pUwnoRkK87pYyHfgQ==
+  dependencies:
+    bn.js "4.11.8"
+    eth-lib "0.2.7"
+    ethereum-bloom-filters "^1.0.6"
+    ethjs-unit "0.1.6"
+    number-to-bn "1.7.0"
+    randombytes "^2.1.0"
+    underscore "1.9.1"
+    utf8 "3.0.0"
+
+web3-utils@^1.2.5:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.2.5.tgz#7691f981ce11dc919e123edbde159dce061a5a53"
+  integrity sha512-U0tNfB4Hep5ouzvNZ+Hr8I8kIftiHiDhwg+Eoh2Nvr5lLOPEH14B2exkRSARLXGY9xl2p3ykJWBCKoG1oCadug==
   dependencies:
     bn.js "4.11.8"
     eth-lib "0.2.7"
