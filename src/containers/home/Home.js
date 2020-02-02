@@ -1,14 +1,17 @@
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import config from 'util/config';
 import useInterval from 'util/useInterval';
+import { selectEthDeposits, selectErc20Deposits } from 'selectors/transactionSelector';
+import { selectAllQueues } from 'selectors/queueSelector';
 import {
   checkWatcherStatus,
   fetchBalances,
   fetchTransactions,
   fetchExits,
-  fetchDeposits
+  fetchDeposits,
+  getExitQueue
 } from 'actions/networkAction';
 
 import Status from 'containers/status/Status';
@@ -30,6 +33,23 @@ function Home () {
   useInterval(() => dispatch(fetchDeposits()), POLL_INTERVAL);
   useInterval(() => dispatch(fetchExits()), POLL_INTERVAL);
   useInterval(() => dispatch(fetchTransactions()), POLL_INTERVAL);
+
+  // const queues = useSelector(selectAllQueues);
+  // const ethDeposits = useSelector(selectEthDeposits);
+  // const erc20Deposits = useSelector(selectErc20Deposits);
+  // const allDeposits = [...ethDeposits, ...erc20Deposits];
+
+  // useEffect(() => {
+  //   // fetch queues for all deposits, if not fetched already
+  //   if (allDeposits && allDeposits.length) {
+  //     for (const deposit of allDeposits) {
+  //       const inQueue = queues.some(i => i.currency === deposit.returnValues.token);
+  //       if (!inQueue) {
+  //         dispatch(getExitQueue(deposit.returnValues.token));
+  //       }
+  //     }
+  //   }
+  // }, [allDeposits, dispatch, queues]);
 
   return (
     <div className={styles.Home}>

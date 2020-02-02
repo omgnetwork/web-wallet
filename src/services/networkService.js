@@ -114,7 +114,13 @@ class NetworkService {
 
   async getExitQueue (currency) {
     const queue = await this.rootChain.getExitQueue(currency);
-    return { currency, queue }
+    return {
+      currency,
+      queue: queue.map(i => ({
+        ...i,
+        currency
+      }))
+    }
   }
 
   async deposit (value, currency) {
@@ -286,7 +292,11 @@ class NetworkService {
       .map(i => {
         const status = ethBlockNumber - i.blockNumber >= finality ? 'Confirmed' : 'Pending';
         const pendingPercentage = (ethBlockNumber - i.blockNumber) / finality;
-        return { ...i, status, pendingPercentage: (pendingPercentage * 100).toFixed() }
+        return {
+          ...i,
+          status,
+          pendingPercentage: (pendingPercentage * 100).toFixed()
+        };
       });
 
     return {
