@@ -24,10 +24,10 @@ function ProcessExitsModal ({ open, toggle }) {
   const queue = useSelector(selectQueue(currency));
 
   useEffect(() => {
-    if (currency && networkService.web3.utils.isAddress(currency)) {
+    if (open && currency && networkService.web3.utils.isAddress(currency)) {
       dispatch(getExitQueue(currency));
     }
-  }, [currency, dispatch]);
+  }, [currency, open, dispatch]);
 
   async function submit () {
     if (maxExits > 0) {
