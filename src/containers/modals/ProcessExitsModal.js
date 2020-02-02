@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import numbro from 'numbro';
 
 import { selectByzantine } from 'selectors/statusSelector';
 import { selectLoading } from 'selectors/loadingSelector';
@@ -15,7 +16,7 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
   const dispatch = useDispatch();
   const byzantineChain = useSelector(selectByzantine);
   const loading = useSelector(selectLoading(['QUEUE/PROCESS']));
-  const [ maxExits, setMaxExits ] = useState(exitData.queuePosition);
+  const [ maxExits, setMaxExits ] = useState('');
 
   async function submit () {
     if (maxExits > 0) {
@@ -34,13 +35,17 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
 
   return (
     <Modal open={open} onClose={handleClose}>
-      <h2>Process Exits</h2>
+      <h2>Process Exit</h2>
+
+      <div className={styles.note}>
+        {`This exit is currently ${exitData ? numbro(exitData.queuePosition).format({ output: 'ordinal' }) : ''} in the queue.`}
+      </div>
 
       <Input
         label='Max exits to process'
         placeholder='20'
         type='number'
-        value={maxExits || ''}
+        value={maxExits || exitData.queuePosition || ''}
         onChange={i => setMaxExits(i.target.value)}
       />
 

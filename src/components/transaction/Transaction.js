@@ -15,11 +15,14 @@ function Transaction ({
   function renderValue () {
     if (button) {
       return (
-        <div
-          onClick={button.onClick}
-          className={styles.button}
-        >
-          {button.text}
+        <div className={styles.statusContainer}>
+          <div
+            onClick={button.onClick}
+            className={styles.button}
+          >
+            {button.text}
+          </div>
+          <div>{subStatus}</div>
         </div>
       );
     }

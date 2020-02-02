@@ -85,10 +85,11 @@ function Exits ({ searchHistory }) {
                   }
                   link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
                   status='Pending'
+                  subStatus={`Block ${i.blockNumber}`}
                   statusPercentage={i.pendingPercentage}
-                  subStatus={i.exitableAt ? `Exitable on ${exitableMoment.format('lll')}` : ''}
                   title={truncate(i.transactionHash, 10, 4, '...')}
-                  subTitle={`Block ${i.blockNumber}`}
+                  midTitle={i.exitableAt ? `Exitable on ${exitableMoment.format('lll')}` : ''}
+                  subTitle={i.currency ? truncate(i.currency, 10, 4, '...'): ''}
                 />
               );
             })}
