@@ -19,13 +19,13 @@ import Deposits from './Deposits';
 import * as styles from './Transactions.module.scss';
 
 function Transactions () {
-  const unorderedTransactions = useSelector(selectChildchainTransactions);
-  const transactions = orderBy(unorderedTransactions, i => i.block.timestamp, 'desc');
-
   const [ searchHistory, setSearchHistory ] = useState('');
   const [ activeTab, setActiveTab ] = useState('Transactions');
 
-  function calculateOutputAmount (utxo) {
+  const unorderedTransactions = useSelector(selectChildchainTransactions);
+  const transactions = orderBy(unorderedTransactions, i => i.block.timestamp, 'desc');
+
+  function renderStatus (utxo) {
     if (utxo.status === 'Pending') {
       return 'Pending'
     }
@@ -80,7 +80,7 @@ function Transactions () {
                     title={`${truncate(i.txhash, 10, 4, '...')}`}
                     midTitle={i.metadata ? i.metadata : undefined}
                     subTitle={moment.unix(i.block.timestamp).format('lll')}
-                    status={calculateOutputAmount(i)}
+                    status={renderStatus(i)}
                     subStatus={`Block ${i.block.blknum}`}
                   />
                 );

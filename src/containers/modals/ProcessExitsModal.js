@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { selectByzantine } from 'selectors/statusSelector';
 import { selectLoading } from 'selectors/loadingSelector';
-import { selectQueue } from 'selectors/queueSelector';
-import { processExits, getExitQueue } from 'actions/networkAction';
-import networkService from 'services/networkService';
+import { processExits } from 'actions/networkAction';
 
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
@@ -13,26 +11,16 @@ import Input from 'components/input/Input';
 
 import * as styles from './ProcessExitsModal.module.scss';
 
-function ProcessExitsModal ({ open, toggle }) {
+function ProcessExitsModal ({ exitData, open, toggle }) {
   const dispatch = useDispatch();
   const byzantineChain = useSelector(selectByzantine);
-
-  const [ currency, setCurrency ] = useState(networkService.OmgUtil.transaction.ETH_CURRENCY);  
-  const [ maxExits, setMaxExits ] = useState(20);
-
   const loading = useSelector(selectLoading(['QUEUE/PROCESS']));
-  const queue = useSelector(selectQueue(currency));
-
-  useEffect(() => {
-    if (open && currency && networkService.web3.utils.isAddress(currency)) {
-      dispatch(getExitQueue(currency));
-    }
-  }, [currency, open, dispatch]);
+  const [ maxExits, setMaxExits ] = useState(exitData.queuePosition);
 
   async function submit () {
     if (maxExits > 0) {
       try {
-        await dispatch(processExits(maxExits, currency));
+        await dispatch(processExits(maxExits, exitData.currency));
         handleClose();
       } catch (err) {
         console.warn(err);
@@ -41,8 +29,6 @@ function ProcessExitsModal ({ open, toggle }) {
   }
 
   function handleClose () {
-    setCurrency(networkService.OmgUtil.transaction.ETH_CURRENCY);
-    setMaxExits(queue ? queue.length : 0);
     toggle();
   }
 
@@ -51,23 +37,15 @@ function ProcessExitsModal ({ open, toggle }) {
       <h2>Process Exits</h2>
 
       <Input
-        label='Currency'
-        placeholder='0x'
-        paste
-        value={currency}
-        onChange={i => setCurrency(i.target.value)}
-      />
-
-      <Input
         label='Max exits to process'
         placeholder='20'
         type='number'
-        value={maxExits}
+        value={maxExits || ''}
         onChange={i => setMaxExits(i.target.value)}
       />
 
       <div className={styles.disclaimer}>
-        {`Current exit queue : ${queue ? queue.length : 0}`}
+        {`Current exit queue : ${exitData.queueLength || 0}`}
       </div>
 
       <div className={styles.buttons}>
@@ -84,10 +62,8 @@ function ProcessExitsModal ({ open, toggle }) {
           style={{ flex: 0 }}
           loading={loading}
           disabled={
-            !maxExits > 0 ||
-            !currency ||
-            !networkService.web3.utils.isAddress(currency) ||
-            (queue && queue.length < 1) ||
+            maxExits < 1 ||
+            exitData.queueLength < 1 ||
             byzantineChain
           }
         >
