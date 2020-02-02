@@ -23,31 +23,32 @@ function Exits ({ searchHistory }) {
   const exitedExits = orderBy(useSelector(selectExitedExits), i => i.blockNumber, 'desc');
 
   // add extra data to pending exits using data from the queue
-  const enhancedPendingExits = pendingExits.map(i => {
-    const exitId = networkService.web3.utils.hexToNumberString(i.returnValues.exitId._hex);
-    const queuedExit = queues.find(i => i.exitId === exitId);
+  function enhanceExits (exits) {
+    return exits.map(i => {
+      const exitId = networkService.web3.utils.hexToNumberString(i.returnValues.exitId._hex);
+      const queuedExit = queues.find(i => i.exitId === exitId);
+      let queuePosition;
+      let queueLength;
+      if (queuedExit) {
+        const tokenQueue = rawQueues[queuedExit.currency];
+        queuePosition = tokenQueue.findIndex(x => x.exitId === exitId)
+        queueLength = tokenQueue.length
+      }
+      return {
+        ...i,
+        ...queuedExit
+          ? {
+            exitableAt: queuedExit.exitableAt,
+            currency: queuedExit.currency,
+            queuePosition: queuePosition + 1,
+            queueLength
+          }
+          : {}
+      }
+    });
+  }
 
-    let queuePosition;
-    let queueLength;
-    if (queuedExit) {
-      const tokenQueue = rawQueues[queuedExit.currency];
-      queuePosition = tokenQueue.findIndex(x => x.exitId === exitId)
-      queueLength = tokenQueue.length
-    }
-    return {
-      ...i,
-      ...queuedExit
-        ? {
-          exitableAt: queuedExit.exitableAt,
-          currency: queuedExit.currency,
-          queuePosition: queuePosition + 1,
-          queueLength
-        }
-        : {}
-    }
-  });
-
-  const _pendingExits = enhancedPendingExits.filter(i => {
+  const _pendingExits = enhanceExits(pendingExits).filter(i => {
     return i.transactionHash.includes(searchHistory);
   });
   const _exitedExits = exitedExits.filter(i => {
@@ -85,11 +86,11 @@ function Exits ({ searchHistory }) {
                       : undefined
                   }
                   link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
-                  status={i.status === 'Confirmed' && i.pendingPercentage > 100 ? 'In Challenge Period' : i.status}
+                  status={i.status === 'Confirmed' && i.pendingPercentage >= 100 ? 'In Challenge Period' : i.status}
                   subStatus={`Block ${i.blockNumber}`}
                   statusPercentage={i.pendingPercentage < 100 ? i.pendingPercentage : ''}
                   title={truncate(i.transactionHash, 10, 4, '...')}
-                  midTitle={i.exitableAt ? `Exitable on ${exitableMoment.format('lll')}` : ''}
+                  midTitle={i.exitableAt ? `Exitable ${exitableMoment.format('lll')}` : ''}
                   subTitle={i.currency ? truncate(i.currency, 10, 4, '...'): ''}
                 />
               );
@@ -100,8 +101,8 @@ function Exits ({ searchHistory }) {
                   key={index}
                   link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
                   status='Exited'
+                  subStatus={`Block ${i.blockNumber}`}
                   title={truncate(i.transactionHash, 10, 4, '...')}
-                  subTitle={`Block ${i.blockNumber}`}
                 />
               );
             })}

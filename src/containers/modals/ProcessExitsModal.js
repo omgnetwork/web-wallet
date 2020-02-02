@@ -45,7 +45,7 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
       </div>
 
       <Input
-        label='Set max exits to process'
+        label='Set the max exits to process'
         placeholder='20'
         type='number'
         value={maxExits}
@@ -75,7 +75,7 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
             byzantineChain
           }
         >
-          PROCESS EXITS
+          PROCESS
         </Button>
       </div>
     </Modal>
