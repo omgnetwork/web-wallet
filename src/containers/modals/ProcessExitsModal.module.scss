@@ -22,4 +22,12 @@
 .note {
   margin: 10px 0;
   font-size: 14px;
+  display: flex; 
+  flex-direction: row;
+}
+
+.position {
+  color: $white;
+  font-weight: bold;
+  margin: 0 7px;
 }

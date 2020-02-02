@@ -16,7 +16,7 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
   const dispatch = useDispatch();
   const byzantineChain = useSelector(selectByzantine);
   const loading = useSelector(selectLoading(['QUEUE/PROCESS']));
-  const [ maxExits, setMaxExits ] = useState('');
+  const [ maxExits, setMaxExits ] = useState(exitData.queuePosition || '');
 
   async function submit () {
     if (maxExits > 0) {
@@ -30,6 +30,7 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
   }
 
   function handleClose () {
+    setMaxExits('');
     toggle();
   }
 
@@ -38,19 +39,21 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
       <h2>Process Exit</h2>
 
       <div className={styles.note}>
-        {`This exit is currently ${exitData ? numbro(exitData.queuePosition).format({ output: 'ordinal' }) : ''} in the queue.`}
+        <span>This exit is currently</span>
+        <span className={styles.position}>{exitData ? numbro(exitData.queuePosition).format({ output: 'ordinal' }) : ''}</span>
+        <span>in the queue for this token.</span>
       </div>
 
       <Input
-        label='Max exits to process'
+        label='Set max exits to process'
         placeholder='20'
         type='number'
-        value={maxExits || exitData.queuePosition || ''}
+        value={maxExits}
         onChange={i => setMaxExits(i.target.value)}
       />
 
       <div className={styles.disclaimer}>
-        {`Current exit queue : ${exitData.queueLength || 0}`}
+        {`Current exit queue length: ${exitData.queueLength || 0}`}
       </div>
 
       <div className={styles.buttons}>

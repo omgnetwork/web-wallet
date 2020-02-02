@@ -40,7 +40,7 @@ function Exits ({ searchHistory }) {
         ? {
           exitableAt: queuedExit.exitableAt,
           currency: queuedExit.currency,
-          queuePosition,
+          queuePosition: queuePosition + 1,
           queueLength
         }
         : {}
@@ -72,6 +72,7 @@ function Exits ({ searchHistory }) {
               const exitableMoment = moment.unix(i.exitableAt);
               const isExitable = moment().isAfter(exitableMoment);
 
+              // TODO: update issue, when pending -> challenge period, exitableAt not there...
               return (
                 <Transaction
                   key={index}
@@ -84,9 +85,9 @@ function Exits ({ searchHistory }) {
                       : undefined
                   }
                   link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
-                  status='Pending'
+                  status={i.status === 'Confirmed' && i.pendingPercentage > 100 ? 'In Challenge Period' : i.status}
                   subStatus={`Block ${i.blockNumber}`}
-                  statusPercentage={i.pendingPercentage}
+                  statusPercentage={i.pendingPercentage < 100 ? i.pendingPercentage : ''}
                   title={truncate(i.transactionHash, 10, 4, '...')}
                   midTitle={i.exitableAt ? `Exitable on ${exitableMoment.format('lll')}` : ''}
                   subTitle={i.currency ? truncate(i.currency, 10, 4, '...'): ''}
