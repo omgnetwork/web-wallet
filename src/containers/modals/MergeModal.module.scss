@@ -20,15 +20,13 @@
   height: 250px;
   overflow-y: scroll;
   .utxo {
-    &:last-child {
-      border-bottom: 1px solid transparent;
-    }
     font-size: 12px;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid $primary;
+    background-color: $midgray;
+    margin-bottom: 2px;
     padding: 10px;
     height: 25px;
     transition: all 200ms ease-in-out;
