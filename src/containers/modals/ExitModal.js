@@ -96,8 +96,6 @@ function ExitModal ({ open, toggle }) {
         })}
       </div>
 
-      <div className={styles.disclaimer}>*Note that while an exit transaction is pending, starting further exits and transfers will be temporarily blocked until the exit transaction is confirmed.</div>
-
       <div className={styles.buttons}>
         <Button
           onClick={handleClose}

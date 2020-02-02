@@ -6,6 +6,7 @@ import { Send, MergeType } from '@material-ui/icons';
 import { selectLastSync } from 'selectors/statusSelector';
 import { selectChildchainBalance, selectRootchainBalance } from 'selectors/balanceSelector';
 import { selectPendingExits } from 'selectors/exitSelector';
+import { selectChildchainTransactions } from 'selectors/transactionSelector';
 
 import DepositModal from 'containers/modals/DepositModal';
 import TransferModal from 'containers/modals/TransferModal';
@@ -25,9 +26,12 @@ function Account () {
   const childBalance = useSelector(selectChildchainBalance);
   const rootBalance = useSelector(selectRootchainBalance);
   const pendingExits = useSelector(selectPendingExits);
+  const transactions = useSelector(selectChildchainTransactions);
 
-  const isPending = pendingExits.some(i => i.status === 'Pending');
+  const exitPending = pendingExits.some(i => i.status === 'Pending');
+  const transferPending = transactions.some(i => i.status === 'Pending');
   const isStalled = lastSync ? lastSync > config.checkSyncInterval : true;
+  const disabled = !childBalance.length || isStalled || exitPending || transferPending;
 
   const [ depositModal, setDepositModal ] = useState(false);
   const [ transferModal, setTransferModal ] = useState(false);
@@ -73,9 +77,7 @@ function Account () {
                   onClick={() => setMergeModal(true)}
                   className={[
                     styles.transfer,
-                    !childBalance.length || isPending || isStalled
-                      ? styles.disabled
-                      : ''
+                    disabled ? styles.disabled : ''
                   ].join(' ')}
                 >
                   <MergeType />
@@ -85,9 +87,7 @@ function Account () {
                   onClick={() => setTransferModal(true)}
                   className={[
                     styles.transfer,
-                    !childBalance.length || isPending || isStalled
-                      ? styles.disabled
-                      : ''
+                    disabled ? styles.disabled : ''
                   ].join(' ')}
                 >
                   <Send />
@@ -117,11 +117,7 @@ function Account () {
               <Button
                 onClick={() => setExitModal(true)}
                 type='secondary'
-                disabled={
-                  !childBalance.length ||
-                  isPending ||
-                  isStalled
-                }
+                disabled={disabled}
               >
                 EXIT
               </Button>

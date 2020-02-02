@@ -21,7 +21,7 @@
   overflow-y: scroll;
   .utxo {
     &:last-child {
-      border-bottom: none;
+      border-bottom: 1px solid transparent;
     }
     font-size: 12px;
     display: flex;

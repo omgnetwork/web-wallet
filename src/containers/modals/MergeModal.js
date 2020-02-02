@@ -73,7 +73,7 @@ function MergeModal ({ open, toggle }) {
   return (
     <Modal open={open} onClose={handleClose}>
       <h2>Merge UTXO's</h2>
-      <div className={styles.disclaimer}>Select the UTXOs you want to merge (max 4)</div>
+      <div className={styles.disclaimer}>Select the UTXOs you want to merge</div>
 
       <div className={styles.list}>
         {!utxos.length && (

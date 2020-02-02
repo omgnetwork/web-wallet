@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import numbro from 'numbro';
 
@@ -16,7 +16,13 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
   const dispatch = useDispatch();
   const byzantineChain = useSelector(selectByzantine);
   const loading = useSelector(selectLoading(['QUEUE/PROCESS']));
-  const [ maxExits, setMaxExits ] = useState(exitData.queuePosition || '');
+  const [ maxExits, setMaxExits ] = useState('');
+
+  useEffect(() => {
+    if (exitData) {
+      setMaxExits(exitData.queuePosition);
+    }
+  }, [exitData]);
 
   async function submit () {
     if (maxExits > 0) {
@@ -41,15 +47,19 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
       <div className={styles.note}>
         <span>This exit is currently</span>
         <span className={styles.position}>{exitData ? numbro(exitData.queuePosition).format({ output: 'ordinal' }) : ''}</span>
-        <span>in the queue for this token.</span>
+        <span>{`in the queue for this token. You will need to process ${exitData.queuePosition} ${exitData.queuePosition === 1 ? 'exit' : 'exits'} to release your funds.`}</span>
       </div>
 
       <Input
-        label='Set the max exits to process'
+        label='How many exits would you like to process?'
         placeholder='20'
         type='number'
         value={maxExits}
-        onChange={i => setMaxExits(i.target.value)}
+        onChange={i => {
+          i.target.value <= exitData.queueLength
+            ? setMaxExits(i.target.value)
+            : setMaxExits(exitData.queueLength)
+        }}
       />
 
       <div className={styles.disclaimer}>
