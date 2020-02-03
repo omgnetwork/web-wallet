@@ -47,13 +47,13 @@ function Status () {
       message = 'Connected'
     }
     if (lastSync > config.checkSyncInterval) {
-      message = 'Stalled'
+      message = 'Syncing'
     }
     return (
       <Tooltip
         title={
-          message === 'Stalled'
-            ? `A stalled status indicates that the Watcher is out of sync with the rootchain. Transactions will not be reflected so users will not be allowed to make new transactions. Last synced rootchain block was ${moment.unix(lastSeenBlock).fromNow()}.`
+          message === 'Syncing'
+            ? `A syncing status indicates that the Watcher is still syncing with the rootchain. Transactions will not be reflected so users will not be allowed to make new transactions. Last synced rootchain block was ${moment.unix(lastSeenBlock).fromNow()}.`
             : ''
         }
         arrow
@@ -64,7 +64,7 @@ function Status () {
             className={[
               styles.statusCircle,
               message === 'Connected' ? styles.healthy : '',
-              message === 'Stalled' ? styles.unhealthy : ''
+              message === 'Syncing' ? styles.unhealthy : ''
             ].join(' ')}
           />
         </div>
