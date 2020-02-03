@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { forOwn } from 'lodash';
+import { forOwn, capitalize } from 'lodash';
 
 import { clearError } from 'actions/errorAction';
 import networkService from 'services/networkService';
@@ -8,6 +8,7 @@ import { selectAllErrors } from 'selectors/errorSelector';
 
 import Home from 'containers/home/Home';
 import Alert from 'components/alert/Alert';
+import config from 'util/config';
 
 import * as styles from './App.module.scss';
 
@@ -46,6 +47,7 @@ function App () {
       <div className={styles.loading}>
         <img src='omg_logo.svg' alt='logo' />
         <span>Waiting for Web3...</span>
+        <span>{`Please make sure you are on the ${capitalize(config.network)} network.`}</span>
       </div>
     );
   }

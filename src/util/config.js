@@ -4,5 +4,6 @@ export default {
   blockExplorerUrl: process.env.REACT_APP_BLOCKEXPLORER_URL || '',
   etherscanUrl: process.env.REACT_APP_ETHERSCAN_URL || 'https://ropsten.etherscan.io',
   checkSyncInterval: process.env.REACT_APP_SYNC_INTERVAL || 60,
-  pollInterval: process.env.REACT_APP_POLL_INTERVAL || 5
+  pollInterval: process.env.REACT_APP_POLL_INTERVAL || 5,
+  network: process.env.REACT_APP_NETWORK || 'ropsten'
 }

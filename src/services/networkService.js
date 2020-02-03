@@ -21,7 +21,8 @@ class NetworkService {
         await window.ethereum.enable();
         const accounts = await this.web3.eth.getAccounts();
         this.account = accounts[0];
-        return true;
+        const network = await this.web3.eth.net.getNetworkType();
+        return network === config.network
       } catch {
         return false;
       }
@@ -30,7 +31,8 @@ class NetworkService {
       this.rootChain = new RootChain({ web3: this.web3, plasmaContractAddress: config.plasmaFrameworkAddress });
       const accounts = await this.web3.eth.getAccounts();
       this.account = accounts[0];
-      return true;
+      const network = await this.web3.eth.net.getNetworkType();
+      return network === config.network
     } else {
       return false;
     }
