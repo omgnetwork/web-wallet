@@ -39,7 +39,7 @@ function Transaction ({
           />
             <span>{status}</span>
             {status === 'Pending' && statusPercentage && (
-              <span className={styles.percentage}>{`(${statusPercentage}%)`}</span>
+              <span className={styles.percentage}>{`(${Math.max(statusPercentage, 0)}%)`}</span>
             )}
         </div>
         <div>{subStatus}</div>

@@ -36,7 +36,7 @@ function Deposits ({ searchHistory }) {
               title={truncate(i.transactionHash, 10, 4, '...')}
               subTitle={`Token: ${truncate(i.returnValues.token, 10, 4, '...')}`}
               status={i.status === 'Pending' ? 'Pending' : `${i.returnValues.amount}`}
-              statusPercentage={i.pendingPercentage}
+              statusPercentage={i.pendingPercentage <= 100 ? i.pendingPercentage : ''}
               subStatus={`Block ${i.blockNumber}`}
             />
           );

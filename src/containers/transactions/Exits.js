@@ -90,7 +90,7 @@ function Exits ({ searchHistory }) {
                       : i.status
                   }
                   subStatus={`Block ${i.blockNumber}`}
-                  statusPercentage={i.pendingPercentage < 100 ? i.pendingPercentage : ''}
+                  statusPercentage={i.pendingPercentage <= 100 ? i.pendingPercentage : ''}
                   title={truncate(i.transactionHash, 10, 4, '...')}
                   midTitle={i.exitableAt ? `Exitable ${exitableMoment.format('lll')}` : ''}
                   subTitle={i.currency ? truncate(i.currency, 10, 4, '...'): ''}
