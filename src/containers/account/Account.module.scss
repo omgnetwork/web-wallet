@@ -49,6 +49,10 @@
       flex-direction: row;
       justify-content: space-between;
       margin-bottom: 20px;
+      @include mobile {
+        flex-direction: column;
+        margin-bottom: 10px;
+      }
       .actions {
         display: flex;
         flex-direction: row;
@@ -59,7 +63,10 @@
         flex-direction: column;
         span:first-child {
           font-size: 10px;
-        } 
+        }
+        @include mobile {
+          margin-bottom: 10px;
+        }
       }
       .transfer {
         cursor: pointer;

@@ -37,6 +37,7 @@
   align-items: flex-end;
   @include mobile {
     text-align: left;
+    align-items: flex-start;
   }
   div:last-child {
     margin-top: 10px;
@@ -61,6 +62,9 @@
     width: 10px;
     height: 10px;
     border-radius: 100%;
+    @include mobile {
+      margin-left: 10px;
+    }
   }
   .pending {
     background-color: $yellow;
