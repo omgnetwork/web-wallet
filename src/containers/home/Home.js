@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { uniq } from 'lodash';
+import { uniq, flatten } from 'lodash';
 
+import { selectChildchainTransactions } from 'selectors/transactionSelector';
 import config from 'util/config';
 import useInterval from 'util/useInterval';
-import { selectEthDeposits, selectErc20Deposits } from 'selectors/transactionSelector';
 import {
   checkWatcherStatus,
   fetchBalances,
@@ -28,8 +28,8 @@ function Home () {
     window.scrollTo(0, 0);
   }, []);
 
-  const ethDeposits = useSelector(selectEthDeposits);
-  const erc20Deposits = useSelector(selectErc20Deposits);
+  const transactions = useSelector(selectChildchainTransactions);
+  const inputs = flatten(transactions.map(i => i.inputs));
 
   useInterval(() => {
     dispatch(checkWatcherStatus());
@@ -38,8 +38,8 @@ function Home () {
     dispatch(fetchExits());
     dispatch(fetchTransactions());
 
-    const depositedTokens = uniq([...ethDeposits, ...erc20Deposits].map(i => i.returnValues.token));
-    for (const token of depositedTokens) {
+    const transactedTokens = uniq(inputs.map(i => i.currency));
+    for (const token of transactedTokens) {
       dispatch(getExitQueue(token));
     }
   }, POLL_INTERVAL);
