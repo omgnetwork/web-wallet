@@ -16,6 +16,7 @@ import MergeModal from 'containers/modals/MergeModal';
 import Copy from 'components/copy/Copy';
 import Button from 'components/button/Button';
 import config from 'util/config';
+import { logAmount } from 'util/amountConvert';
 
 import networkService from 'services/networkService';
 
@@ -99,10 +100,10 @@ function Account () {
               return (
                 <div key={index} className={styles.row}>
                   <div className={styles.token}>
-                    <span className={styles.symbol}>{i.symbol}</span>
-                    <Copy light value={i.token} />
+                    <span className={styles.symbol}>{i.name}</span>
+                    <Copy light value={i.currency} />
                   </div>
-                  <span>{i.amount}</span>
+                  <span>{logAmount(i.amount, i.decimals)}</span>
                 </div>
               )
             })}
@@ -136,10 +137,10 @@ function Account () {
               return (
                 <div key={index} className={styles.row}>
                   <div className={styles.token}>
-                    <span className={styles.symbol}>{i.symbol}</span>
-                    <Copy light value={i.token} />
+                    <span className={styles.symbol}>{i.name}</span>
+                    <Copy light value={i.currency} />
                   </div>
-                  <span>{i.amount}</span>
+                  <span>{logAmount(i.amount, i.decimals)}</span>
                 </div>
               )
             })}

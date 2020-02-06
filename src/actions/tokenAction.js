@@ -31,7 +31,7 @@ export async function getToken (currency) {
     //
   }
 
-  const decimals = _decimals || 0;
+  const decimals = Number(_decimals.toString()) || 0;
   const name = _name || truncate(currency, 6, 4, '...');
 
   const tokenInfo = {
@@ -41,7 +41,6 @@ export async function getToken (currency) {
     icon
   }
 
-  // add it to the store
   store.dispatch({
     type: 'TOKEN/GET/SUCCESS',
     payload: tokenInfo

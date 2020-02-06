@@ -1,8 +1,7 @@
-import networkService from 'services/networkService';
-
+const eth = '0x0000000000000000000000000000000000000000'
 const initialState = {
-  [networkService.OmgUtil.transaction.ETH_CURRENCY]: {
-    currency: networkService.OmgUtil.transaction.ETH_CURRENCY,
+  [eth]: {
+    currency: eth,
     decimals: 18,
     name: 'ETH',
     icon: 'ether.png'
