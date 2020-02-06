@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { selectLoading } from 'selectors/loadingSelector';
 import { transfer } from 'actions/networkAction';
+import { getToken } from 'actions/tokenAction';
 
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
@@ -10,14 +11,16 @@ import Input from 'components/input/Input';
 import InputSelect from 'components/inputselect/InputSelect';
 
 import networkService from 'services/networkService';
+import { logAmount, powAmount } from 'util/amountConvert';
 
 import * as styles from './TransferModal.module.scss';
 
 function TransferModal ({ open, toggle, balances = [] }) {
+  const ETH = networkService.OmgUtil.transaction.ETH_CURRENCY;
   const dispatch = useDispatch();
-  const [ currency, setCurrency ] = useState(networkService.OmgUtil.transaction.ETH_CURRENCY);
+  const [ currency, setCurrency ] = useState(ETH);
   const [ value, setValue ] = useState('');
-  const [ feeToken, setFeeToken ] = useState(networkService.OmgUtil.transaction.ETH_CURRENCY);
+  const [ feeToken, setFeeToken ] = useState(ETH);
   const [ feeValue, setFeeValue ] = useState('');
   const [ recipient, setRecipient ] = useState('');
   const [ metadata, setMetadata ] = useState('');
@@ -25,9 +28,9 @@ function TransferModal ({ open, toggle, balances = [] }) {
   const loading = useSelector(selectLoading(['TRANSFER/CREATE']));
 
   const selectOptions = balances.map(i => ({
-    title: i.symbol,
-    value: i.token,
-    subTitle: `Balance: ${i.amount}`
+    title: i.name,
+    value: i.currency,
+    subTitle: `Balance: ${logAmount(i.amount, i.decimals)}`
   }))
 
   async function submit () {
@@ -38,12 +41,14 @@ function TransferModal ({ open, toggle, balances = [] }) {
       feeToken &&
       networkService.web3.utils.isAddress(recipient)
     ) {
+      const valueTokenInfo = await getToken(currency);
+      const feeTokenInfo = await getToken(feeToken);
       try {
         await dispatch(transfer({
           recipient,
-          value,
+          value: powAmount(value, valueTokenInfo.decimals),
           currency,
-          feeValue,
+          feeValue: powAmount(feeValue, feeTokenInfo.decimals),
           feeToken,
           metadata
         }))
@@ -55,9 +60,9 @@ function TransferModal ({ open, toggle, balances = [] }) {
   }
 
   function handleClose () {
-    setCurrency(networkService.OmgUtil.transaction.ETH_CURRENCY);
+    setCurrency(ETH);
     setValue('');
-    setFeeToken(networkService.OmgUtil.transaction.ETH_CURRENCY);
+    setFeeToken(ETH);
     setFeeValue('');
     setRecipient('');
     setMetadata('');
@@ -121,8 +126,8 @@ function TransferModal ({ open, toggle, balances = [] }) {
           style={{ flex: 0 }}
           loading={loading}
           disabled={
-            value < 1 ||
-            feeValue < 1 ||
+            value <= 0 ||
+            feeValue <= 0 ||
             !currency ||
             !feeToken ||
             !recipient ||

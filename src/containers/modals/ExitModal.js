@@ -85,7 +85,7 @@ function ExitModal ({ open, toggle }) {
 
               <div className={styles.value}>
                 <div className={styles.amount}>
-                  {`Amount: ${logAmount(i.amount.toString(), i.tokenInfo.decimals)}`}
+                  {logAmount(i.amount.toString(), i.tokenInfo.decimals)}
                 </div>
 
                 <div className={styles.check}>
