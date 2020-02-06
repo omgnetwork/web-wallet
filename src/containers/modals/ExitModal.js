@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { orderBy } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
-import truncate from 'truncate-middle';
 import { Check } from '@material-ui/icons';
 
 import { selectLoading } from 'selectors/loadingSelector';
@@ -11,6 +11,7 @@ import Modal from 'components/modal/Modal';
 import Input from 'components/input/Input';
 
 import networkService from 'services/networkService';
+import { logAmount } from 'util/amountConvert';
 
 import * as styles from './ExitModal.module.scss';
 
@@ -24,7 +25,8 @@ function ExitModal ({ open, toggle }) {
 
   useEffect(() => {
     async function fetchUTXOS () {
-      const utxos = await networkService.getUtxos();
+      const _utxos = await networkService.getUtxos();
+      const utxos = orderBy(_utxos, i => i.currency, 'desc');
       setUtxos(utxos);
     }
     if (open) {
@@ -49,9 +51,13 @@ function ExitModal ({ open, toggle }) {
     toggle();
   }
 
+  
   const _utxos = utxos
-    .filter(i => i.currency.includes(searchUTXO))
-    .filter(i => i);
+    .filter(i => {
+      return i.currency.toLowerCase().includes(searchUTXO.toLowerCase()) ||
+        i.tokenInfo.name.toLowerCase().includes(searchUTXO.toLowerCase())
+    })
+    .filter(i => !!i);
   return (
     <Modal open={open} onClose={handleClose}>
       <h2>Start Standard Exit</h2>
@@ -79,12 +85,12 @@ function ExitModal ({ open, toggle }) {
               ].join(' ')}
             >
               <div className={styles.title}>
-                {truncate(i.currency, 10, 4, '...')}
+                {i.tokenInfo.name}
               </div>
 
               <div className={styles.value}>
                 <div className={styles.amount}>
-                  {`Amount: ${i.amount.toString()}`}
+                  {logAmount(i.amount.toString(), i.tokenInfo.decimals)}
                 </div>
 
                 <div className={styles.check}>

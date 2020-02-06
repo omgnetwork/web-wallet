@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { selectLoading } from 'selectors/loadingSelector';
 import { deposit } from 'actions/networkAction';
+import { getToken } from 'actions/tokenAction';
+import { powAmount } from 'util/amountConvert';
 
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
@@ -14,17 +16,32 @@ import networkService from 'services/networkService';
 import * as styles from './DepositModal.module.scss';
 
 function DepositModal ({ open, toggle }) {
+  const ETH = networkService.OmgUtil.transaction.ETH_CURRENCY;
   const dispatch = useDispatch();
   const loading = useSelector(selectLoading(['DEPOSIT/CREATE']));
 
   const [ activeTab, setActiveTab ] = useState('ETH');
   const [ value, setValue ] = useState('');
-  const [ currency, setCurrency ] = useState(networkService.OmgUtil.transaction.ETH_CURRENCY);
+  const [ currency, setCurrency ] = useState(ETH);
+  const [ tokenInfo, setTokenInfo ] = useState({});
+
+  useEffect(() => {
+    async function getTokenInfo () {
+      if (currency && networkService.web3.utils.isAddress(currency)) {
+        const tokenInfo = await getToken(currency);
+        setTokenInfo(tokenInfo);
+      } else {
+        setTokenInfo({});
+      }
+    }
+    getTokenInfo()
+  }, [currency]);
   
   async function submit () {
-    if (value > 0 && currency) {
+    if (value > 0 && currency && tokenInfo) {
+      const amount = powAmount(value, tokenInfo.decimals);
       try {
-        await dispatch(deposit(value, currency));
+        await dispatch(deposit(amount, currency));
         toggle();
       } catch(err) {
         console.warn(err);
@@ -35,7 +52,7 @@ function DepositModal ({ open, toggle }) {
   function handleClose () {
     setActiveTab('ETH')
     setValue('')
-    setCurrency(networkService.OmgUtil.transaction.ETH_CURRENCY)
+    setCurrency(ETH)
     toggle()
   }
 
@@ -47,7 +64,7 @@ function DepositModal ({ open, toggle }) {
         className={styles.tabs}
         onClick={i => {
           i === 'ETH'
-            ? setCurrency(networkService.OmgUtil.transaction.ETH_CURRENCY)
+            ? setCurrency(ETH)
             : setCurrency('');
           setActiveTab(i)
         }}
@@ -68,7 +85,7 @@ function DepositModal ({ open, toggle }) {
       <Input
         label='Amount to deposit into the OMG Network'
         type='number'
-        unit={activeTab === 'ERC20' ? '' : 'WEI'}
+        unit={tokenInfo ? tokenInfo.name : ''}
         placeholder={0}
         value={value}
         onChange={i => setValue(i.target.value)}
@@ -92,8 +109,9 @@ function DepositModal ({ open, toggle }) {
           style={{ flex: 0 }}
           loading={loading}
           disabled={
-            value < 1 ||
-            !currency
+            value <= 0 ||
+            !currency ||
+            !networkService.web3.utils.isAddress(currency)
           }
         >
           DEPOSIT

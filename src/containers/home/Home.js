@@ -29,7 +29,12 @@ function Home () {
   }, []);
 
   const transactions = useSelector(selectChildchainTransactions);
-  const inputs = flatten(transactions.map(i => i.inputs));
+  const inputs = flatten(
+    transactions
+      .filter(i => i.status !== 'Pending')
+      .map(i => i.inputs)
+  );
+  const transactedTokens = uniq(inputs.map(i => i.currency));
 
   useInterval(() => {
     dispatch(checkWatcherStatus());
@@ -38,7 +43,6 @@ function Home () {
     dispatch(fetchExits());
     dispatch(fetchTransactions());
 
-    const transactedTokens = uniq(inputs.map(i => i.currency));
     for (const token of transactedTokens) {
       dispatch(getExitQueue(token));
     }

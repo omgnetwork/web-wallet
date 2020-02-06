@@ -7,6 +7,7 @@ import { selectEthDeposits, selectErc20Deposits } from 'selectors/transactionSel
 
 import Transaction from 'components/transaction/Transaction';
 import config from 'util/config';
+import { logAmount } from 'util/amountConvert';
 
 import * as styles from './Transactions.module.scss';
 
@@ -34,8 +35,8 @@ function Deposits ({ searchHistory }) {
               key={index}
               link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
               title={truncate(i.transactionHash, 10, 4, '...')}
-              subTitle={`Token: ${truncate(i.returnValues.token, 10, 4, '...')}`}
-              status={i.status === 'Pending' ? 'Pending' : `${i.returnValues.amount}`}
+              subTitle={`Token: ${i.tokenInfo.name}`}
+              status={i.status === 'Pending' ? 'Pending' : logAmount(i.returnValues.amount, i.tokenInfo.decimals)}
               statusPercentage={i.pendingPercentage <= 100 ? i.pendingPercentage : ''}
               subStatus={`Block ${i.blockNumber}`}
             />

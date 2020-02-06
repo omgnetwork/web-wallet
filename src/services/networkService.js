@@ -1,11 +1,11 @@
 import Web3 from 'web3';
-import { orderBy } from 'lodash';
+import { orderBy, flatten, uniq, omit } from 'lodash';
 import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
-import erc20abi from 'human-standard-token-abi';
-import truncate from 'truncate-middle';
 import BN from 'bn.js';
 import JSONBigNumber from 'json-bigint';
 import config from 'util/config';
+
+import { getToken } from 'actions/tokenAction';
 
 class NetworkService {
   constructor () {
@@ -55,6 +55,9 @@ class NetworkService {
 
   async getAllTransactions () {
     const rawTransactions = await this.childChain.getTransactions({ address: this.account });
+    const currencies = uniq(flatten(rawTransactions.map(i => i.inputs.map(input => input.currency))));
+    await Promise.all(currencies.map(i => getToken(i)));
+
     const transactions = rawTransactions.map(i => {
       return {
         ...i,
@@ -68,20 +71,9 @@ class NetworkService {
     const _childchainBalances = await this.childChain.getBalance(this.account);
     const childchainBalances = await Promise.all(_childchainBalances.map(
       async i => {
-        const isEth = i.currency === OmgUtil.transaction.ETH_CURRENCY
-        let symbol = 'WEI';
-        if (!isEth) {
-          const tokenContract = new this.web3.eth.Contract(erc20abi, i.currency);
-          try {
-            const _symbol = await tokenContract.methods.symbol().call();
-            symbol = _symbol || truncate(i.currency, 6, 4, '...');
-          } catch (err) {
-            symbol = truncate(i.currency, 6, 4, '...');
-          }
-        }
+        const token = await getToken(i.currency)
         return {
-          symbol,
-          token: i.currency,
+          ...token,
           amount: i.amount.toString()
         }
       }
@@ -89,16 +81,14 @@ class NetworkService {
 
     const rootErc20Balances = await Promise.all(childchainBalances.map(
       async i => {
-        const isEth = i.symbol === 'WEI';
-        if (!isEth) {
+        if (i.name !== 'ETH') {
           const balance = await OmgUtil.getErc20Balance({
             web3: this.web3,
             address: this.account,
-            erc20Address: i.token
+            erc20Address: i.currency
           })
           return {
-            symbol: i.symbol,
-            token: i.token,
+            ...i,
             amount: balance.toString()
           }
         }
@@ -106,15 +96,15 @@ class NetworkService {
     ))
 
     const _rootEthBalance = await this.web3.eth.getBalance(this.account);
+    const ethToken = await getToken(OmgUtil.transaction.ETH_CURRENCY)
     const rootchainEthBalance = {
-      symbol: 'WEI',
-      token: OmgUtil.transaction.ETH_CURRENCY,
+      ...ethToken,
       amount: _rootEthBalance
     }
 
     return {
-      rootchain: orderBy([rootchainEthBalance, ...rootErc20Balances.filter(i => !!i)], i => i.token),
-      childchain: orderBy(childchainBalances, i => i.token)
+      rootchain: orderBy([rootchainEthBalance, ...rootErc20Balances.filter(i => !!i)], i => i.currency),
+      childchain: orderBy(childchainBalances, i => i.currency)
     }
   }
 
@@ -238,7 +228,12 @@ class NetworkService {
   }
 
   async getUtxos () {
-    return this.childChain.getUtxos(this.account);
+    const _utxos = await this.childChain.getUtxos(this.account);
+    const utxos = await Promise.all(_utxos.map(async utxo => {
+      const tokenInfo = await getToken(utxo.currency);
+      return { ...utxo, tokenInfo }
+    }));
+    return utxos;
   }
 
   async getDeposits () {
@@ -251,21 +246,23 @@ class NetworkService {
       filter: { depositor: this.account },
       fromBlock: 0
     });
-    const ethDeposits = _ethDeposits.map(i => {
+    const ethDeposits = await Promise.all(_ethDeposits.map(async i => {
+      const tokenInfo = await getToken(i.returnValues.token);
       const status = ethBlockNumber - i.blockNumber >= depositFinality ? 'Confirmed' : 'Pending';
       const pendingPercentage = (ethBlockNumber - i.blockNumber) / depositFinality;
-      return { ...i, status, pendingPercentage: (pendingPercentage * 100).toFixed() }
-    });
+      return { ...i, status, pendingPercentage: (pendingPercentage * 100).toFixed(), tokenInfo }
+    }));
 
     const _erc20Deposits = await erc20Vault.getPastEvents('DepositCreated', {
       filter: { depositor: this.account },
       fromBlock: 0
     });
-    const erc20Deposits = _erc20Deposits.map(i => {
+    const erc20Deposits = await Promise.all(_erc20Deposits.map(async i => {
+      const tokenInfo = await getToken(i.returnValues.token);
       const status = ethBlockNumber - i.blockNumber >= depositFinality ? 'Confirmed' : 'Pending';
       const pendingPercentage = (ethBlockNumber - i.blockNumber) / depositFinality;
-      return { ...i, status, pendingPercentage: (pendingPercentage * 100).toFixed() }
-    });
+      return { ...i, status, pendingPercentage: (pendingPercentage * 100).toFixed(), tokenInfo }
+    }));
 
     return { eth: ethDeposits, erc20: erc20Deposits };
   }
@@ -311,9 +308,8 @@ class NetworkService {
     }
   }
 
-  async exitUtxo (utxoToExit) {
-    delete utxoToExit['creating_txhash'];
-    delete utxoToExit['spending_txhash'];
+  async exitUtxo (utxo) {
+    const utxoToExit = omit(utxo, ['tokenInfo', 'spending_txhash', 'creating_txhash']);
     const exitData = await this.childChain.getExitData(utxoToExit);
     const hasToken = await this.rootChain.hasToken(utxoToExit.currency);
     if (!hasToken) {
