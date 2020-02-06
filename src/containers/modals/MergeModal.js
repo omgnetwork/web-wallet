@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { orderBy } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { Check } from '@material-ui/icons';
 
@@ -23,7 +24,8 @@ function MergeModal ({ open, toggle }) {
 
   useEffect(() => {
     async function fetchUTXOS () {
-      const utxos = await networkService.getUtxos();
+      const _utxos = await networkService.getUtxos();
+      const utxos = orderBy(_utxos, i => i.currency, 'desc');
       setUtxos(utxos);
     }
     if (open) {
