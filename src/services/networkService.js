@@ -1,5 +1,5 @@
 import Web3 from 'web3';
-import { orderBy, flatten, uniq } from 'lodash';
+import { orderBy, flatten, uniq, omit } from 'lodash';
 import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
 import BN from 'bn.js';
 import JSONBigNumber from 'json-bigint';
@@ -85,7 +85,7 @@ class NetworkService {
           const balance = await OmgUtil.getErc20Balance({
             web3: this.web3,
             address: this.account,
-            erc20Address: i.token
+            erc20Address: i.currency
           })
           return {
             ...i,
@@ -228,7 +228,12 @@ class NetworkService {
   }
 
   async getUtxos () {
-    return this.childChain.getUtxos(this.account);
+    const _utxos = await this.childChain.getUtxos(this.account);
+    const utxos = await Promise.all(_utxos.map(async utxo => {
+      const tokenInfo = await getToken(utxo.currency);
+      return { ...utxo, tokenInfo }
+    }));
+    return utxos;
   }
 
   async getDeposits () {
@@ -303,9 +308,8 @@ class NetworkService {
     }
   }
 
-  async exitUtxo (utxoToExit) {
-    delete utxoToExit['creating_txhash'];
-    delete utxoToExit['spending_txhash'];
+  async exitUtxo (utxo) {
+    const utxoToExit = omit(utxo, ['tokenInfo', 'spending_txhash', 'creating_txhash']);
     const exitData = await this.childChain.getExitData(utxoToExit);
     const hasToken = await this.rootChain.hasToken(utxoToExit.currency);
     if (!hasToken) {

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import truncate from 'truncate-middle';
 import { Check } from '@material-ui/icons';
 
 import { selectLoading } from 'selectors/loadingSelector';
@@ -10,6 +9,7 @@ import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
 
 import networkService from 'services/networkService';
+import { logAmount } from 'util/amountConvert';
 
 import * as styles from './MergeModal.module.scss';
 
@@ -91,12 +91,12 @@ function MergeModal ({ open, toggle }) {
               ].join(' ')}
             >
               <div className={styles.title}>
-                {truncate(i.currency, 10, 4, '...')}
+                {i.tokenInfo.name}
               </div>
 
               <div className={styles.value}>
                 <div className={styles.amount}>
-                  {`Amount: ${i.amount.toString()}`}
+                  {`Amount: ${logAmount(i.amount.toString(), i.tokenInfo.decimals)}`}
                 </div>
 
                 <div className={styles.check}>

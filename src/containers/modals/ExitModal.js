@@ -11,6 +11,7 @@ import Modal from 'components/modal/Modal';
 import Input from 'components/input/Input';
 
 import networkService from 'services/networkService';
+import { logAmount } from 'util/amountConvert';
 
 import * as styles from './ExitModal.module.scss';
 
@@ -79,12 +80,12 @@ function ExitModal ({ open, toggle }) {
               ].join(' ')}
             >
               <div className={styles.title}>
-                {truncate(i.currency, 10, 4, '...')}
+                {i.tokenInfo.name}
               </div>
 
               <div className={styles.value}>
                 <div className={styles.amount}>
-                  {`Amount: ${i.amount.toString()}`}
+                  {`Amount: ${logAmount(i.amount.toString(), i.tokenInfo.decimals)}`}
                 </div>
 
                 <div className={styles.check}>

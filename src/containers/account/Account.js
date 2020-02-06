@@ -31,7 +31,7 @@ function Account () {
 
   const exitPending = pendingExits.some(i => i.status === 'Pending');
   const transferPending = transactions.some(i => i.status === 'Pending');
-  const isStalled = lastSync ? lastSync > config.checkSyncInterval : true;
+  const isStalled = lastSync > config.checkSyncInterval;
   const disabled = !childBalance.length || isStalled || exitPending || transferPending;
 
   const [ depositModal, setDepositModal ] = useState(false);
