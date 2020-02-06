@@ -5,10 +5,6 @@ import axios from 'axios';
 import store from 'store';
 
 export async function getToken (currency) {
-  if (!networkService.web3.utils.isAddress(currency)) {
-    return
-  }
-
   const state = store.getState();
   if (state.token[currency]) {
     return state.token[currency]
@@ -18,9 +14,9 @@ export async function getToken (currency) {
   const [ _name, _decimals ] = await Promise.all([
     tokenContract.methods.symbol().call(),
     tokenContract.methods.decimals().call()
-  ]);
+  ]).catch(e => null);
 
-  let icon
+  let icon = ''
   try {
     const iconAddress = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${currency}/logo.png`
     const validIcon = await axios.get(iconAddress);
@@ -31,7 +27,7 @@ export async function getToken (currency) {
     //
   }
 
-  const decimals = Number(_decimals.toString()) || 0;
+  const decimals = _decimals ? Number(_decimals.toString()) : 0;
   const name = _name || truncate(currency, 6, 4, '...');
 
   const tokenInfo = {

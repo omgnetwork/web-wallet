@@ -241,21 +241,23 @@ class NetworkService {
       filter: { depositor: this.account },
       fromBlock: 0
     });
-    const ethDeposits = _ethDeposits.map(i => {
+    const ethDeposits = await Promise.all(_ethDeposits.map(async i => {
+      const tokenInfo = await getToken(i.returnValues.token);
       const status = ethBlockNumber - i.blockNumber >= depositFinality ? 'Confirmed' : 'Pending';
       const pendingPercentage = (ethBlockNumber - i.blockNumber) / depositFinality;
-      return { ...i, status, pendingPercentage: (pendingPercentage * 100).toFixed() }
-    });
+      return { ...i, status, pendingPercentage: (pendingPercentage * 100).toFixed(), tokenInfo }
+    }));
 
     const _erc20Deposits = await erc20Vault.getPastEvents('DepositCreated', {
       filter: { depositor: this.account },
       fromBlock: 0
     });
-    const erc20Deposits = _erc20Deposits.map(i => {
+    const erc20Deposits = await Promise.all(_erc20Deposits.map(async i => {
+      const tokenInfo = await getToken(i.returnValues.token);
       const status = ethBlockNumber - i.blockNumber >= depositFinality ? 'Confirmed' : 'Pending';
       const pendingPercentage = (ethBlockNumber - i.blockNumber) / depositFinality;
-      return { ...i, status, pendingPercentage: (pendingPercentage * 100).toFixed() }
-    });
+      return { ...i, status, pendingPercentage: (pendingPercentage * 100).toFixed(), tokenInfo }
+    }));
 
     return { eth: ethDeposits, erc20: erc20Deposits };
   }
