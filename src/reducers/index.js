@@ -8,6 +8,7 @@ import statusReducer from './statusReducer';
 import balanceReducer from './balanceReducer';
 import exitReducer from './exitReducer';
 import queueReducer from './queueReducer';
+import tokenReducer from './tokenReducer';
 
 const rootReducer = combineReducers({
   loading: loadingReducer,
@@ -17,7 +18,8 @@ const rootReducer = combineReducers({
   status: statusReducer,
   balance: balanceReducer,
   exit: exitReducer,
-  queue: queueReducer
+  queue: queueReducer,
+  token: tokenReducer
 });
 
 export default rootReducer;
