@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import BN from 'bn.js';
+import BN from 'bignumber.js';
 
 import { selectLoading } from 'selectors/loadingSelector';
 import { transfer } from 'actions/networkAction';
@@ -10,6 +10,7 @@ import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
 import Input from 'components/input/Input';
 import InputSelect from 'components/inputselect/InputSelect';
+import Select from 'components/select/Select';
 
 import networkService from 'services/networkService';
 import { logAmount, powAmount } from 'util/amountConvert';
@@ -29,8 +30,22 @@ function TransferModal ({ open, toggle, balances = [] }) {
 
   useEffect(() => {
     async function fetchFees () {
-      const fees = await networkService.fetchFees();
-      setFeeOptions(fees);
+      // TODO: enable when omg-js bumped
+      // const fees = await networkService.fetchFees();
+      // setFeeOptions(fees);
+
+      setFeeOptions([
+        {
+          amount: "30000000000000",
+          currency: "0x0000000000000000000000000000000000000000",
+          subunit_to_unit: "1000000000000000000"
+        },
+        {
+          amount: "1000000000000000000",
+          currency: "0x11b7592274b344a6be0ace7e5d5df4348473e2fa",
+          subunit_to_unit: "1000000000000000000"
+        }
+      ]);
     }
 
     if (open && !feeOptions.length) {
@@ -44,24 +59,23 @@ function TransferModal ({ open, toggle, balances = [] }) {
     subTitle: `Balance: ${logAmount(i.amount, i.decimals)}`
   }));
 
-  const usableFees = balances
-    .filter(balance => {
-      const feeObject = feeOptions.find(fee => fee.currency === balance.currency);
-      if (feeObject) {
-        if (new BN(balance.amount).gte(new BN(feeObject.amount))) {
-          return true;
-        }
+  const usableFees = balances.filter(balance => {
+    const feeObject = feeOptions.find(fee => fee.currency === balance.currency);
+    if (feeObject) {
+      if (new BN(balance.amount).gte(new BN(feeObject.amount))) {
+        return true;
       }
-      return false;
-    })
-    .map(i => {
-      const feeObject = feeOptions.find(fee => fee.currency === i.currency);
-      return {
-        title: i.name,
-        value: i.currency,
-        subTitle: `Fee Amount: ${new BN(feeObject.amount).div(new BN(feeObject.subunit_to_unit))}`
-      }
-    });
+    }
+    return false;
+  }).map(i => {
+    const feeObject = feeOptions.find(fee => fee.currency === i.currency);
+    const feeAmount = new BN(feeObject.amount).div(new BN(feeObject.subunit_to_unit));
+    return {
+      title: i.name,
+      value: i.currency,
+      subTitle: `Fee Amount: ${feeAmount.toString()}`
+    }
+  });
 
   async function submit () {
     if (
@@ -121,14 +135,11 @@ function TransferModal ({ open, toggle, balances = [] }) {
         selectValue={currency}
       />
 
-      <InputSelect
+      <Select
         label='Fee Token'
-        placeholder={0}
         value={feeToken}
-        onChange={console.log}
-        selectOptions={usableFees}
+        options={usableFees}
         onSelect={i => setFeeToken(i.target.value)}
-        selectValue={feeToken}
       />
 
       <Input
