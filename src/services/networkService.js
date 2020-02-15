@@ -176,19 +176,25 @@ class NetworkService {
     };
   }
 
+  async fetchFees () {
+    const allFees = await this.childChain.getFees();
+    return allFees['1'];
+  }
+
   async transfer ({
     recipient,
     value,
     currency,
-    feeValue,
     feeToken,
     metadata
   }) {
     const _utxos = await this.childChain.getUtxos(this.account);
     const utxos = orderBy(_utxos, i => i.amount, 'desc');
-    const _metadata = metadata
-      ? OmgUtil.transaction.encodeMetadata(metadata)
-      : OmgUtil.transaction.NULL_METADATA;
+
+    const allFees = await this.fetchFees();
+    const feeInfo = allFees.find(i => i.currency === feeToken);
+    if (!feeInfo) throw new Error(`${feeToken} is not a supported fee token.`);
+
     const payments = [{
       owner: recipient,
       currency,
@@ -196,14 +202,14 @@ class NetworkService {
     }];
     const fee = {
       currency: feeToken,
-      amount: new BN(feeValue)
+      amount: new BN(feeInfo.amount)
     };
     const txBody = OmgUtil.transaction.createTransactionBody({
       fromAddress: this.account,
       fromUtxos: utxos,
       payments,
       fee,
-      metadata: _metadata
+      metadata
     });
     const typedData = OmgUtil.transaction.getTypedData(txBody, config.plasmaFrameworkAddress);
     const signature = await this.web3.currentProvider.send(
