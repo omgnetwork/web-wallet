@@ -11,12 +11,20 @@ class NetworkService {
   constructor () {
     this.childChain = new ChildChain({ watcherUrl: config.watcherUrl });
     this.OmgUtil = OmgUtil;
+    this.plasmaContractAddress = '';
   }
 
   async enableNetwork () {
+    try {
+      const { contract_addr } = await this.childChain.status();
+      this.plasmaContractAddress = contract_addr.plasma_framework;
+    } catch (err) {
+      return false;
+    }
+
     if (window.ethereum) {
       this.web3 = new Web3(window.ethereum, null, { transactionConfirmationBlocks: 1 });
-      this.rootChain = new RootChain({ web3: this.web3, plasmaContractAddress: config.plasmaFrameworkAddress });
+      this.rootChain = new RootChain({ web3: this.web3, plasmaContractAddress: this.plasmaContractAddress });
       try {
         await window.ethereum.enable();
         const accounts = await this.web3.eth.getAccounts();
@@ -28,7 +36,7 @@ class NetworkService {
       }
     } else if (window.web3) {
       this.web3 = new Web3(window.web3.currentProvider, null, { transactionConfirmationBlocks: 1 });
-      this.rootChain = new RootChain({ web3: this.web3, plasmaContractAddress: config.plasmaFrameworkAddress });
+      this.rootChain = new RootChain({ web3: this.web3, plasmaContractAddress: this.plasmaContractAddress });
       const accounts = await this.web3.eth.getAccounts();
       this.account = accounts[0];
       const network = await this.web3.eth.net.getNetworkType();
@@ -154,7 +162,7 @@ class NetworkService {
       fee,
       metadata: OmgUtil.transaction.encodeMetadata(_metadata)
     });
-    const typedData = OmgUtil.transaction.getTypedData(txBody, config.plasmaFrameworkAddress);
+    const typedData = OmgUtil.transaction.getTypedData(txBody, this.plasmaContractAddress);
     const signature = await this.web3.currentProvider.send(
       'eth_signTypedData_v3',
       [
@@ -211,7 +219,7 @@ class NetworkService {
       fee,
       metadata
     });
-    const typedData = OmgUtil.transaction.getTypedData(txBody, config.plasmaFrameworkAddress);
+    const typedData = OmgUtil.transaction.getTypedData(txBody, this.plasmaContractAddress);
     const signature = await this.web3.currentProvider.send(
       'eth_signTypedData_v3',
       [

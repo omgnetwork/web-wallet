@@ -11,14 +11,13 @@ To run this application locally, make sure you have a local instance of elixir-o
 
 ## Initial Setup
 
-Make sure you have access to a Watcher endpoint, and the address of the deployed Plasma Contract. The wallet also requires an in-browser web3 wallet like MetaMask to sign transactions.
+Make sure you have access to a Watcher endpoint. The wallet also requires an in-browser web3 wallet like MetaMask to sign transactions.
 
 1. Install dependencies by running `yarn install` from the root
 
 2. Create a `.env` file in the root and add your configuration.
 ```env
 REACT_APP_WATCHER_URL=        the watcher url
-REACT_APP_PLASMA_FRAMEWORK=   the plasma framework contract address
 REACT_APP_BLOCKEXPLORER_URL=  the block explorer url 
 REACT_APP_ETHERSCAN_URL=      the etherscan url 
 REACT_APP_SYNC_INTERVAL=      max seconds watcher has to sync to ethereum before blocking further transactions
