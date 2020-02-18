@@ -1,9 +1,17 @@
 import React from 'react';
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress, Tooltip } from '@material-ui/core';
 
 import * as styles from './Button.module.scss';
 
-function Button ({ children, style, onClick, type, disabled, loading }) {
+function Button ({
+  children,
+  style,
+  onClick,
+  type,
+  disabled,
+  loading,
+  tooltip = ''
+}) {
   return (
     <div
       style={style}
@@ -19,9 +27,14 @@ function Button ({ children, style, onClick, type, disabled, loading }) {
     >
       {children}
       {loading && (
-        <div className={styles.loading}>
-          <CircularProgress size={14} color='inherit' />
-        </div>
+        <Tooltip
+          title={tooltip}
+          arrow
+        >
+          <div className={styles.loading}>
+            <CircularProgress size={14} color='inherit' />
+          </div>
+        </Tooltip>
       )}
     </div>
   )
