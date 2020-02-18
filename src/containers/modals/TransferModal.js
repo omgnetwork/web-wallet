@@ -30,24 +30,9 @@ function TransferModal ({ open, toggle, balances = [] }) {
 
   useEffect(() => {
     async function fetchFees () {
-      // TODO: enable when omg-js bumped
-      // const fees = await networkService.fetchFees();
-      // setFeeOptions(fees);
-
-      setFeeOptions([
-        {
-          amount: "30000000000000",
-          currency: "0x0000000000000000000000000000000000000000",
-          subunit_to_unit: "1000000000000000000"
-        },
-        {
-          amount: "1000000000000000000",
-          currency: "0x11b7592274b344a6be0ace7e5d5df4348473e2fa",
-          subunit_to_unit: "1000000000000000000"
-        }
-      ]);
+      const fees = await networkService.fetchFees();
+      setFeeOptions(fees);
     }
-
     if (open && !feeOptions.length) {
       fetchFees();
     }
@@ -73,7 +58,7 @@ function TransferModal ({ open, toggle, balances = [] }) {
     return {
       title: i.name,
       value: i.currency,
-      subTitle: `Fee Amount: ${feeAmount.toString()}`
+      subTitle: `Fee Amount: ${feeAmount.toFixed()}`
     }
   });
 
