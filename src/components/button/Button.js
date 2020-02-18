@@ -23,7 +23,7 @@ function Button ({
         loading ? styles.disabled : '',
         disabled ? styles.disabled : '',
       ].join(' ')}
-      onClick={onClick}
+      onClick={loading || disabled ? null : onClick}
     >
       {children}
       {loading && (

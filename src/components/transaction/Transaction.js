@@ -1,4 +1,5 @@
 import React from 'react';
+import { Tooltip } from '@material-ui/core';
 
 import * as styles from './Transaction.module.scss';
 
@@ -10,7 +11,8 @@ function Transaction ({
   button,
   title,
   midTitle,
-  subTitle
+  subTitle,
+  tooltip = ''
 }) {
   function renderValue () {
     if (button) {
@@ -39,7 +41,12 @@ function Transaction ({
           />
             <span>{status}</span>
             {status === 'Pending' && statusPercentage && (
-              <span className={styles.percentage}>{`(${Math.max(statusPercentage, 0)}%)`}</span>
+              <Tooltip
+                title={tooltip}
+                arrow
+              >
+                <span className={styles.percentage}>{`(${Math.max(statusPercentage, 0)}%)`}</span>
+              </Tooltip>
             )}
         </div>
         <div>{subStatus}</div>
