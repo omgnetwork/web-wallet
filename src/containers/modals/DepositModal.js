@@ -108,6 +108,7 @@ function DepositModal ({ open, toggle }) {
           type='primary'
           style={{ flex: 0 }}
           loading={loading}
+          tooltip='Your deposit transaction is still pending. Please wait for confirmation.'
           disabled={
             value <= 0 ||
             !currency ||

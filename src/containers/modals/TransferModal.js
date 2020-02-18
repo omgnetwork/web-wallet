@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import BN from 'bignumber.js';
 
 import { selectLoading } from 'selectors/loadingSelector';
 import { transfer } from 'actions/networkAction';
@@ -9,6 +10,7 @@ import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
 import Input from 'components/input/Input';
 import InputSelect from 'components/inputselect/InputSelect';
+import Select from 'components/select/Select';
 
 import networkService from 'services/networkService';
 import { logAmount, powAmount } from 'util/amountConvert';
@@ -21,34 +23,58 @@ function TransferModal ({ open, toggle, balances = [] }) {
   const [ currency, setCurrency ] = useState(ETH);
   const [ value, setValue ] = useState('');
   const [ feeToken, setFeeToken ] = useState(ETH);
-  const [ feeValue, setFeeValue ] = useState('');
+  const [ feeOptions, setFeeOptions ] = useState([]);
   const [ recipient, setRecipient ] = useState('');
   const [ metadata, setMetadata ] = useState('');
-
   const loading = useSelector(selectLoading(['TRANSFER/CREATE']));
+
+  useEffect(() => {
+    async function fetchFees () {
+      const fees = await networkService.fetchFees();
+      setFeeOptions(fees);
+    }
+    if (open && !feeOptions.length) {
+      fetchFees();
+    }
+  }, [open, feeOptions]);
 
   const selectOptions = balances.map(i => ({
     title: i.name,
     value: i.currency,
     subTitle: `Balance: ${logAmount(i.amount, i.decimals)}`
-  }))
+  }));
+
+  const usableFees = balances.filter(balance => {
+    const feeObject = feeOptions.find(fee => fee.currency === balance.currency);
+    if (feeObject) {
+      if (new BN(balance.amount).gte(new BN(feeObject.amount))) {
+        return true;
+      }
+    }
+    return false;
+  }).map(i => {
+    const feeObject = feeOptions.find(fee => fee.currency === i.currency);
+    const feeAmount = new BN(feeObject.amount).div(new BN(feeObject.subunit_to_unit));
+    return {
+      title: i.name,
+      value: i.currency,
+      subTitle: `Fee Amount: ${feeAmount.toFixed()}`
+    }
+  });
 
   async function submit () {
     if (
       value > 0 &&
-      feeValue > 0 &&
       currency &&
       feeToken &&
       networkService.web3.utils.isAddress(recipient)
     ) {
       const valueTokenInfo = await getToken(currency);
-      const feeTokenInfo = await getToken(feeToken);
       try {
         await dispatch(transfer({
           recipient,
           value: powAmount(value, valueTokenInfo.decimals),
           currency,
-          feeValue: powAmount(feeValue, feeTokenInfo.decimals),
           feeToken,
           metadata
         }))
@@ -63,7 +89,6 @@ function TransferModal ({ open, toggle, balances = [] }) {
     setCurrency(ETH);
     setValue('');
     setFeeToken(ETH);
-    setFeeValue('');
     setRecipient('');
     setMetadata('');
     toggle();
@@ -95,14 +120,11 @@ function TransferModal ({ open, toggle, balances = [] }) {
         selectValue={currency}
       />
 
-      <InputSelect
-        label='Fee'
-        placeholder={0}
-        value={feeValue}
-        onChange={i => setFeeValue(i.target.value)}
-        selectOptions={selectOptions}
+      <Select
+        label='Fee Token'
+        value={feeToken}
+        options={usableFees}
         onSelect={i => setFeeToken(i.target.value)}
-        selectValue={feeToken}
       />
 
       <Input
@@ -127,7 +149,6 @@ function TransferModal ({ open, toggle, balances = [] }) {
           loading={loading}
           disabled={
             value <= 0 ||
-            feeValue <= 0 ||
             !currency ||
             !feeToken ||
             !recipient ||

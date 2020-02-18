@@ -39,6 +39,7 @@ function Deposits ({ searchHistory }) {
               status={i.status === 'Pending' ? 'Pending' : logAmount(i.returnValues.amount, i.tokenInfo.decimals)}
               statusPercentage={i.pendingPercentage <= 100 ? i.pendingPercentage : ''}
               subStatus={`Block ${i.blockNumber}`}
+              tooltip={'For re-org protection, deposits require 10 block confirmations before the UTXO is available to spend.'}
             />
           );
         })}

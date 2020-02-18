@@ -5,18 +5,19 @@
 This is an example client side wallet built in React.js which allows you to make interactions with the OMG network from the browser.
 To run this application locally, make sure you have a local instance of elixir-omg running or have access to an already deployed network.
 
-- This example application is using [`omg-js v3.0.0-alpha.17`](https://github.com/omisego/omg-js)
+- This example application is using [`omg-js v3.0.0-alpha.19`](https://github.com/omisego/omg-js)
+- Requires Node >= 8.11.3 < 13.0.0
+- Requires Chrome web browser (will not work on Brave with certain web3 configurations)
 
 ## Initial Setup
 
-Make sure you have access to a Watcher endpoint, and the address of the deployed Plasma Contract. The wallet also requires an in-browser web3 wallet like MetaMask to sign transactions.
+Make sure you have access to a Watcher endpoint. The wallet also requires an in-browser web3 wallet like MetaMask to sign transactions.
 
 1. Install dependencies by running `yarn install` from the root
 
 2. Create a `.env` file in the root and add your configuration.
 ```env
 REACT_APP_WATCHER_URL=        the watcher url
-REACT_APP_PLASMA_FRAMEWORK=   the plasma framework contract address
 REACT_APP_BLOCKEXPLORER_URL=  the block explorer url 
 REACT_APP_ETHERSCAN_URL=      the etherscan url 
 REACT_APP_SYNC_INTERVAL=      max seconds watcher has to sync to ethereum before blocking further transactions

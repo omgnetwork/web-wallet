@@ -11,6 +11,7 @@ import { selectConnection, selectByzantine, selectLastSync, selectLastSeenBlock 
 import Info from 'components/info/Info';
 import Copy from 'components/copy/Copy';
 import config from 'util/config';
+import networkService from 'services/networkService';
 
 import * as styles from './Status.module.scss';
 
@@ -88,8 +89,8 @@ function Status () {
             },
             {
               header: 'Plasma Framework Address',
-              title: truncate(config.plasmaFrameworkAddress, 10, 4, '...'),
-              value: <Copy value={config.plasmaFrameworkAddress} />
+              title: truncate(networkService.plasmaContractAddress, 10, 4, '...'),
+              value: <Copy value={networkService.plasmaContractAddress} />
             },
             {
               header: 'Watcher URL', 
