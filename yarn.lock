@@ -1272,13 +1272,13 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@omisego/omg-js-childchain@^3.0.0-alpha.19":
-  version "3.0.0-alpha.19"
-  resolved "https://registry.yarnpkg.com/@omisego/omg-js-childchain/-/omg-js-childchain-3.0.0-alpha.19.tgz#c764c6a2ba666587f9f2f606271f78eac3541d1f"
-  integrity sha512-D5mTfs3udYuFyEZ4vlPEwm9ugu8aAtLi8eF5KV7XMkf8Iw++Y94VS75jkBgwxmSPdRoITFXsQD7ZxE0TyRM3eg==
+"@omisego/omg-js-childchain@3.0.0-alpha.21":
+  version "3.0.0-alpha.21"
+  resolved "https://registry.yarnpkg.com/@omisego/omg-js-childchain/-/omg-js-childchain-3.0.0-alpha.21.tgz#71f47f3f67d9ede8a10cd07f4d0ec1700a8646c9"
+  integrity sha512-5a+qawQyBXK9aLkP6HXiOg9WuwqEkUQP6M3qpO5LGkgR1/61yA91YTP/DubMAwIyww+k4cerMlj+dhjYwuE76w==
   dependencies:
     "@hapi/joi" "^16.1.8"
-    "@omisego/omg-js-util" "^3.0.0-alpha.19"
+    "@omisego/omg-js-util" "3.0.0-alpha.21"
     bn.js "^5.0.0"
     debug "^4.0.1"
     json-bigint "git+https://git@github.com/omisego/json-bigint.git"
@@ -1287,23 +1287,24 @@
     rlp "^2.1.0"
     web3-utils "^1.2.5"
 
-"@omisego/omg-js-rootchain@^3.0.0-alpha.19":
-  version "3.0.0-alpha.19"
-  resolved "https://registry.yarnpkg.com/@omisego/omg-js-rootchain/-/omg-js-rootchain-3.0.0-alpha.19.tgz#f3e40920a3d189c990d8f751a92615de04337d63"
-  integrity sha512-qgkuUdq4PUU+yWl4Ixu2GMBY3LYnyfHTh5tyxUbehqbVjl1s96xiDUc2ijyo0R+nXsPTREXnQXceFmBWSG7yFw==
+"@omisego/omg-js-rootchain@3.0.0-alpha.21":
+  version "3.0.0-alpha.21"
+  resolved "https://registry.yarnpkg.com/@omisego/omg-js-rootchain/-/omg-js-rootchain-3.0.0-alpha.21.tgz#e865cbb3494e2f25c4573c830b9929cb66e41cb0"
+  integrity sha512-6dZiLXg/K5gGJTdAddSWPVGQdNvjUuiMMwE3tSuY1/dYDGKDYBcxJpYC8M+/cEYZV7fUGwuQf6UR91E7Uyxn5A==
   dependencies:
     "@hapi/joi" "^16.1.8"
-    "@omisego/omg-js-util" "^3.0.0-alpha.19"
+    "@omisego/omg-js-util" "3.0.0-alpha.21"
     abi-decoder "^2.2.2"
     bn.js "^5.0.0"
     debug "^4.0.1"
+    ethereumjs-util "^6.2.0"
     human-standard-token-abi "^2.0.0"
     web3-utils "^1.2.3"
 
-"@omisego/omg-js-util@^3.0.0-alpha.19":
-  version "3.0.0-alpha.19"
-  resolved "https://registry.yarnpkg.com/@omisego/omg-js-util/-/omg-js-util-3.0.0-alpha.19.tgz#027cbdd839813554f19eda8fabdce2387bf93ace"
-  integrity sha512-L0VFvWAQgFXgCK+nt+yhq6bOL+SIfxzY+dPZVfmfGgs22u9zfQSSxHq0bZdfmV9jUDMXF/1w5PGaPiEcI972yg==
+"@omisego/omg-js-util@3.0.0-alpha.21":
+  version "3.0.0-alpha.21"
+  resolved "https://registry.yarnpkg.com/@omisego/omg-js-util/-/omg-js-util-3.0.0-alpha.21.tgz#c0bfa8c99f0e93ff857bde27d9777a61cdfa3472"
+  integrity sha512-SUwmARfFTLyRaev9zsVODSerrBU9i0opYycw1hOxXRHK3eHFspPhTiVae4vwkCWyxhvr4DXxj8o8QhkELzijkQ==
   dependencies:
     "@hapi/joi" "^17.1.0"
     bn.js "^5.1.1"
@@ -1317,14 +1318,14 @@
     rlp "^2.2.2"
     web3-utils "^1.2.1"
 
-"@omisego/omg-js@^3.0.0-alpha.19":
-  version "3.0.0-alpha.19"
-  resolved "https://registry.yarnpkg.com/@omisego/omg-js/-/omg-js-3.0.0-alpha.19.tgz#fdfa321405af013167fe3896ebbdd2623c3991a3"
-  integrity sha512-NfPURp/rvCQa5GPHXSE91GlDfOym66h0dNGePZjBM8xJhnhNGs2jLM4Hy8AtUWoD28w+Eu2nAy90EBf8j90aFw==
+"@omisego/omg-js@^3.0.0-alpha.21":
+  version "3.0.0-alpha.21"
+  resolved "https://registry.yarnpkg.com/@omisego/omg-js/-/omg-js-3.0.0-alpha.21.tgz#f8d8d6b33b357bda03585412720d9d3175c4437a"
+  integrity sha512-dNEzrI3gbrmT/+OpvxsvfmJ7yQpUUsYV1Ca/pf8mAVC7t64BX6UcaSkNKetSOlKC7qbxTvtwNgfwP51ia0P7zQ==
   dependencies:
-    "@omisego/omg-js-childchain" "^3.0.0-alpha.19"
-    "@omisego/omg-js-rootchain" "^3.0.0-alpha.19"
-    "@omisego/omg-js-util" "^3.0.0-alpha.19"
+    "@omisego/omg-js-childchain" "3.0.0-alpha.21"
+    "@omisego/omg-js-rootchain" "3.0.0-alpha.21"
+    "@omisego/omg-js-util" "3.0.0-alpha.21"
 
 "@svgr/babel-plugin-add-jsx-attribute@^4.2.0":
   version "4.2.0"
@@ -4344,7 +4345,7 @@ ethereumjs-util@^5.0.0, ethereumjs-util@^5.1.1:
     safe-buffer "^5.1.1"
     secp256k1 "^3.0.1"
 
-ethereumjs-util@^6.0.0:
+ethereumjs-util@^6.0.0, ethereumjs-util@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-6.2.0.tgz#23ec79b2488a7d041242f01e25f24e5ad0357960"
   integrity sha512-vb0XN9J2QGdZGIEKG2vXM+kUdEivUfU6Wmi5y0cg+LRhDYKnXIZ/Lz7XjFbHRR9VIKq2lVGLzGBkA++y2nOdOQ==
