@@ -7,6 +7,7 @@
     "@material-ui/icons": "^4.5.1",
     "@material-ui/lab": "^4.0.0-alpha.39",
     "@omisego/omg-js": "^3.0.0-0.4.1",
+    "@sentry/browser": "^5.12.4",
     "axios": "^0.19.2",
     "bignumber.js": "^9.0.0",
     "bn.js": "^5.1.1",
