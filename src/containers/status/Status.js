@@ -4,7 +4,7 @@ import truncate from 'truncate-middle';
 import moment from 'moment';
 import { Tooltip } from '@material-ui/core';
 import { Dvr, GitHub } from '@material-ui/icons';
-import omg_network from './omg_network.svg';
+import omg_network from './omisego-blue.svg';
 
 import { selectConnection, selectByzantine, selectLastSync, selectLastSeenBlock } from 'selectors/statusSelector';
 

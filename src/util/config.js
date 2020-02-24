@@ -4,5 +4,6 @@ export default {
   etherscanUrl: process.env.REACT_APP_ETHERSCAN_URL || 'https://ropsten.etherscan.io',
   checkSyncInterval: process.env.REACT_APP_SYNC_INTERVAL || 120,
   pollInterval: process.env.REACT_APP_POLL_INTERVAL || 5,
-  network: process.env.REACT_APP_NETWORK || 'ropsten'
+  network: process.env.REACT_APP_NETWORK || 'ropsten',
+  sentry: process.env.REACT_APP_SENTRY_DSN
 }
