@@ -1,0 +1,48 @@
+version: 2
+
+workflows:
+  version: 2
+  build-master:
+    jobs:
+      - test:
+          filters:
+            branches:
+              only: master
+      - build-and-deploy:
+          requires:
+            - test
+  build-other-branches:
+    jobs:
+      - test:
+          filters:
+            branches:
+              ignore: master
+      - build-and-deploy:
+          requires:
+            - test
+
+jobs:
+  test:
+    docker:
+      - image: node:12.16.1-alpine3.11
+    steps:
+      - checkout
+      - run: |
+          apk update && apk upgrade
+          apk add --no-cache git openssh make gcc g++ python
+      - run: yarn install
+
+  build-and-deploy:
+    docker:
+      - image: google/cloud-sdk
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: |
+          export SHORT_GIT_HASH=$(echo $CIRCLE_SHA1 | cut -c -7)
+          export DOCKER_TAG=$(echo $DOCKER_REPO_URL:$SHORT_GIT_HASH)
+          echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+          gcloud auth configure-docker
+          docker build -t $DOCKER_IMAGE_NAME .
+          docker tag $DOCKER_IMAGE_NAME $DOCKER_TAG
+          docker push $DOCKER_TAG
