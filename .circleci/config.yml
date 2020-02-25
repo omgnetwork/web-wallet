@@ -17,9 +17,6 @@ workflows:
           filters:
             branches:
               ignore: master
-      - build-and-deploy:
-          requires:
-            - test
 
 jobs:
   test:
