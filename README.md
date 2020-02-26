@@ -7,7 +7,7 @@
 This is an example client side wallet built in React.js which allows you to make interactions with the OMG network from the browser.
 To run this application locally, make sure you have a local instance of elixir-omg running or have access to an already deployed network.
 
-- This example application is using [`omg-js v3.0.0-0.4.1`](https://github.com/omisego/omg-js)
+- This example application is using [`omg-js`](https://github.com/omisego/omg-js)
 - Requires Node >= 8.11.3 < 13.0.0
 - Requires Chrome web browser (will not work on Brave with certain web3 configurations)
 
