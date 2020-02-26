@@ -1,5 +1,7 @@
 # react-starter-kit
 
+[![CircleCI](https://circleci.com/gh/omisego/react-starter-kit/tree/master.svg?style=svg)](https://circleci.com/gh/omisego/react-starter-kit/tree/master)
+
 [![Netlify Status](https://api.netlify.com/api/v1/badges/21aadcdd-99f2-4ddd-be65-7797c0ca1cdc/deploy-status)](https://app.netlify.com/sites/omgnetwork-browser-wallet/deploys)
 
 This is an example client side wallet built in React.js which allows you to make interactions with the OMG network from the browser.
