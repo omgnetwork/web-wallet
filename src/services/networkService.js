@@ -1,5 +1,5 @@
 import Web3 from 'web3';
-import { orderBy, flatten, uniq, omit } from 'lodash';
+import { orderBy, flatten, uniq } from 'lodash';
 import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
 import BN from 'bn.js';
 import JSONBigNumber from 'json-bigint';
@@ -323,12 +323,11 @@ class NetworkService {
   }
 
   async exitUtxo (utxo) {
-    const utxoToExit = omit(utxo, ['tokenInfo', 'spending_txhash', 'creating_txhash']);
-    const exitData = await this.childChain.getExitData(utxoToExit);
-    const hasToken = await this.rootChain.hasToken(utxoToExit.currency);
+    const exitData = await this.childChain.getExitData(utxo);
+    const hasToken = await this.rootChain.hasToken(utxo.currency);
     if (!hasToken) {
       await this.rootChain.addToken({
-        token: utxoToExit.currency,
+        token: utxo.currency,
         txOptions: { from: this.account, gas: 6000000 }
       });
     }
