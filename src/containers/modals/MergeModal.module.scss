@@ -18,7 +18,7 @@
 
 .list {
   height: 250px;
-  overflow-y: scroll;
+  overflow-y: auto;
   .utxo {
     font-size: 12px;
     display: flex;
