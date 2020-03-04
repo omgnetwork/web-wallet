@@ -15,9 +15,13 @@ function Input ({
   className
 }) {
   async function handlePaste () {
-    const text = await navigator.clipboard.readText();
-    if (text) {
-      onChange({ target: { value: text } });
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        onChange({ target: { value: text } });
+      }
+    } catch (err) {
+      // navigator clipboard api not supported in client browser
     }
   }
 
