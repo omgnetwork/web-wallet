@@ -1,7 +1,7 @@
 import erc20abi from 'human-standard-token-abi';
 import networkService from 'services/networkService';
 import truncate from 'truncate-middle';
-import axios from 'axios';
+// import axios from 'axios';
 import store from 'store';
 
 export async function getToken (currency) {
@@ -18,11 +18,11 @@ export async function getToken (currency) {
 
   let icon = ''
   try {
-    const iconAddress = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${currency}/logo.png`
-    const validIcon = await axios.get(iconAddress);
-    if (validIcon) {
-      icon = iconAddress
-    }
+    // const iconAddress = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${currency}/logo.png`
+    // const validIcon = await axios.get(iconAddress);
+    // if (validIcon) {
+    //   icon = iconAddress
+    // }
   } catch (err) {
     //
   }
