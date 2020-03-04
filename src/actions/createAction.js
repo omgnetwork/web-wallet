@@ -8,7 +8,7 @@ export function createAction (key, asyncAction) {
         return resolve();
       } catch (error) {
         dispatch({ type: `${key}/ERROR`, payload: error.message || 'Unknown error' });
-        return reject();
+        return;
       }
     });
   }
