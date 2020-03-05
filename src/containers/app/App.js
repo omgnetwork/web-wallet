@@ -45,7 +45,7 @@ function App () {
   function renderLoading () {
     return (
       <div className={styles.loading}>
-        <img src='omisego-blue.svg' alt='logo' />
+        <img src='omg_logo.svg' alt='logo' />
         <span>Waiting for Web3...</span>
         <span>{`Please make sure you are on the ${capitalize(config.network)} network.`}</span>
       </div>

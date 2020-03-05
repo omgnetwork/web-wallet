@@ -4,7 +4,7 @@ import truncate from 'truncate-middle';
 import moment from 'moment';
 import { Tooltip } from '@material-ui/core';
 import { Dvr, GitHub } from '@material-ui/icons';
-import omg_network from './omisego-blue.svg';
+import omg_network from './omg_logo.svg';
 
 import { selectConnection, selectByzantine, selectLastSync, selectLastSeenBlock } from 'selectors/statusSelector';
 
@@ -35,7 +35,7 @@ function Status () {
         <div
           className={[
             styles.statusCircle,
-            byzantineChain ? '' : styles.healthy
+            byzantineChain ? styles.unhealthy : styles.healthy
           ].join(' ')}
         />
       </div>

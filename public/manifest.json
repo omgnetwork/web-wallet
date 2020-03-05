@@ -8,12 +8,12 @@
       "type": "image/x-icon"
     },
     {
-      "src": "omisego-blue.svg",
+      "src": "omg_logo.svg",
       "type": "image/svg",
       "sizes": "192x192"
     },
     {
-      "src": "omisego-blue.svg",
+      "src": "omg_logo.svg",
       "type": "image/svg",
       "sizes": "512x512"
     }
