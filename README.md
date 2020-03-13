@@ -20,6 +20,7 @@ Make sure you have access to a Watcher endpoint. The wallet also requires an in-
 2. Create a `.env` file in the root and add your configuration.
 ```env
 REACT_APP_WATCHER_URL=        the watcher url
+REACT_APP_PLASMA_ADDRESS=     the plasma framework address
 REACT_APP_BLOCKEXPLORER_URL=  the block explorer url 
 REACT_APP_ETHERSCAN_URL=      the etherscan url 
 REACT_APP_SYNC_INTERVAL=      max seconds watcher has to sync to ethereum before blocking further transactions

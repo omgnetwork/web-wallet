@@ -17,7 +17,7 @@ import Web3 from 'web3';
 import { orderBy, flatten, uniq } from 'lodash';
 import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
 import BN from 'bn.js';
-import JSONBigNumber from 'json-bigint';
+import JSONBigNumber from 'omg-json-bigint';
 import config from 'util/config';
 
 import { getToken } from 'actions/tokenAction';
@@ -26,17 +26,10 @@ class NetworkService {
   constructor () {
     this.childChain = new ChildChain({ watcherUrl: config.watcherUrl });
     this.OmgUtil = OmgUtil;
-    this.plasmaContractAddress = '';
+    this.plasmaContractAddress = config.plasmaAddress;
   }
 
   async enableNetwork () {
-    try {
-      const { contract_addr } = await this.childChain.status();
-      this.plasmaContractAddress = contract_addr.plasma_framework;
-    } catch (err) {
-      return false;
-    }
-
     if (window.ethereum) {
       this.web3 = new Web3(window.ethereum, null, { transactionConfirmationBlocks: 1 });
       this.rootChain = new RootChain({ web3: this.web3, plasmaContractAddress: this.plasmaContractAddress });

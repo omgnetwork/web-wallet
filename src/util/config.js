@@ -15,6 +15,7 @@ limitations under the License. */
 
 export default {
   watcherUrl: process.env.REACT_APP_WATCHER_URL || 'http://localhost:7534',
+  plasmaAddress: process.env.REACT_APP_PLASMA_ADDRESS || '',
   blockExplorerUrl: process.env.REACT_APP_BLOCKEXPLORER_URL || '',
   etherscanUrl: process.env.REACT_APP_ETHERSCAN_URL || 'https://ropsten.etherscan.io',
   checkSyncInterval: process.env.REACT_APP_SYNC_INTERVAL || 120,

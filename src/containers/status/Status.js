@@ -36,6 +36,23 @@ function Status () {
   const lastSync = useSelector(selectLastSync);
   const lastSeenBlock = useSelector(selectLastSeenBlock);
 
+  const renderNoConnection = (
+    <Tooltip
+      title='Currently cannot connect to the Watcher. Either the Watcher is not operational or there is a connection issue. Please wait while we retry the connection.'
+      arrow
+    >
+      <div className={styles.indicator}>
+        <span>No Connection</span>
+        <div
+          className={[
+            styles.statusCircle,
+            styles.unhealthy
+          ].join(' ')}
+        />
+      </div>
+    </Tooltip>
+  )
+
   const renderChainHealth = (
     <Tooltip
       title={
@@ -50,7 +67,7 @@ function Status () {
         <div
           className={[
             styles.statusCircle,
-            byzantineChain ? '' : styles.healthy
+            byzantineChain ? styles.unhealthy : styles.healthy
           ].join(' ')}
         />
       </div>
@@ -96,7 +113,7 @@ function Status () {
           data={[
             {
               title: 'Watcher Status',
-              value: renderWatcherStatus()
+              value: watcherConnection ? renderWatcherStatus() : renderNoConnection
             },
             {
               title: 'Network Status',
