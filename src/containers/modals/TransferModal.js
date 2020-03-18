@@ -33,12 +33,11 @@ import { logAmount, powAmount } from 'util/amountConvert';
 import * as styles from './TransferModal.module.scss';
 
 function TransferModal ({ open, toggle, balances = [] }) {
-  const ETH = networkService.OmgUtil.transaction.ETH_CURRENCY;
   const dispatch = useDispatch();
-  const [ currency, setCurrency ] = useState(ETH);
+  const [ currency, setCurrency ] = useState('');
   const [ value, setValue ] = useState('');
-  const [ feeToken, setFeeToken ] = useState(ETH);
-  const [ feeOptions, setFeeOptions ] = useState([]);
+  const [ feeToken, setFeeToken ] = useState('');
+  const [ usableFees, setUsableFees ] = useState([]);
   const [ recipient, setRecipient ] = useState('');
   const [ metadata, setMetadata ] = useState('');
   const loading = useSelector(selectLoading(['TRANSFER/CREATE']));
@@ -46,36 +45,49 @@ function TransferModal ({ open, toggle, balances = [] }) {
   useEffect(() => {
     async function fetchFees () {
       const fees = await networkService.fetchFees();
-      setFeeOptions(fees);
+      const usableFees = balances.filter(balance => {
+        const feeObject = fees.find(fee => fee.currency === balance.currency);
+        if (feeObject) {
+          if (new BN(balance.amount).gte(new BN(feeObject.amount))) {
+            return true;
+          }
+        }
+        return false;
+      }).map(i => {
+        const feeObject = fees.find(fee => fee.currency === i.currency);
+        const feeAmount = new BN(feeObject.amount).div(new BN(feeObject.subunit_to_unit));
+        return {
+          title: i.name,
+          value: i.currency,
+          subTitle: `Fee Amount: ${feeAmount.toFixed()}`
+        }
+      });
+
+      setUsableFees(usableFees);
     }
-    if (open && !feeOptions.length) {
+
+    if (open) {
       fetchFees();
     }
-  }, [open, feeOptions]);
+  }, [open, balances]);
+
+  useEffect(() => {
+    if (balances.length) {
+      setCurrency(balances[0].currency)
+    }
+  }, [balances])
+
+  useEffect(() => {
+    if (usableFees.length) {
+      setFeeToken(usableFees[0].value)
+    }
+  }, [usableFees])
 
   const selectOptions = balances.map(i => ({
     title: i.name,
     value: i.currency,
     subTitle: `Balance: ${logAmount(i.amount, i.decimals)}`
   }));
-
-  const usableFees = balances.filter(balance => {
-    const feeObject = feeOptions.find(fee => fee.currency === balance.currency);
-    if (feeObject) {
-      if (new BN(balance.amount).gte(new BN(feeObject.amount))) {
-        return true;
-      }
-    }
-    return false;
-  }).map(i => {
-    const feeObject = feeOptions.find(fee => fee.currency === i.currency);
-    const feeAmount = new BN(feeObject.amount).div(new BN(feeObject.subunit_to_unit));
-    return {
-      title: i.name,
-      value: i.currency,
-      subTitle: `Fee Amount: ${feeAmount.toFixed()}`
-    }
-  });
 
   async function submit () {
     if (
@@ -101,9 +113,9 @@ function TransferModal ({ open, toggle, balances = [] }) {
   }
 
   function handleClose () {
-    setCurrency(ETH);
+    setCurrency('');
     setValue('');
-    setFeeToken(ETH);
+    setFeeToken('');
     setRecipient('');
     setMetadata('');
     toggle();
