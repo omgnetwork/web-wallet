@@ -72,16 +72,16 @@ function TransferModal ({ open, toggle, balances = [] }) {
   }, [open, balances]);
 
   useEffect(() => {
-    if (balances.length) {
+    if (balances.length && !currency) {
       setCurrency(balances[0].currency)
     }
-  }, [balances])
+  }, [balances, currency])
 
   useEffect(() => {
-    if (usableFees.length) {
+    if (usableFees.length && !feeToken) {
       setFeeToken(usableFees[0].value)
     }
-  }, [usableFees])
+  }, [usableFees, feeToken])
 
   const selectOptions = balances.map(i => ({
     title: i.name,
