@@ -1,6 +1,6 @@
 {
   "name": "react-starter-kit",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.8.3",
@@ -32,7 +32,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "serve": "serve -s build -l tcp://0.0.0.0:8000"
+    "serve": "yarn build && serve -s build -l tcp://0.0.0.0:8000"
   },
   "eslintConfig": {
     "extends": "react-app"

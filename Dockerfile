@@ -7,9 +7,6 @@ COPY . /app
 WORKDIR /app
 
 RUN yarn install
-RUN yarn build
-
-RUN apk del make gcc g++ python git openssh
 
 EXPOSE 8000
 
