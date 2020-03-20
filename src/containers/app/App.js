@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { forOwn, capitalize } from 'lodash';
 
 import { clearError } from 'actions/errorAction';
@@ -29,11 +29,13 @@ import * as styles from './App.module.scss';
 
 function App () {
   const dispatch = useDispatch();
-  const errors = useSelector(selectAllErrors());
+  const errors = useSelector(selectAllErrors, shallowEqual);
 
   const [ loading, setLoading ] = useState(true);
   const [ error, setError ] = useState({});
   const [ isError, setIsError ] = useState(false);
+
+  console.log('App render');
 
   useEffect(() => {
     async function checkNetwork() {
@@ -42,7 +44,7 @@ function App () {
         setLoading(false);
       }
     }
-    checkNetwork()
+    checkNetwork();
   }, []);
 
   useEffect(() => {
@@ -55,22 +57,20 @@ function App () {
         setIsError(false);
       }
     })
-  }, [errors, dispatch]);
+  }, [errors]);
 
-  function renderLoading () {
-    return (
-      <div className={styles.loading}>
-        <img src='omisego-blue.svg' alt='logo' />
-        <span>Waiting for Web3...</span>
-        <span>{`Please make sure you are on the ${capitalize(config.network)} network.`}</span>
-      </div>
-    );
-  }
+  const renderLoading = (
+    <div className={styles.loading}>
+      <img src='omisego-blue.svg' alt='logo' />
+      <span>Waiting for Web3...</span>
+      <span>{`Please make sure you are on the ${capitalize(config.network)} network.`}</span>
+    </div>
+  );
 
   return (
     <div className={styles.App}>
       {loading
-        ? renderLoading()
+        ? renderLoading
         : <Home />
       }
 
