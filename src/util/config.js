@@ -13,13 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
+import env from '@beam-australia/react-env';
+
 export default {
-  watcherUrl: process.env.REACT_APP_WATCHER_URL || 'http://localhost:7534',
-  plasmaAddress: process.env.REACT_APP_PLASMA_ADDRESS || '',
-  blockExplorerUrl: process.env.REACT_APP_BLOCKEXPLORER_URL || '',
-  etherscanUrl: process.env.REACT_APP_ETHERSCAN_URL || 'https://ropsten.etherscan.io',
-  checkSyncInterval: process.env.REACT_APP_SYNC_INTERVAL || 120,
-  pollInterval: process.env.REACT_APP_POLL_INTERVAL || 5,
-  network: process.env.REACT_APP_NETWORK || 'ropsten',
-  sentry: process.env.REACT_APP_SENTRY_DSN
+  watcherUrl: env('WATCHER_URL') || 'http://localhost:7534',
+  plasmaAddress: env('PLASMA_ADDRESS') || '',
+  blockExplorerUrl: env('BLOCKEXPLORER_URL') || '',
+  etherscanUrl: env('ETHERSCAN_URL') || 'https://ropsten.etherscan.io',
+  checkSyncInterval: env('SYNC_INTERVAL') || 120,
+  pollInterval: env('POLL_INTERVAL') || 5,
+  network: env('NETWORK') || 'ropsten',
+  sentry: env('SENTRY_DSN')
 }

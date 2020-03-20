@@ -1,13 +1,24 @@
-FROM node:12.16.1-alpine3.11
+FROM node:12.16.1-alpine3.11 as build
 
 RUN apk update && apk upgrade && \
     apk add --no-cache git openssh make gcc g++ python
 
-COPY . /app
-WORKDIR /app
+WORKDIR /var/app
+
+COPY package.json /var/app
+
+COPY yarn.lock /var/app
 
 RUN yarn install
 
-EXPOSE 8000
+ADD . .
 
-CMD ["yarn", "serve"]
+RUN yarn build
+
+FROM beamaustralia/react-env:latest
+
+WORKDIR /var/www
+
+COPY --from=build /var/app/build /var/www
+
+COPY .env* /var/www/
