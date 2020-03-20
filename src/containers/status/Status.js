@@ -16,12 +16,11 @@ limitations under the License. */
 import React from 'react';
 import { useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
-import moment from 'moment';
 import { Tooltip } from '@material-ui/core';
 import { Dvr, GitHub } from '@material-ui/icons';
 import omg_network from './omisego-blue.svg';
 
-import { selectConnection, selectByzantine, selectLastSync, selectLastSeenBlock } from 'selectors/statusSelector';
+import { selectConnection, selectByzantine, selectLastSync } from 'selectors/statusSelector';
 
 import Info from 'components/info/Info';
 import Copy from 'components/copy/Copy';
@@ -34,7 +33,6 @@ function Status () {
   const watcherConnection = useSelector(selectConnection);
   const byzantineChain = useSelector(selectByzantine);
   const lastSync = useSelector(selectLastSync);
-  const lastSeenBlock = useSelector(selectLastSeenBlock);
 
   const renderNoConnection = (
     <Tooltip
@@ -74,36 +72,27 @@ function Status () {
     </Tooltip>
   );
 
-  function renderWatcherStatus () {
-    let message = '';
-    if (lastSync <= config.checkSyncInterval) {
-      message = 'Connected'
-    }
-    if (lastSync > config.checkSyncInterval) {
-      message = 'Syncing'
-    }
-    return (
-      <Tooltip
-        title={
-          message === 'Syncing'
-            ? `A syncing status indicates that the Watcher is still syncing with the rootchain. Transactions will not be reflected so users will not be allowed to make new transactions. Last synced rootchain block was ${moment.unix(lastSeenBlock).fromNow()}.`
-            : ''
-        }
-        arrow
-      >
-        <div className={styles.indicator}>
-          <span>{message}</span>
-          <div
-            className={[
-              styles.statusCircle,
-              message === 'Connected' ? styles.healthy : '',
-              message === 'Syncing' ? styles.unhealthy : ''
-            ].join(' ')}
-          />
-        </div>
-      </Tooltip>
-    );
-  }
+  const renderWatcherStatus = (
+    <Tooltip
+      title={
+        !lastSync
+          ? `A syncing status indicates that the Watcher is still syncing with the rootchain. Transactions will not be reflected so users will not be allowed to make new transactions.`
+          : ''
+      }
+      arrow
+    >
+      <div className={styles.indicator}>
+        <span>{lastSync ? 'Connected' : 'Syncing'}</span>
+        <div
+          className={[
+            styles.statusCircle,
+            lastSync ? styles.healthy : '',
+            !lastSync ? styles.unhealthy : ''
+          ].join(' ')}
+        />
+      </div>
+    </Tooltip>
+  );
 
   return (
     <div className={styles.Status}>
@@ -113,7 +102,7 @@ function Status () {
           data={[
             {
               title: 'Watcher Status',
-              value: watcherConnection ? renderWatcherStatus() : renderNoConnection
+              value: watcherConnection ? renderWatcherStatus : renderNoConnection
             },
             {
               title: 'Network Status',
