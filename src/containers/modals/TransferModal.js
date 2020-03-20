@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import BN from 'bignumber.js';
 
 import { selectLoading } from 'selectors/loadingSelector';
+import { selectFees } from 'selectors/feeSelector';
 import { transfer } from 'actions/networkAction';
 import { getToken } from 'actions/tokenAction';
 
@@ -32,21 +33,24 @@ import { logAmount, powAmount } from 'util/amountConvert';
 
 import * as styles from './TransferModal.module.scss';
 
-function TransferModal ({ open, toggle, balances = [] }) {
+function TransferModal ({ open, toggle, balances }) {
   const dispatch = useDispatch();
+
   const [ currency, setCurrency ] = useState('');
   const [ value, setValue ] = useState('');
   const [ feeToken, setFeeToken ] = useState('');
-  const [ usableFees, setUsableFees ] = useState([]);
   const [ recipient, setRecipient ] = useState('');
   const [ metadata, setMetadata ] = useState('');
+  const [ usableFees, setUsableFees ] = useState('');
+
+  const fees = useSelector(selectFees);
+  const feesLoading = useSelector(selectLoading(['FEES/GET']));
   const loading = useSelector(selectLoading(['TRANSFER/CREATE']));
 
   useEffect(() => {
-    async function fetchFees () {
-      const fees = await networkService.fetchFees();
+    if (Object.keys(fees).length) {
       const usableFees = balances.filter(balance => {
-        const feeObject = fees.find(fee => fee.currency === balance.currency);
+        const feeObject = fees[balance.currency];
         if (feeObject) {
           if (new BN(balance.amount).gte(new BN(feeObject.amount))) {
             return true;
@@ -54,7 +58,7 @@ function TransferModal ({ open, toggle, balances = [] }) {
         }
         return false;
       }).map(i => {
-        const feeObject = fees.find(fee => fee.currency === i.currency);
+        const feeObject = fees[i.currency];
         const feeAmount = new BN(feeObject.amount).div(new BN(feeObject.subunit_to_unit));
         return {
           title: i.name,
@@ -62,14 +66,11 @@ function TransferModal ({ open, toggle, balances = [] }) {
           subTitle: `Fee Amount: ${feeAmount.toFixed()}`
         }
       });
-
-      setUsableFees(usableFees);
+      if (usableFees.length) {
+        setUsableFees(usableFees);
+      }
     }
-
-    if (open) {
-      fetchFees();
-    }
-  }, [open, balances]);
+  }, [balances, fees]);
 
   useEffect(() => {
     if (balances.length && !currency) {

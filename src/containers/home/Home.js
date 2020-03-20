@@ -26,7 +26,8 @@ import {
   fetchTransactions,
   fetchExits,
   fetchDeposits,
-  getExitQueue
+  getExitQueue,
+  fetchFees
 } from 'actions/networkAction';
 
 import Status from 'containers/status/Status';
@@ -57,6 +58,7 @@ function Home () {
     dispatch(fetchDeposits());
     dispatch(fetchExits());
     dispatch(fetchTransactions());
+    dispatch(fetchFees());
 
     for (const token of transactedTokens) {
       dispatch(getExitQueue(token));
