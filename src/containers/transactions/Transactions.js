@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import React, { useState } from 'react';
-import { orderBy } from 'lodash';
+import { orderBy, isEqual } from 'lodash';
 import { useSelector } from 'react-redux';
 import BN from 'bn.js';
 import moment from 'moment';
@@ -37,7 +37,7 @@ function Transactions () {
   const [ searchHistory, setSearchHistory ] = useState('');
   const [ activeTab, setActiveTab ] = useState('Transactions');
 
-  const unorderedTransactions = useSelector(selectChildchainTransactions);
+  const unorderedTransactions = useSelector(selectChildchainTransactions, isEqual);
   const transactions = orderBy(unorderedTransactions, i => i.block.timestamp, 'desc');
 
   function renderStatus (utxo) {

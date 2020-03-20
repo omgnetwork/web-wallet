@@ -15,7 +15,7 @@ limitations under the License. */
 
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector, batch } from 'react-redux';
-import { uniq, flatten } from 'lodash';
+import { uniq, flatten, isEqual } from 'lodash';
 
 import { selectChildchainTransactions } from 'selectors/transactionSelector';
 import config from 'util/config';
@@ -44,10 +44,7 @@ function Home () {
     window.scrollTo(0, 0);
   }, []);
 
-  const transactions = useSelector(
-    selectChildchainTransactions,
-    (before, after) => before.length === after.length
-  );
+  const transactions = useSelector(selectChildchainTransactions, isEqual);
 
   const inputs = flatten(
     transactions

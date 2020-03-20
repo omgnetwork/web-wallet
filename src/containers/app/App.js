@@ -14,8 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { forOwn, capitalize } from 'lodash';
+import { useDispatch, useSelector } from 'react-redux';
+import { forOwn, capitalize, isEqual } from 'lodash';
 
 import { clearError } from 'actions/errorAction';
 import networkService from 'services/networkService';
@@ -29,7 +29,7 @@ import * as styles from './App.module.scss';
 
 function App () {
   const dispatch = useDispatch();
-  const errors = useSelector(selectAllErrors, shallowEqual);
+  const errors = useSelector(selectAllErrors, isEqual);
 
   const [ loading, setLoading ] = useState(true);
   const [ error, setError ] = useState({});

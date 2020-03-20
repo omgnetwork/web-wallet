@@ -15,6 +15,7 @@ limitations under the License. */
 
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { isEqual } from 'lodash';
 import truncate from 'truncate-middle';
 import { Send, MergeType } from '@material-ui/icons';
 
@@ -30,7 +31,6 @@ import MergeModal from 'containers/modals/MergeModal';
 
 import Copy from 'components/copy/Copy';
 import Button from 'components/button/Button';
-import config from 'util/config';
 import { logAmount } from 'util/amountConvert';
 
 import networkService from 'services/networkService';
@@ -38,16 +38,15 @@ import networkService from 'services/networkService';
 import * as styles from './Account.module.scss';
 
 function Account () {
-  const lastSync = useSelector(selectLastSync);
-  const childBalance = useSelector(selectChildchainBalance);
-  const rootBalance = useSelector(selectRootchainBalance);
-  const pendingExits = useSelector(selectPendingExits);
-  const transactions = useSelector(selectChildchainTransactions);
+  const isSynced = useSelector(selectLastSync);
+  const childBalance = useSelector(selectChildchainBalance, isEqual);
+  const rootBalance = useSelector(selectRootchainBalance, isEqual);
+  const pendingExits = useSelector(selectPendingExits, isEqual);
+  const transactions = useSelector(selectChildchainTransactions, isEqual);
 
   const exitPending = pendingExits.some(i => i.status === 'Pending');
   const transferPending = transactions.some(i => i.status === 'Pending');
-  const isStalled = lastSync > config.checkSyncInterval;
-  const disabled = !childBalance.length || isStalled || exitPending || transferPending;
+  const disabled = !childBalance.length || !isSynced || exitPending || transferPending;
 
   const [ depositModal, setDepositModal ] = useState(false);
   const [ transferModal, setTransferModal ] = useState(false);
@@ -126,7 +125,7 @@ function Account () {
               <Button
                 onClick={() => setDepositModal(true)}
                 type='primary'
-                disabled={isStalled}
+                disabled={!isSynced}
               >
                 DEPOSIT
               </Button>
