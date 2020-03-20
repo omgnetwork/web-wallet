@@ -13,10 +13,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector, batch } from 'react-redux';
 import { uniq, flatten, isEqual } from 'lodash';
 
+import { selectModalState } from 'selectors/uiSelector';
 import { selectChildchainTransactions } from 'selectors/transactionSelector';
 import config from 'util/config';
 import useInterval from 'util/useInterval';
@@ -29,6 +30,12 @@ import {
   getExitQueue,
   fetchFees
 } from 'actions/networkAction';
+import { closeModal } from 'actions/uiAction';
+
+import DepositModal from 'containers/modals/DepositModal';
+import TransferModal from 'containers/modals/TransferModal';
+import ExitModal from 'containers/modals/ExitModal';
+import MergeModal from 'containers/modals/MergeModal';
 
 import Status from 'containers/status/Status';
 import Account from 'containers/account/Account';
@@ -44,14 +51,24 @@ function Home () {
     window.scrollTo(0, 0);
   }, []);
 
-  const transactions = useSelector(selectChildchainTransactions, isEqual);
+  const depositModalState = useSelector(selectModalState('depositModal'));
+  const transferModalState = useSelector(selectModalState('transferModal'));
+  const exitModalState = useSelector(selectModalState('exitModal'));
+  const mergeModalState = useSelector(selectModalState('mergeModal'));
 
-  const inputs = flatten(
-    transactions
+  const transactions = useSelector(selectChildchainTransactions, isEqual);
+  const transactedTokens = useMemo(() => {
+    const inputs = flatten(transactions
       .filter(i => i.status !== 'Pending')
       .map(i => i.inputs)
+    );
+    return uniq(inputs.map(i => i.currency));
+  }, [ transactions ]);
+
+  const handleModalClose = useCallback(
+    (name) => dispatch(closeModal(name)),
+    [dispatch]
   );
-  const transactedTokens = uniq(inputs.map(i => i.currency));
 
   useInterval(() => {
     batch(() => {
@@ -69,15 +86,33 @@ function Home () {
   }, POLL_INTERVAL);
 
   return (
-    <div className={styles.Home}>
-      <Status />
+    <>
+      <DepositModal
+        open={depositModalState}
+        toggle={() => handleModalClose('depositModal')}
+      />
+      <TransferModal
+        open={transferModalState}
+        toggle={() => handleModalClose('transferModal')}
+      />
+      <ExitModal
+        open={exitModalState}
+        toggle={() => handleModalClose('exitModal')}
+      />
+      <MergeModal
+        open={mergeModalState}
+        toggle={() => handleModalClose('mergeModal')}
+      />
+      <div className={styles.Home}>
+        <Status />
 
-      <div className={styles.main}>
-        <Account/>
-        <Transactions/>
+        <div className={styles.main}>
+          <Account/>
+          <Transactions/>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
-export default Home;
+export default React.memo(Home);

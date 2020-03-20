@@ -139,4 +139,4 @@ function ExitModal ({ open, toggle }) {
   );
 }
 
-export default ExitModal;
+export default React.memo(ExitModal);

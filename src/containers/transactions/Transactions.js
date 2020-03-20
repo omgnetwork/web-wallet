@@ -112,4 +112,4 @@ function Transactions () {
   );
 }
 
-export default Transactions;
+export default React.memo(Transactions);

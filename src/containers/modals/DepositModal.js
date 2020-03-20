@@ -30,8 +30,9 @@ import networkService from 'services/networkService';
 
 import * as styles from './DepositModal.module.scss';
 
+const ETH = networkService.OmgUtil.transaction.ETH_CURRENCY;
+
 function DepositModal ({ open, toggle }) {
-  const ETH = networkService.OmgUtil.transaction.ETH_CURRENCY;
   const dispatch = useDispatch();
   const loading = useSelector(selectLoading(['DEPOSIT/CREATE']));
 
@@ -137,4 +138,4 @@ function DepositModal ({ open, toggle }) {
   );
 }
 
-export default DepositModal;
+export default React.memo(DepositModal);

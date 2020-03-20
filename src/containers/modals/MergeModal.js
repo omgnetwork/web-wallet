@@ -149,4 +149,4 @@ function MergeModal ({ open, toggle }) {
   );
 }
 
-export default MergeModal;
+export default React.memo(MergeModal);

@@ -15,8 +15,10 @@ limitations under the License. */
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { isEqual } from 'lodash';
 import BN from 'bignumber.js';
 
+import { selectChildchainBalance } from 'selectors/balanceSelector';
 import { selectLoading } from 'selectors/loadingSelector';
 import { selectFees } from 'selectors/feeSelector';
 import { transfer } from 'actions/networkAction';
@@ -33,8 +35,9 @@ import { logAmount, powAmount } from 'util/amountConvert';
 
 import * as styles from './TransferModal.module.scss';
 
-function TransferModal ({ open, toggle, balances }) {
+function TransferModal ({ open, toggle }) {
   const dispatch = useDispatch();
+  const balances = useSelector(selectChildchainBalance, isEqual);
 
   const [ currency, setCurrency ] = useState('');
   const [ value, setValue ] = useState('');
@@ -192,4 +195,4 @@ function TransferModal ({ open, toggle, balances }) {
   );
 }
 
-export default TransferModal;
+export default React.memo(TransferModal);
