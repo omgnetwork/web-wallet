@@ -25,14 +25,13 @@
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
-    "serve": "^11.3.0",
     "truncate-middle": "^1.0.6",
     "web3": "1.0.0-beta.55"
   },
   "scripts": {
+    "prestart": "react-env",
     "start": "react-scripts start",
-    "build": "react-scripts build",
-    "serve": "yarn build && serve -s build -l tcp://0.0.0.0:8000"
+    "build": "react-scripts build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -48,5 +47,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@beam-australia/react-env": "^2.1.2"
   }
 }
