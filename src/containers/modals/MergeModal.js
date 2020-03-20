@@ -20,6 +20,7 @@ import { Check } from '@material-ui/icons';
 
 import { selectLoading } from 'selectors/loadingSelector';
 import { mergeUtxos } from 'actions/networkAction';
+import { closeModal } from 'actions/uiAction';
 
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
@@ -29,7 +30,7 @@ import { logAmount } from 'util/amountConvert';
 
 import * as styles from './MergeModal.module.scss';
 
-function MergeModal ({ open, toggle }) {
+function MergeModal ({ open }) {
   const dispatch = useDispatch();
   const [ selectedUTXOs, setSelectedUTXOs ] = useState([]);
   const [ searchUTXO, setSearchUTXO ] = useState('');
@@ -71,7 +72,7 @@ function MergeModal ({ open, toggle }) {
   function handleClose () {
     setSelectedUTXOs([]);
     setSearchUTXO('');
-    toggle();
+    dispatch(closeModal('mergeModal'));
   }
 
   function handleUtxoClick (utxo) {

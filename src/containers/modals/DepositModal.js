@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { selectLoading } from 'selectors/loadingSelector';
 import { deposit } from 'actions/networkAction';
+import { closeModal } from 'actions/uiAction';
 import { getToken } from 'actions/tokenAction';
 import { powAmount } from 'util/amountConvert';
 
@@ -32,7 +33,7 @@ import * as styles from './DepositModal.module.scss';
 
 const ETH = networkService.OmgUtil.transaction.ETH_CURRENCY;
 
-function DepositModal ({ open, toggle }) {
+function DepositModal ({ open }) {
   const dispatch = useDispatch();
   const loading = useSelector(selectLoading(['DEPOSIT/CREATE']));
 
@@ -50,7 +51,7 @@ function DepositModal ({ open, toggle }) {
         setTokenInfo({});
       }
     }
-    getTokenInfo()
+    getTokenInfo();
   }, [currency]);
   
   async function submit () {
@@ -58,7 +59,7 @@ function DepositModal ({ open, toggle }) {
       const amount = powAmount(value, tokenInfo.decimals);
       try {
         await dispatch(deposit(amount, currency));
-        toggle();
+        handleClose();
       } catch(err) {
         console.warn(err);
       }
@@ -66,10 +67,10 @@ function DepositModal ({ open, toggle }) {
   }
 
   function handleClose () {
-    setActiveTab('ETH')
-    setValue('')
-    setCurrency(ETH)
-    toggle()
+    setActiveTab('ETH');
+    setValue('');
+    setCurrency(ETH);
+    dispatch(closeModal('depositModal'));
   }
 
   return (

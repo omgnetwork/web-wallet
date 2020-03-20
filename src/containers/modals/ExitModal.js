@@ -20,6 +20,7 @@ import { Check } from '@material-ui/icons';
 
 import { selectLoading } from 'selectors/loadingSelector';
 import { exitUtxo } from 'actions/networkAction';
+import { closeModal } from 'actions/uiAction';
 
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
@@ -30,7 +31,7 @@ import { logAmount } from 'util/amountConvert';
 
 import * as styles from './ExitModal.module.scss';
 
-function ExitModal ({ open, toggle }) {
+function ExitModal ({ open }) {
   const dispatch = useDispatch();
   const loading = useSelector(selectLoading(['EXIT/CREATE']));
 
@@ -63,7 +64,7 @@ function ExitModal ({ open, toggle }) {
   function handleClose () {
     setSelectedUTXO();
     setSearchUTXO('');
-    toggle();
+    dispatch(closeModal('exitModal'));
   }
 
   

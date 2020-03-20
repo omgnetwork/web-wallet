@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React, { useEffect, useMemo, useCallback } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector, batch } from 'react-redux';
 import { uniq, flatten, isEqual } from 'lodash';
 
@@ -30,7 +30,6 @@ import {
   getExitQueue,
   fetchFees
 } from 'actions/networkAction';
-import { closeModal } from 'actions/uiAction';
 
 import DepositModal from 'containers/modals/DepositModal';
 import TransferModal from 'containers/modals/TransferModal';
@@ -65,11 +64,6 @@ function Home () {
     return uniq(inputs.map(i => i.currency));
   }, [ transactions ]);
 
-  const handleModalClose = useCallback(
-    (name) => dispatch(closeModal(name)),
-    [dispatch]
-  );
-
   useInterval(() => {
     batch(() => {
       dispatch(checkWatcherStatus());
@@ -87,25 +81,13 @@ function Home () {
 
   return (
     <>
-      <DepositModal
-        open={depositModalState}
-        toggle={() => handleModalClose('depositModal')}
-      />
-      <TransferModal
-        open={transferModalState}
-        toggle={() => handleModalClose('transferModal')}
-      />
-      <ExitModal
-        open={exitModalState}
-        toggle={() => handleModalClose('exitModal')}
-      />
-      <MergeModal
-        open={mergeModalState}
-        toggle={() => handleModalClose('mergeModal')}
-      />
+      <DepositModal open={depositModalState} />
+      <TransferModal open={transferModalState} />
+      <ExitModal open={exitModalState} />
+      <MergeModal open={mergeModalState} />
+
       <div className={styles.Home}>
         <Status />
-
         <div className={styles.main}>
           <Account/>
           <Transactions/>

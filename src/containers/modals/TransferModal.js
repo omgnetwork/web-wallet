@@ -23,6 +23,7 @@ import { selectLoading } from 'selectors/loadingSelector';
 import { selectFees } from 'selectors/feeSelector';
 import { transfer } from 'actions/networkAction';
 import { getToken } from 'actions/tokenAction';
+import { closeModal } from 'actions/uiAction';
 
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
@@ -35,7 +36,7 @@ import { logAmount, powAmount } from 'util/amountConvert';
 
 import * as styles from './TransferModal.module.scss';
 
-function TransferModal ({ open, toggle }) {
+function TransferModal ({ open }) {
   const dispatch = useDispatch();
   const balances = useSelector(selectChildchainBalance, isEqual);
 
@@ -122,7 +123,7 @@ function TransferModal ({ open, toggle }) {
     setFeeToken('');
     setRecipient('');
     setMetadata('');
-    toggle();
+    dispatch(closeModal('transferModal'));
   }
 
   return (
