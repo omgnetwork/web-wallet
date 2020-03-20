@@ -41,7 +41,7 @@ function TransferModal ({ open, toggle, balances }) {
   const [ feeToken, setFeeToken ] = useState('');
   const [ recipient, setRecipient ] = useState('');
   const [ metadata, setMetadata ] = useState('');
-  const [ usableFees, setUsableFees ] = useState('');
+  const [ usableFees, setUsableFees ] = useState([]);
 
   const fees = useSelector(selectFees);
   const feesLoading = useSelector(selectLoading(['FEES/GET']));
@@ -149,6 +149,7 @@ function TransferModal ({ open, toggle, balances }) {
       />
 
       <Select
+        loading={feesLoading}
         label='Fee Token'
         value={feeToken}
         options={usableFees}

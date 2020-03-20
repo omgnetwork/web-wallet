@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, batch } from 'react-redux';
 import { uniq, flatten } from 'lodash';
 
 import { selectChildchainTransactions } from 'selectors/transactionSelector';
@@ -44,7 +44,11 @@ function Home () {
     window.scrollTo(0, 0);
   }, []);
 
-  const transactions = useSelector(selectChildchainTransactions);
+  const transactions = useSelector(
+    selectChildchainTransactions,
+    (before, after) => before.length === after.length
+  );
+
   const inputs = flatten(
     transactions
       .filter(i => i.status !== 'Pending')
@@ -53,16 +57,18 @@ function Home () {
   const transactedTokens = uniq(inputs.map(i => i.currency));
 
   useInterval(() => {
-    dispatch(checkWatcherStatus());
-    dispatch(fetchBalances());
-    dispatch(fetchDeposits());
-    dispatch(fetchExits());
-    dispatch(fetchTransactions());
-    dispatch(fetchFees());
-
-    for (const token of transactedTokens) {
-      dispatch(getExitQueue(token));
-    }
+    batch(() => {
+      dispatch(checkWatcherStatus());
+      dispatch(fetchBalances());
+      dispatch(fetchDeposits());
+      dispatch(fetchExits());
+      dispatch(fetchTransactions());
+      dispatch(fetchFees());
+  
+      for (const token of transactedTokens) {
+        dispatch(getExitQueue(token));
+      }
+    });
   }, POLL_INTERVAL);
 
   return (

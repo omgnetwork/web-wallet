@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { forOwn, capitalize } from 'lodash';
 
@@ -34,8 +34,6 @@ function App () {
   const [ loading, setLoading ] = useState(true);
   const [ error, setError ] = useState({});
   const [ isError, setIsError ] = useState(false);
-
-  console.log('App render');
 
   useEffect(() => {
     async function checkNetwork() {
@@ -59,6 +57,11 @@ function App () {
     })
   }, [errors]);
 
+  const handleErrorClose = useCallback(
+    () => dispatch(clearError(error)),
+    [dispatch, error]
+  );
+
   const renderLoading = (
     <div className={styles.loading}>
       <img src='omisego-blue.svg' alt='logo' />
@@ -78,7 +81,7 @@ function App () {
         type='error'
         duration={5000}
         open={isError}
-        onClose={() => dispatch(clearError(error))}
+        onClose={handleErrorClose}
       >
         {`Oops! Something went wrong! ${isError ? Object.values(error)[0] : ''}`}
       </Alert>
