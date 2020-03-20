@@ -20,5 +20,3 @@ FROM beamaustralia/react-env:latest
 WORKDIR /var/www
 
 COPY --from=build /var/app/build /var/www
-
-COPY .env* /var/www/
