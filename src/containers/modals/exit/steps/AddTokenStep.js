@@ -63,6 +63,7 @@ function AddTokenStep ({
           type='primary'
           style={{ flex: 0 }}
           loading={addExitQueueLoading}
+          tooltip='Your add exit queue transaction is still pending. Please wait for confirmation.'
         >
           ADD QUEUE
         </Button>

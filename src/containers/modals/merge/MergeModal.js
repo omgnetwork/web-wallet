@@ -142,6 +142,7 @@ function MergeModal ({ open }) {
           type='primary'
           style={{ flex: 0 }}
           loading={loading}
+          tooltip='Your merge transaction is still pending. Please wait for confirmation.'
           disabled={selectedUTXOs.length <= 1 || selectedUTXOs.length > 4}
         >
           MERGE

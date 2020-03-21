@@ -19,7 +19,7 @@ import { isEqual } from 'lodash';
 import truncate from 'truncate-middle';
 import { Send, MergeType } from '@material-ui/icons';
 
-import { selectLastSync } from 'selectors/statusSelector';
+import { selectIsSynced } from 'selectors/statusSelector';
 import { selectChildchainBalance, selectRootchainBalance } from 'selectors/balanceSelector';
 import { selectPendingExits } from 'selectors/exitSelector';
 import { selectChildchainTransactions } from 'selectors/transactionSelector';
@@ -36,7 +36,7 @@ import * as styles from './Account.module.scss';
 
 function Account () {
   const dispatch = useDispatch();
-  const isSynced = useSelector(selectLastSync);
+  const isSynced = useSelector(selectIsSynced);
   const childBalance = useSelector(selectChildchainBalance, isEqual);
   const rootBalance = useSelector(selectRootchainBalance, isEqual);
   const pendingExits = useSelector(selectPendingExits, isEqual);

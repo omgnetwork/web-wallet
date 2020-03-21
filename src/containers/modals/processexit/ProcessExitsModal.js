@@ -94,6 +94,7 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
           type='primary'
           style={{ flex: 0 }}
           loading={loading}
+          tooltip='Your process exits transaction is still pending. Please wait for confirmation.'
           disabled={
             maxExits < 1 ||
             exitData.queueLength < 1 ||

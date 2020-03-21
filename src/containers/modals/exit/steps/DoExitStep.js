@@ -57,6 +57,7 @@ function DoExitStep ({
           type='primary'
           style={{ flex: 0 }}
           loading={submitLoading}
+          tooltip='Your exit transaction is still pending. Please wait for confirmation.'
           disabled={!selectedUTXO}
         >
           SUBMIT EXIT
