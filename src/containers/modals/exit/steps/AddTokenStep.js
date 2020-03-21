@@ -48,7 +48,7 @@ function AddTokenStep ({
     <>
       <h2>Add Exit Queue</h2>
 
-      <div>{`The exit queue for ${selectedUTXO.tokenInfo.name} token does not exist yet. Adding the exit queue is required before being able to start your exit.`}</div>
+      <div>{`The exit queue for ${selectedUTXO.tokenInfo.name} does not exist yet. Adding the exit queue is required before being able to start your exit.`}</div>
 
       <div className={styles.buttons}>
         <Button

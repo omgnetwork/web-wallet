@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { forOwn, capitalize, isEqual } from 'lodash';
 
@@ -57,10 +57,7 @@ function App () {
     })
   }, [errors]);
 
-  const handleErrorClose = useCallback(
-    () => dispatch(clearError(error)),
-    [dispatch, error]
-  );
+  const handleErrorClose = () => dispatch(clearError(error));
 
   const renderLoading = (
     <div className={styles.loading}>
