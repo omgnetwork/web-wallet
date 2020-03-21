@@ -130,4 +130,4 @@ function Exits ({ searchHistory }) {
   );
 }
 
-export default Exits;
+export default React.memo(Exits);

@@ -51,12 +51,12 @@ function MergeModal ({ open }) {
 
   useEffect(() => {
     if (selectedUTXOs.length) {
-      setSearchUTXO(selectedUTXOs[0].currency)
+      setSearchUTXO(selectedUTXOs[0].currency);
     }
     if (!selectedUTXOs.length) {
-      setSearchUTXO('')
+      setSearchUTXO('');
     }
-  }, [selectedUTXOs])
+  }, [selectedUTXOs]);
 
   async function submit () {
     if (selectedUTXOs.length > 1 && selectedUTXOs.length < 5) {
@@ -88,6 +88,7 @@ function MergeModal ({ open }) {
   const _utxos = utxos
     .filter(i => i.currency.includes(searchUTXO))
     .filter(i => i);
+
   return (
     <Modal open={open} onClose={handleClose}>
       <h2>Merge UTXO's</h2>

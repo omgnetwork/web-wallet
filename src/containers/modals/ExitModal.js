@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { orderBy } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { Check } from '@material-ui/icons';
@@ -67,12 +67,14 @@ function ExitModal ({ open }) {
     dispatch(closeModal('exitModal'));
   }
 
-  const _utxos = utxos
-    .filter(i => {
+  const _utxos = useMemo(() => {
+    return utxos.filter(i => {
       return i.currency.toLowerCase().includes(searchUTXO.toLowerCase()) ||
         i.tokenInfo.name.toLowerCase().includes(searchUTXO.toLowerCase())
-    })
-    .filter(i => !!i);
+      })
+      .filter(i => !!i);
+  }, [ utxos, searchUTXO ]);
+
   return (
     <Modal open={open} onClose={handleClose}>
       <h2>Start Standard Exit</h2>

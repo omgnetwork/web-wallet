@@ -63,4 +63,4 @@ function Deposits ({ searchHistory }) {
   );
 }
 
-export default Deposits;
+export default React.memo(Deposits);

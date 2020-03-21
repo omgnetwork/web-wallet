@@ -38,16 +38,17 @@ import * as styles from './TransferModal.module.scss';
 
 function TransferModal ({ open }) {
   const dispatch = useDispatch();
-  const balances = useSelector(selectChildchainBalance, isEqual);
-
+  
   const [ currency, setCurrency ] = useState('');
   const [ value, setValue ] = useState('');
   const [ feeToken, setFeeToken ] = useState('');
   const [ recipient, setRecipient ] = useState('');
   const [ metadata, setMetadata ] = useState('');
   const [ usableFees, setUsableFees ] = useState([]);
+  
+  const balances = useSelector(selectChildchainBalance, isEqual);
+  const fees = useSelector(selectFees, isEqual);
 
-  const fees = useSelector(selectFees);
   const feesLoading = useSelector(selectLoading(['FEES/GET']));
   const loading = useSelector(selectLoading(['TRANSFER/CREATE']));
 
@@ -101,8 +102,8 @@ function TransferModal ({ open }) {
       feeToken &&
       networkService.web3.utils.isAddress(recipient)
     ) {
-      const valueTokenInfo = await getToken(currency);
       try {
+        const valueTokenInfo = await getToken(currency);
         await dispatch(transfer({
           recipient,
           value: powAmount(value, valueTokenInfo.decimals),
