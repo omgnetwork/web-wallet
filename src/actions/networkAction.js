@@ -52,6 +52,41 @@ export function fetchExits () {
   );
 }
 
+export function checkForExitQueue (_token) {
+  return async function (dispatch) {
+    const token = _token.toLowerCase();
+    dispatch({ type: `QUEUE/GET_${token}/REQUEST` });
+    try {
+      const hasToken = await networkService.checkForExitQueue(token);
+      if (hasToken) {
+        const queue = await networkService.getExitQueue(token);
+        dispatch({ type: `QUEUE/GET/SUCCESS`, payload: queue });
+        dispatch({ type: `QUEUE/GET_${token}/SUCCESS` });
+        return true;
+      }
+      dispatch({ type: `QUEUE/GET_${token}/SUCCESS` });
+      return false;
+    } catch (error) {
+      dispatch({ type: `QUEUE/GET_${token}/ERROR`, payload: error.message });
+      return false;
+    }
+  }
+}
+
+export function getExitQueue (currency) {
+  return createAction(
+    'QUEUE/GET',
+    () => networkService.getExitQueue(currency)
+  );
+}
+
+export function addExitQueue (token) {
+  return createAction(
+    'QUEUE/CREATE',
+    () => networkService.addExitQueue(token)
+  );
+}
+
 export function exitUtxo (utxo) {
   return createAction(
     'EXIT/CREATE',
@@ -70,13 +105,6 @@ export function processExits (maxExits, currency) {
   return createAction(
     'QUEUE/PROCESS',
     () => networkService.processExits(maxExits, currency)
-  );
-}
-
-export function getExitQueue (currency) {
-  return createAction(
-    'QUEUE/GET',
-    () => networkService.getExitQueue(currency)
   );
 }
 

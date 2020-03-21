@@ -19,7 +19,9 @@ import truncate from 'truncate-middle';
 import store from 'store';
 // import axios from 'axios';
 
-export async function getToken (currency) {
+export async function getToken (_currency) {
+  const currency = _currency.toLowerCase();
+
   const state = store.getState();
   if (state.token[currency]) {
     return state.token[currency]

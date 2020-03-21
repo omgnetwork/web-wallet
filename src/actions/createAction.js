@@ -20,10 +20,10 @@ export function createAction (key, asyncAction) {
       try {
         const response = await asyncAction();
         dispatch({ type: `${key}/SUCCESS`, payload: response });
-        return resolve();
+        return resolve(true);
       } catch (error) {
         dispatch({ type: `${key}/ERROR`, payload: error.message || 'Unknown error' });
-        return;
+        return resolve(false);
       }
     });
   }

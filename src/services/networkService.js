@@ -124,17 +124,6 @@ class NetworkService {
     }
   }
 
-  async getExitQueue (currency) {
-    const queue = await this.rootChain.getExitQueue(currency);
-    return {
-      currency,
-      queue: queue.map(i => ({
-        ...i,
-        currency
-      }))
-    }
-  }
-
   async deposit (value, currency) {
     if (currency !== OmgUtil.transaction.ETH_CURRENCY) {
       await this.rootChain.approveToken({
@@ -330,15 +319,31 @@ class NetworkService {
     }
   }
 
+  async checkForExitQueue (token) {
+    return this.rootChain.hasToken(token);
+  }
+
+  async getExitQueue (_currency) {
+    const currency = _currency.toLowerCase();
+    const queue = await this.rootChain.getExitQueue(currency);
+    return {
+      currency,
+      queue: queue.map(i => ({
+        ...i,
+        currency
+      }))
+    }
+  }
+
+  async addExitQueue (token) {
+    return this.rootChain.addToken({
+      token,
+      txOptions: { from: this.account, gas: 6000000 }
+    });
+  }
+
   async exitUtxo (utxo) {
     const exitData = await this.childChain.getExitData(utxo);
-    const hasToken = await this.rootChain.hasToken(utxo.currency);
-    if (!hasToken) {
-      await this.rootChain.addToken({
-        token: utxo.currency,
-        txOptions: { from: this.account, gas: 6000000 }
-      });
-    }
     return this.rootChain.startStandardExit({
       utxoPos: exitData.utxo_pos,
       outputTx: exitData.txbytes,
