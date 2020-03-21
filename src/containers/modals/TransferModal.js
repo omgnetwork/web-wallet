@@ -49,7 +49,7 @@ function TransferModal ({ open }) {
   const balances = useSelector(selectChildchainBalance, isEqual);
   const fees = useSelector(selectFees, isEqual);
 
-  const feesLoading = useSelector(selectLoading(['FEES/GET']));
+  const feesLoading = useSelector(selectLoading(['FEE/GET']));
   const loading = useSelector(selectLoading(['TRANSFER/CREATE']));
 
   useEffect(() => {
@@ -155,7 +155,7 @@ function TransferModal ({ open }) {
 
       <Select
         loading={feesLoading}
-        label='Fee Token'
+        label='Fee'
         value={feeToken}
         options={usableFees}
         onSelect={i => setFeeToken(i.target.value)}

@@ -45,4 +45,4 @@ function Copy ({ value, light }) {
   );
 }
 
-export default Copy;
+export default React.memo(Copy);
