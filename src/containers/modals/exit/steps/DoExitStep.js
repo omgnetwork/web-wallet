@@ -42,6 +42,8 @@ function DoExitStep ({
     <>
       <h2>Start Standard Exit</h2>
 
+      <div>{`The exit queue for ${selectedUTXO.tokenInfo.name} has been added. You can now start your exit.`}</div>
+
       <div className={styles.buttons}>
         <Button
           onClick={handleClose}
