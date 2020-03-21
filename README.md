@@ -35,12 +35,12 @@ REACT_APP_SENTRY_DSN=         sentry dsn handler
 
 Open up your browser and navigate to `http://localhost:3000`, Make sure your Metamask is currently unlocked. You should be able to see your account balance on both the Root chain and Child chain.
 
-From here, you can perform 3 actions:
+From here, you can perform these actions:
 
 1. Deposit into the OMG Network: After 10 blocks confirmations, your Rootchain balance will be updated.
 
 2. Transfer funds on the OMG Network: Fill in the values for the Transfer fields and click Transfer. Depending on network congestion, you may have to wait for a little while for the transaction to be included in a block.
 
-3. Exit your funds back to Rootchain: select a UTXO to exit click on Submit Exit. The exit period will begin after a successful transaction. Do note that the exit period will be varied depending on the deployed contract environment. After the specified amount of time has passed, you will be able to process the exit and receive your funds back.
+3. Exit your funds back to the Rootchain: select a UTXO to exit click on Submit Exit. The exit period will begin after a successful transaction. Do note that the exit period will be varied depending on the deployed contract environment. After the specified amount of time has passed, you will be able to process the exit and receive your funds back.
 
 4. If the challenge period has passed, your exit will exist in an exit queue of that token. You can call process exits on this queue to receive your funds back.
