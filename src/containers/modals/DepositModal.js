@@ -80,10 +80,8 @@ function DepositModal ({ open }) {
       <Tabs
         className={styles.tabs}
         onClick={i => {
-          i === 'ETH'
-            ? setCurrency(ETH)
-            : setCurrency('');
-          setActiveTab(i)
+          i === 'ETH' ? setCurrency(ETH) : setCurrency('');
+          setActiveTab(i);
         }}
         activeTab={activeTab}
         tabs={[ 'ETH', 'ERC20' ]}

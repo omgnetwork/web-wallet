@@ -38,4 +38,4 @@ function Tabs ({ tabs, activeTab, onClick, className }) {
   );
 }
 
-export default Tabs;
+export default React.memo(Tabs);

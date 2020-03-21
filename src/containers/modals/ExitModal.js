@@ -67,7 +67,6 @@ function ExitModal ({ open }) {
     dispatch(closeModal('exitModal'));
   }
 
-  
   const _utxos = utxos
     .filter(i => {
       return i.currency.toLowerCase().includes(searchUTXO.toLowerCase()) ||
