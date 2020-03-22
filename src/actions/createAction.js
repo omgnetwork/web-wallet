@@ -13,7 +13,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-export function createAction (key, asyncAction) {
+import sanitizeError from 'util/sanitizeError';
+
+export function createAction (key, asyncAction, customErrorMessage) {
   return async function (dispatch) {
     dispatch({ type: `${key}/REQUEST` });
     try {
@@ -23,8 +25,11 @@ export function createAction (key, asyncAction) {
     } catch (error) {
       // cancel request loading state
       dispatch({ type: `${key}/ERROR` });
+
       // show error in ui
-      dispatch({ type: 'UI/ERROR/UPDATE', payload: error.message });
+      const sanitizedError = await sanitizeError(error);
+      dispatch({ type: 'UI/ERROR/UPDATE', payload: customErrorMessage || sanitizedError });
+      
       // resolve the result to the view
       return false;
     };

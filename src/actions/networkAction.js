@@ -67,7 +67,7 @@ export function checkForExitQueue (_token) {
       dispatch({ type: `QUEUE/GET_${token}/SUCCESS` });
       return false;
     } catch (error) {
-      dispatch({ type: 'UI/ERROR/UPDATE', payload: 'Unable to check exit queue' });
+      dispatch({ type: 'UI/ERROR/UPDATE', payload: `Unable to check exit queue for ${token}` });
       return false;
     }
   }

@@ -68,7 +68,7 @@ function App () {
         open={!!errorMessage}
         onClose={handleErrorClose}
       >
-        {`Something went wrong! ${errorMessage}`}
+        {`Error! ${errorMessage}`}
       </Alert>
 
       <Alert

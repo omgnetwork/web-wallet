@@ -22,6 +22,8 @@ import config from 'util/config';
 
 import { getToken } from 'actions/tokenAction';
 
+const GAS_LIMIT = 6000000;
+
 class NetworkService {
   constructor () {
     this.childChain = new ChildChain({ watcherUrl: config.watcherUrl });
@@ -129,13 +131,13 @@ class NetworkService {
       await this.rootChain.approveToken({
         erc20Address: currency,
         amount: value,
-        txOptions: { from: this.account, gas: 6000000 }
+        txOptions: { from: this.account, gas: GAS_LIMIT }
       })
     }
     return this.rootChain.deposit({
       amount: new BN(value),
       ...currency !== OmgUtil.transaction.ETH_CURRENCY ? { currency } : {},
-      txOptions: { from: this.account, gas: 6000000 }
+      txOptions: { from: this.account, gas: GAS_LIMIT }
     })
   }
 
@@ -338,7 +340,7 @@ class NetworkService {
   async addExitQueue (token) {
     return this.rootChain.addToken({
       token,
-      txOptions: { from: this.account, gas: 6000000 }
+      txOptions: { from: this.account, gas: GAS_LIMIT }
     });
   }
 
@@ -348,7 +350,7 @@ class NetworkService {
       utxoPos: exitData.utxo_pos,
       outputTx: exitData.txbytes,
       inclusionProof: exitData.proof,
-      txOptions: { from: this.account, gas: 6000000 }
+      txOptions: { from: this.account, gas: GAS_LIMIT }
     });
   }
 
@@ -357,7 +359,7 @@ class NetworkService {
       token: currency,
       exitId: 0,
       maxExitsToProcess: maxExits,
-      txOptions: { from: this.account, gas: 6000000 }
+      txOptions: { from: this.account, gas: GAS_LIMIT }
     })
   }
 }
