@@ -60,14 +60,10 @@ function MergeModal ({ open }) {
 
   async function submit () {
     if (selectedUTXOs.length > 1 && selectedUTXOs.length < 5) {
-      try {
-        const res = await dispatch(mergeUtxos(selectedUTXOs));
-        if (res) {
-          dispatch(openAlert('Merge submitted. You will be blocked from making more transactions until the merge is confirmed.'));
-          handleClose();
-        }
-      } catch (err) {
-        console.warn(err);
+      const res = await dispatch(mergeUtxos(selectedUTXOs));
+      if (res) {
+        dispatch(openAlert('Merge submitted. You will be blocked from making more transactions until the merge is confirmed.'));
+        handleClose();
       }
     }
   }

@@ -57,14 +57,10 @@ function DepositModal ({ open }) {
   async function submit () {
     if (value > 0 && currency && tokenInfo) {
       const amount = powAmount(value, tokenInfo.decimals);
-      try {
-        const res = await dispatch(deposit(amount, currency));
-        if (res) {
-          dispatch(openAlert('Deposit submitted. Check the Deposits tab to see the status of your deposit.'));
-          handleClose();
-        }
-      } catch (err) {
-        console.warn(err);
+      const res = await dispatch(deposit(amount, currency));
+      if (res) {
+        dispatch(openAlert('Deposit submitted. Check the Deposits tab to see the status of your deposit.'));
+        handleClose();
       }
     }
   }

@@ -41,13 +41,9 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
 
   async function submit () {
     if (maxExits > 0) {
-      try {
-        const res = await dispatch(processExits(maxExits, exitData.currency));
-        if (res) {
-          handleClose();
-        }
-      } catch (err) {
-        console.warn(err);
+      const res = await dispatch(processExits(maxExits, exitData.currency));
+      if (res) {
+        handleClose();
       }
     }
   }
