@@ -24,6 +24,7 @@
     "react-scripts": "3.2.0",
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
+    "redux-mock-store": "^1.5.4",
     "redux-thunk": "^2.3.0",
     "truncate-middle": "^1.0.6",
     "web3": "1.0.0-beta.55"
@@ -31,7 +32,9 @@
   "scripts": {
     "prestart": "react-env",
     "start": "react-scripts start",
-    "build": "react-scripts build"
+    "build": "react-scripts build",
+    "test": "react-scripts test --watchAll=false",
+    "coverage": "yarn test --coverage"
   },
   "eslintConfig": {
     "extends": "react-app"
