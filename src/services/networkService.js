@@ -128,11 +128,15 @@ class NetworkService {
 
   async deposit (value, currency) {
     if (currency !== OmgUtil.transaction.ETH_CURRENCY) {
-      await this.rootChain.approveToken({
-        erc20Address: currency,
-        amount: value,
-        txOptions: { from: this.account, gas: GAS_LIMIT }
-      })
+      try {
+        await this.rootChain.approveToken({
+          erc20Address: currency,
+          amount: value,
+          txOptions: { from: this.account, gas: GAS_LIMIT }
+        });
+      } catch (error) {
+        throw new Error(`Approval to deposit ${value} ${currency} failed.`);
+      }
     }
     return this.rootChain.deposit({
       amount: new BN(value),
