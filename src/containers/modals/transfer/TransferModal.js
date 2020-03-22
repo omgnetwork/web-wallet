@@ -71,17 +71,15 @@ function TransferModal ({ open }) {
           subTitle: `Fee Amount: ${feeAmount.toFixed()}`
         }
       });
-      if (usableFees.length) {
-        setUsableFees(usableFees);
-      }
+      setUsableFees(usableFees);
     }
-  }, [balances, fees]);
+  }, [balances, fees, open]);
 
   useEffect(() => {
     if (balances.length && !currency) {
       setCurrency(balances[0].currency)
     }
-  }, [balances, currency])
+  }, [balances, currency, open]);
 
   useEffect(() => {
     if (usableFees.length && !feeToken) {

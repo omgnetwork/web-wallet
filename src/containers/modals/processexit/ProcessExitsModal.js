@@ -37,7 +37,7 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
     if (exitData) {
       setMaxExits(exitData.queuePosition);
     }
-  }, [exitData]);
+  }, [exitData, open]);
 
   async function submit () {
     if (maxExits > 0) {

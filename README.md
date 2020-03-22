@@ -2,14 +2,11 @@
 
 [![CircleCI](https://circleci.com/gh/omisego/react-starter-kit/tree/master.svg?style=svg)](https://circleci.com/gh/omisego/react-starter-kit/tree/master)
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/21aadcdd-99f2-4ddd-be65-7797c0ca1cdc/deploy-status)](https://app.netlify.com/sites/omgnetwork-browser-wallet/deploys)
-
 This is an example client side wallet built in React.js which allows you to make interactions with the OMG network from the browser.
 To run this application locally, make sure you have a local instance of elixir-omg running or have access to an already deployed network.
 
 - This example application is using [`omg-js`](https://github.com/omisego/omg-js)
-- Requires Node >= 8.11.3 < 13.0.0
-- Requires Chrome web browser (will not work on Brave with certain web3 configurations)
+- Requires Node >= 9 < 13
 
 ## Initial Setup
 
@@ -37,10 +34,10 @@ Open up your browser and navigate to `http://localhost:3000`, Make sure your Met
 
 From here, you can perform these actions:
 
-1. Deposit into the OMG Network: After 10 blocks confirmations, your Rootchain balance will be updated.
+1. Deposit into the OMG Network.
 
-2. Transfer funds on the OMG Network: Fill in the values for the Transfer fields and click Transfer. Depending on network congestion, you may have to wait for a little while for the transaction to be included in a block.
+2. Transfer funds on the OMG Network.
 
-3. Exit your funds back to the Rootchain: select a UTXO to exit click on Submit Exit. The exit period will begin after a successful transaction. Do note that the exit period will be varied depending on the deployed contract environment. After the specified amount of time has passed, you will be able to process the exit and receive your funds back.
+3. Exit your funds back to the Rootchain.
 
 4. If the challenge period has passed, your exit will exist in an exit queue of that token. You can call process exits on this queue to receive your funds back.
