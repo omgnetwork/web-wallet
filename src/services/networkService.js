@@ -17,6 +17,7 @@ import Web3 from 'web3';
 import { orderBy, flatten, uniq } from 'lodash';
 import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
 import BN from 'bn.js';
+import axios from 'axios';
 import JSONBigNumber from 'omg-json-bigint';
 import config from 'util/config';
 
@@ -365,6 +366,40 @@ class NetworkService {
       maxExitsToProcess: maxExits,
       txOptions: { from: this.account, gas: GAS_LIMIT }
     })
+  }
+
+  async getGasPrice () {
+    // first try ethgasstation
+    try {
+      const { data: { safeLow, average, fast } } = await axios.get('https://ethgasstation.info/json/ethgasAPI.json');
+      return {
+        slow: safeLow * 100000000,
+        normal: average * 100000000,
+        fast: fast * 100000000
+      }
+    } catch (error) {
+      //
+    }
+
+    // if not web3 oracle
+    try {
+      const _medianEstimate = await this.web3.eth.getGasPrice();
+      const medianEstimate = Number(_medianEstimate);
+      return {
+        slow: Math.max(medianEstimate / 2, 1000000000),
+        normal: medianEstimate,
+        fast: medianEstimate * 5
+      }
+    } catch (error) {
+      //
+    }
+
+    // if not these defaults
+    return {
+      slow: 1000000000,
+      normal: 2000000000,
+      fast: 10000000000
+    }
   }
 }
 

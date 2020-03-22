@@ -24,6 +24,7 @@ import exitReducer from './exitReducer';
 import queueReducer from './queueReducer';
 import tokenReducer from './tokenReducer';
 import feeReducer from './feeReducer';
+import gasReducer from './gasReducer';
 import uiReducer from './uiReducer';
 
 const rootReducer = combineReducers({
@@ -36,6 +37,7 @@ const rootReducer = combineReducers({
   queue: queueReducer,
   token: tokenReducer,
   fees: feeReducer,
+  gas: gasReducer,
   ui: uiReducer
 });
 

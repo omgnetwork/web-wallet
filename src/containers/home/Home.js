@@ -28,7 +28,8 @@ import {
   fetchExits,
   fetchDeposits,
   getExitQueue,
-  fetchFees
+  fetchFees,
+  fetchGas
 } from 'actions/networkAction';
 
 import DepositModal from 'containers/modals/deposit/DepositModal';
@@ -78,6 +79,10 @@ function Home () {
       }
     });
   }, POLL_INTERVAL);
+
+  useInterval(() => {
+    dispatch(fetchGas());
+  }, POLL_INTERVAL * 3);
 
   return (
     <>

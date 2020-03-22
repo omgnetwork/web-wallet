@@ -122,6 +122,13 @@ export function mergeUtxos (utxos) {
   );
 }
 
+export function fetchGas () {
+  return createAction(
+    'GAS/GET',
+    () => networkService.getGasPrice()
+  );
+}
+
 export function fetchFees () {
   return async function (dispatch) {
     const state = store.getState();

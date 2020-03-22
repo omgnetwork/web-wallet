@@ -53,7 +53,7 @@ function DepositModal ({ open }) {
     }
     getTokenInfo();
   }, [currency]);
-  
+
   async function submit () {
     if (value > 0 && currency && tokenInfo) {
       const amount = powAmount(value, tokenInfo.decimals);
