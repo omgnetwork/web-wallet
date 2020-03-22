@@ -127,13 +127,17 @@ class NetworkService {
     }
   }
 
-  async deposit (value, currency) {
+  async deposit (value, currency, gasPrice) {
     if (currency !== OmgUtil.transaction.ETH_CURRENCY) {
       try {
         await this.rootChain.approveToken({
           erc20Address: currency,
           amount: value,
-          txOptions: { from: this.account, gas: GAS_LIMIT }
+          txOptions: {
+            from: this.account,
+            gas: GAS_LIMIT,
+            gasPrice: gasPrice.toString()
+          }
         });
       } catch (error) {
         throw new Error(`Approval to deposit ${value} ${currency} failed.`);
@@ -142,7 +146,11 @@ class NetworkService {
     return this.rootChain.deposit({
       amount: new BN(value),
       ...currency !== OmgUtil.transaction.ETH_CURRENCY ? { currency } : {},
-      txOptions: { from: this.account, gas: GAS_LIMIT }
+      txOptions: {
+        from: this.account,
+        gas: GAS_LIMIT,
+        gasPrice: gasPrice.toString()
+      }
     })
   }
 
@@ -342,29 +350,41 @@ class NetworkService {
     }
   }
 
-  async addExitQueue (token) {
+  async addExitQueue (token, gasPrice) {
     return this.rootChain.addToken({
       token,
-      txOptions: { from: this.account, gas: GAS_LIMIT }
+      txOptions: {
+        from: this.account,
+        gas: GAS_LIMIT,
+        gasPrice: gasPrice.toString()
+      }
     });
   }
 
-  async exitUtxo (utxo) {
+  async exitUtxo (utxo, gasPrice) {
     const exitData = await this.childChain.getExitData(utxo);
     return this.rootChain.startStandardExit({
       utxoPos: exitData.utxo_pos,
       outputTx: exitData.txbytes,
       inclusionProof: exitData.proof,
-      txOptions: { from: this.account, gas: GAS_LIMIT }
+      txOptions: {
+        from: this.account,
+        gas: GAS_LIMIT,
+        gasPrice: gasPrice.toString()
+      }
     });
   }
 
-  async processExits (maxExits, currency) {
+  async processExits (maxExits, currency, gasPrice) {
     return this.rootChain.processExits({
       token: currency,
       exitId: 0,
       maxExitsToProcess: maxExits,
-      txOptions: { from: this.account, gas: GAS_LIMIT }
+      txOptions: {
+        from: this.account,
+        gas: GAS_LIMIT,
+        gasPrice: gasPrice.toString()
+      }
     })
   }
 

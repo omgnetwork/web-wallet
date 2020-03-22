@@ -22,6 +22,7 @@ import { closeModal, openAlert } from 'actions/uiAction';
 import { getToken } from 'actions/tokenAction';
 import { powAmount } from 'util/amountConvert';
 
+import GasPicker from 'components/gaspicker/GasPicker';
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
 import Input from 'components/input/Input';
@@ -37,6 +38,8 @@ function DepositModal ({ open }) {
   const dispatch = useDispatch();
   const loading = useSelector(selectLoading(['DEPOSIT/CREATE']));
 
+  const [ gasPrice, setGasPrice ] = useState();
+  const [ selectedSpeed, setSelectedSpeed ] = useState('normal');
   const [ activeTab, setActiveTab ] = useState('ETH');
   const [ value, setValue ] = useState('');
   const [ currency, setCurrency ] = useState(ETH);
@@ -57,7 +60,7 @@ function DepositModal ({ open }) {
   async function submit () {
     if (value > 0 && currency && tokenInfo) {
       const amount = powAmount(value, tokenInfo.decimals);
-      const res = await dispatch(deposit(amount, currency));
+      const res = await dispatch(deposit(amount, currency, gasPrice));
       if (res) {
         dispatch(openAlert('Deposit submitted. Check the Deposits tab to see the status of your deposit.'));
         handleClose();
@@ -67,6 +70,7 @@ function DepositModal ({ open }) {
 
   function handleClose () {
     setActiveTab('ETH');
+    setSelectedSpeed('normal');
     setValue('');
     setCurrency(ETH);
     dispatch(closeModal('depositModal'));
@@ -103,6 +107,12 @@ function DepositModal ({ open }) {
         placeholder={0}
         value={value}
         onChange={i => setValue(i.target.value)}
+      />
+
+      <GasPicker
+        selectedSpeed={selectedSpeed}
+        setSelectedSpeed={setSelectedSpeed}
+        setGasPrice={setGasPrice}
       />
 
       {activeTab === 'ERC20' && (

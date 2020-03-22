@@ -82,7 +82,7 @@ function Home () {
 
   useInterval(() => {
     dispatch(fetchGas());
-  }, POLL_INTERVAL * 3);
+  }, POLL_INTERVAL * 10);
 
   return (
     <>

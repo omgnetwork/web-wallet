@@ -22,7 +22,7 @@ async function sanitizeError (error) {
   }
 
   // try get reason from evm error message
-  if (error.message.includes('Transaction has been reverted by the EVM')) {
+  if (error.message && error.message.includes('Transaction has been reverted by the EVM')) {
     try {
       const errorTx = JSON.parse(error.message.split('reverted by the EVM:')[1]);
       const reason = await networkService.OmgUtil.ethErrorReason({
@@ -36,7 +36,7 @@ async function sanitizeError (error) {
   }
 
   // default to original error message
-  return error.message;
+  return error.message || 'Something went wrong';
 }
 
 export default sanitizeError;

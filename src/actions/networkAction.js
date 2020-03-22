@@ -80,31 +80,31 @@ export function getExitQueue (currency) {
   );
 }
 
-export function addExitQueue (token) {
+export function addExitQueue (token, gasPrice) {
   return createAction(
     'QUEUE/CREATE',
-    () => networkService.addExitQueue(token)
+    () => networkService.addExitQueue(token, gasPrice)
   );
 }
 
-export function exitUtxo (utxo) {
+export function exitUtxo (utxo, gasPrice) {
   return createAction(
     'EXIT/CREATE',
-    () => networkService.exitUtxo(utxo)
+    () => networkService.exitUtxo(utxo, gasPrice)
   );
 }
 
-export function deposit (value, currency) {
+export function deposit (value, currency, gasPrice) {
   return createAction(
     'DEPOSIT/CREATE',
-    () => networkService.deposit(value, currency)
+    () => networkService.deposit(value, currency, gasPrice)
   );
 }
 
-export function processExits (maxExits, currency) {
+export function processExits (maxExits, currency, gasPrice) {
   return createAction(
     'QUEUE/PROCESS',
-    () => networkService.processExits(maxExits, currency)
+    () => networkService.processExits(maxExits, currency, gasPrice)
   );
 }
 

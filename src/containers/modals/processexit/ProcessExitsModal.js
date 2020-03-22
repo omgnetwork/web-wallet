@@ -21,6 +21,7 @@ import { selectByzantine } from 'selectors/statusSelector';
 import { selectLoading } from 'selectors/loadingSelector';
 import { processExits } from 'actions/networkAction';
 
+import GasPicker from 'components/gaspicker/GasPicker';
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
 import Input from 'components/input/Input';
@@ -29,9 +30,13 @@ import * as styles from './ProcessExitsModal.module.scss';
 
 function ProcessExitsModal ({ exitData, open, toggle }) {
   const dispatch = useDispatch();
+
   const byzantineChain = useSelector(selectByzantine);
   const loading = useSelector(selectLoading(['QUEUE/PROCESS']));
+  
   const [ maxExits, setMaxExits ] = useState('');
+  const [ gasPrice, setGasPrice ] = useState();
+  const [ selectedSpeed, setSelectedSpeed ] = useState('normal');
 
   useEffect(() => {
     if (exitData) {
@@ -41,7 +46,7 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
 
   async function submit () {
     if (maxExits > 0) {
-      const res = await dispatch(processExits(maxExits, exitData.currency));
+      const res = await dispatch(processExits(maxExits, exitData.currency, gasPrice));
       if (res) {
         handleClose();
       }
@@ -49,6 +54,7 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
   }
 
   function handleClose () {
+    setSelectedSpeed('normal');
     setMaxExits('');
     toggle();
   }
@@ -78,6 +84,12 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
       <div className={styles.disclaimer}>
         {`Current exit queue length: ${exitData.queueLength || 0}`}
       </div>
+
+      <GasPicker
+        selectedSpeed={selectedSpeed}
+        setSelectedSpeed={setSelectedSpeed}
+        setGasPrice={setGasPrice}
+      />
 
       <div className={styles.buttons}>
         <Button

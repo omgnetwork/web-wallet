@@ -26,14 +26,15 @@ import * as styles from '../ExitModal.module.scss';
 function AddTokenStep ({
   selectedUTXO,
   setSelectedUTXO,
-  setStep
+  setStep,
+  gasPrice
 }) {
   const dispatch = useDispatch();
 
   const addExitQueueLoading = useSelector(selectLoading(['QUEUE/CREATE']));
 
   async function doAddExitQueue () {
-    const res = await dispatch(addExitQueue(selectedUTXO.currency));
+    const res = await dispatch(addExitQueue(selectedUTXO.currency, gasPrice));
     if (res) {
       return setStep(3);
     }

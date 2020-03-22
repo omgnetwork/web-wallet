@@ -110,7 +110,7 @@ function TransferModal ({ open }) {
           metadata
         }));
         if (res) {
-          dispatch(openAlert('Transfer submitted. You will be blocked from making more transactions until the transfer is confirmed.'));
+          dispatch(openAlert('Transfer submitted. You will be blocked from making further transactions until the transfer is confirmed.'));
           handleClose();
         }
       } catch (err) {

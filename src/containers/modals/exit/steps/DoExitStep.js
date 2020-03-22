@@ -17,6 +17,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { exitUtxo } from 'actions/networkAction';
+import { openAlert } from 'actions/uiAction';
 import { selectLoading } from 'selectors/loadingSelector';
 
 import Button from 'components/button/Button';
@@ -25,15 +26,17 @@ import * as styles from '../ExitModal.module.scss';
 
 function DoExitStep ({
   selectedUTXO,
-  handleClose
+  handleClose,
+  gasPrice
 }) {
   const dispatch = useDispatch();
 
   const submitLoading = useSelector(selectLoading(['EXIT/CREATE']));
 
   async function doExit () {
-    const res = await dispatch(exitUtxo(selectedUTXO));
+    const res = await dispatch(exitUtxo(selectedUTXO, gasPrice));
     if (res) {
+      dispatch(openAlert('Exit submitted. You will be blocked from making further transactions until the exit is confirmed.'));
       handleClose();
     }
   }
@@ -42,7 +45,7 @@ function DoExitStep ({
     <>
       <h2>Start Standard Exit</h2>
 
-      <div>{`The exit queue for ${selectedUTXO.tokenInfo.name} has been added. You can now start your exit.`}</div>
+      <div>{`The exit queue has been added. You can now start your exit.`}</div>
 
       <div className={styles.buttons}>
         <Button

@@ -19,9 +19,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Check } from '@material-ui/icons';
 
 import networkService from 'services/networkService';
+import { openAlert } from 'actions/uiAction';
 import { checkForExitQueue, exitUtxo } from 'actions/networkAction';
 import { selectLoading } from 'selectors/loadingSelector';
 
+import GasPicker from 'components/gaspicker/GasPicker';
 import Input from 'components/input/Input';
 import Button from 'components/button/Button';
 
@@ -33,7 +35,11 @@ function SelectStep ({
   setSelectedUTXO,
   selectedUTXO,
   handleClose,
-  setStep
+  setStep,
+  gasPrice,
+  setGasPrice,
+  selectedSpeed,
+  setSelectedSpeed
 }) {
   const dispatch = useDispatch();
 
@@ -63,8 +69,9 @@ function SelectStep ({
   }
 
   async function doExit () {
-    const res = await dispatch(exitUtxo(selectedUTXO));
+    const res = await dispatch(exitUtxo(selectedUTXO, gasPrice));
     if (res) {
+      dispatch(openAlert('Exit submitted. You will be blocked from making further transactions until the exit is confirmed.'));
       handleClose();
     }
   }
@@ -79,6 +86,7 @@ function SelectStep ({
 
   function closeModal () {
     setSearchUTXO('');
+    setSelectedSpeed('normal');
     handleClose();
   }
 
@@ -125,6 +133,12 @@ function SelectStep ({
           );
         })}
       </div>
+
+      <GasPicker
+        selectedSpeed={selectedSpeed}
+        setSelectedSpeed={setSelectedSpeed}
+        setGasPrice={setGasPrice}
+      />
 
       <div className={styles.buttons}>
         <Button

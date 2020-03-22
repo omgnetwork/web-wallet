@@ -27,6 +27,8 @@ import DoExitStep from './steps/DoExitStep';
 function ExitModal ({ open }) {
   const dispatch = useDispatch();
 
+  const [ gasPrice, setGasPrice ] = useState();
+  const [ selectedSpeed, setSelectedSpeed ] = useState('normal');
   const [ selectedUTXO, setSelectedUTXO ] = useState();
   const [ step, setStep ] = useState(1);
 
@@ -44,6 +46,10 @@ function ExitModal ({ open }) {
           setSelectedUTXO={setSelectedUTXO}
           handleClose={handleClose}
           setStep={setStep}
+          gasPrice={gasPrice}
+          setGasPrice={setGasPrice}
+          selectedSpeed={selectedSpeed}
+          setSelectedSpeed={setSelectedSpeed}
         />
       )}
       {step === 2 && (
@@ -51,12 +57,14 @@ function ExitModal ({ open }) {
           setSelectedUTXO={setSelectedUTXO}
           selectedUTXO={selectedUTXO}
           setStep={setStep}
+          gasPrice={gasPrice}
         />
       )}
       {step === 3 && (
         <DoExitStep
           selectedUTXO={selectedUTXO}
           handleClose={handleClose}
+          gasPrice={gasPrice}
         />
       )}
     </Modal>
