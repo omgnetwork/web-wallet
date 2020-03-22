@@ -18,8 +18,7 @@ const initialState = {
   [eth]: {
     currency: eth,
     decimals: 18,
-    name: 'ETH',
-    icon: 'ether.png'
+    name: 'ETH'
   }
 };
 
