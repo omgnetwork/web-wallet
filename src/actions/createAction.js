@@ -14,18 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 export function createAction (key, asyncAction) {
-  return function (dispatch) {
-    return new Promise (async (resolve, reject) => {
-      dispatch({ type: `${key}/REQUEST` })
-      try {
-        const response = await asyncAction();
-        dispatch({ type: `${key}/SUCCESS`, payload: response });
-        return resolve(true);
-      } catch (error) {
-        dispatch({ type: `${key}/ERROR` });
-        dispatch({ type: 'UI/ERROR/UPDATE', payload: error.message });
-        return resolve(false);
-      }
-    });
+  return async function (dispatch) {
+    dispatch({ type: `${key}/REQUEST` });
+    try {
+      const response = await asyncAction();
+      dispatch({ type: `${key}/SUCCESS`, payload: response });
+      return true;
+    } catch (error) {
+      // cancel request loading state
+      dispatch({ type: `${key}/ERROR` });
+      // show error in ui
+      dispatch({ type: 'UI/ERROR/UPDATE', payload: error.message });
+      // resolve the result to the view
+      return false;
+    };
   }
 }
