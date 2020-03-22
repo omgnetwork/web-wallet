@@ -22,7 +22,8 @@ export function createAction (key, asyncAction) {
         dispatch({ type: `${key}/SUCCESS`, payload: response });
         return resolve(true);
       } catch (error) {
-        dispatch({ type: `${key}/ERROR`, payload: error.message || 'Unknown error' });
+        dispatch({ type: `${key}/ERROR` });
+        dispatch({ type: 'UI/ERROR/UPDATE', payload: error.message });
         return resolve(false);
       }
     });

@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { selectLoading } from 'selectors/loadingSelector';
 import { deposit } from 'actions/networkAction';
-import { closeModal } from 'actions/uiAction';
+import { closeModal, openAlert } from 'actions/uiAction';
 import { getToken } from 'actions/tokenAction';
 import { powAmount } from 'util/amountConvert';
 
@@ -58,9 +58,12 @@ function DepositModal ({ open }) {
     if (value > 0 && currency && tokenInfo) {
       const amount = powAmount(value, tokenInfo.decimals);
       try {
-        await dispatch(deposit(amount, currency));
-        handleClose();
-      } catch(err) {
+        const res = await dispatch(deposit(amount, currency));
+        if (res) {
+          dispatch(openAlert('Deposit submitted. Check the Deposits tab to see the status of your deposit.'));
+          handleClose();
+        }
+      } catch (err) {
         console.warn(err);
       }
     }

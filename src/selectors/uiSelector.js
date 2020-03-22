@@ -18,3 +18,11 @@ export function selectModalState (modal) {
     return state.ui[modal];
   }
 }
+
+export function selectAlert (state) {
+  return state.ui.alert;
+}
+
+export function selectError (state) {
+  return state.ui.error;
+}
