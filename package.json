@@ -37,15 +37,6 @@
     "test": "react-scripts test --watchAll=false",
     "test:coverage": "yarn test --coverage"
   },
-  "jest": {
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "/src/components/",
-      "/src/containers/",
-      "/src/index.js",
-      "/src/util/config.js"
-    ]
-  },
   "eslintConfig": {
     "extends": "react-app"
   },
