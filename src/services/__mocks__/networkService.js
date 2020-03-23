@@ -14,21 +14,25 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 const networkService = {
-  checkStatus: jest.fn(() => new Promise((resolve, reject) => resolve('toto'))),
-  getBalances: jest.fn(() => new Promise((resolve, reject) => resolve('toto'))),
-  getAllTransactions: jest.fn(() => new Promise((resolve, reject) => resolve('toto'))),
-  getDeposits: jest.fn(() => new Promise((resolve, reject) => resolve('toto'))),
-  getExits: jest.fn(() => new Promise((resolve, reject) => resolve('toto'))),
-  checkForExitQueue: jest.fn(() => new Promise((resolve, reject) => resolve(true))),
-  getExitQueue: jest.fn(() => new Promise((resolve, reject) => resolve('toto'))),
-  addExitQueue: jest.fn(() => new Promise((resolve, reject) => resolve('toto'))),
-  exitUtxo: jest.fn(() => new Promise((resolve, reject) => resolve('toto'))),
-  deposit: jest.fn(() => new Promise((resolve, reject) => resolve('toto'))),
-  processExits: jest.fn(() => new Promise((resolve, reject) => resolve('toto'))),
-  transfer: jest.fn(() => new Promise((resolve, reject) => resolve('toto'))),
-  mergeUtxos: jest.fn(() => new Promise((resolve, reject) => resolve('toto'))),
-  getGasPrice: jest.fn(() => new Promise((resolve, reject) => resolve('toto'))),
-  fetchFees: jest.fn(() => new Promise((resolve, reject) => resolve([1, 2, 3]))),
+  OmgUtil: {
+    ethErrorReason: jest.fn().mockImplementationOnce(() => Promise.resolve('toto'))
+  },
+  web3: null,
+  checkStatus: jest.fn(() => Promise.resolve('toto')),
+  getBalances: jest.fn(() => Promise.resolve('toto')),
+  getAllTransactions: jest.fn(() => Promise.resolve('toto')),
+  getDeposits: jest.fn(() => Promise.resolve('toto')),
+  getExits: jest.fn(() => Promise.resolve('toto')),
+  checkForExitQueue: jest.fn(() => Promise.resolve(true)),
+  getExitQueue: jest.fn(() => Promise.resolve('toto')),
+  addExitQueue: jest.fn(() => Promise.resolve('toto')),
+  exitUtxo: jest.fn(() => Promise.resolve('toto')),
+  deposit: jest.fn(() => Promise.resolve('toto')),
+  processExits: jest.fn(() => Promise.resolve('toto')),
+  transfer: jest.fn(() => Promise.resolve('toto')),
+  mergeUtxos: jest.fn(() => Promise.resolve('toto')),
+  getGasPrice: jest.fn(() => Promise.resolve('toto')),
+  fetchFees: jest.fn(() => Promise.resolve([1, 2, 3]))
 };
 
 export default networkService;

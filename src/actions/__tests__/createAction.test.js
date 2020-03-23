@@ -22,11 +22,11 @@ const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
 function fakeAsyncRequestSuccess () {
-  return new Promise((resolve, reject) => resolve('toto-success'));
+  return Promise.resolve('toto-success');
 }
 
 function fakeAsyncRequestFailure () {
-  return new Promise((resolve, reject) => reject(Error('toto-failed')));
+  return Promise.reject(Error('toto-failed'));
 }
 
 describe('createAction', () => {

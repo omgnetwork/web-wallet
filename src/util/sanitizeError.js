@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import networkService from 'services/networkService';
+import JSON5 from 'json5';
 
 async function sanitizeError (error) {
   // user sign rejection from metamask
@@ -22,9 +23,10 @@ async function sanitizeError (error) {
   }
 
   // try get reason from evm error message
-  if (error.message && error.message.includes('Transaction has been reverted by the EVM')) {
+  const revertedMessage = 'Transaction has been reverted by the EVM:'
+  if (error.message && error.message.includes(revertedMessage)) {
     try {
-      const errorTx = JSON.parse(error.message.split('reverted by the EVM:')[1]);
+      const errorTx = JSON5.parse(error.message.split(revertedMessage)[1]);
       const reason = await networkService.OmgUtil.ethErrorReason({
         web3: networkService.web3,
         hash: errorTx.transactionHash

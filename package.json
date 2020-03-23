@@ -12,6 +12,7 @@
     "bignumber.js": "^9.0.0",
     "bn.js": "^5.1.1",
     "human-standard-token-abi": "^2.0.0",
+    "json5": "^2.1.2",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "node-sass": "^4.13.0",
@@ -34,7 +35,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --watchAll=false",
-    "coverage": "yarn test --coverage"
+    "test:coverage": "yarn test --coverage"
   },
   "eslintConfig": {
     "extends": "react-app"
