@@ -19,6 +19,7 @@ import { isEqual } from 'lodash';
 import truncate from 'truncate-middle';
 import { Send, MergeType } from '@material-ui/icons';
 
+import { selectLoading } from 'selectors/loadingSelector';
 import { selectIsSynced } from 'selectors/statusSelector';
 import { selectChildchainBalance, selectRootchainBalance } from 'selectors/balanceSelector';
 import { selectPendingExits } from 'selectors/exitSelector';
@@ -41,6 +42,7 @@ function Account () {
   const rootBalance = useSelector(selectRootchainBalance, isEqual);
   const pendingExits = useSelector(selectPendingExits, isEqual);
   const transactions = useSelector(selectChildchainTransactions, isEqual);
+  const criticalTransactionLoading = useSelector(selectLoading(['EXIT/CREATE']));
 
   const exitPending = useMemo(() => pendingExits.some(i => i.status === 'Pending'), [ pendingExits ]);
   const transferPending = useMemo(() => transactions.some(i => i.status === 'Pending'), [ transactions ]);
@@ -71,7 +73,7 @@ function Account () {
                 onClick={() => handleModalClick('mergeModal')}
                 className={[
                   styles.transfer,
-                  disabled ? styles.disabled : ''
+                  (disabled || criticalTransactionLoading) ? styles.disabled : ''
                 ].join(' ')}
               >
                 <MergeType />
@@ -81,7 +83,7 @@ function Account () {
                 onClick={() => handleModalClick('transferModal')}
                 className={[
                   styles.transfer,
-                  disabled ? styles.disabled : ''
+                  (disabled || criticalTransactionLoading) ? styles.disabled : ''
                 ].join(' ')}
               >
                 <Send />
