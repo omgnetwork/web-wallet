@@ -25,8 +25,12 @@ import store from 'store';
 
 import './index.scss';
 
-Sentry.init({ dsn: config.sentry });
-TagManager.initialize({ gtmId: config.gtmId });
+if (config.sentry) {
+  Sentry.init({ dsn: config.sentry });
+}
+if (config.gtmId) {
+  TagManager.initialize({ gtmId: config.gtmId });
+}
 
 ReactDOM.render(
   <Provider store={store}>
