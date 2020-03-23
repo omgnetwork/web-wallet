@@ -22,11 +22,13 @@ REACT_APP_BLOCKEXPLORER_URL=  the block explorer url
 REACT_APP_ETHERSCAN_URL=      the etherscan url 
 REACT_APP_SYNC_INTERVAL=      max seconds watcher has to sync to ethereum before blocking further transactions
 REACT_APP_POLL_INTERVAL=      number of seconds to poll account data
-REACT_APP_NETWORK=            the network your environment is on (ropsten, rinkeby, etc.)
-REACT_APP_SENTRY_DSN=         sentry dsn handler
+REACT_APP_NETWORK=            the network your environment is on (ropsten, rinkeby, private, main, etc.)
+REACT_APP_SENTRY_DSN=         *optional* sentry dsn handler
 ```
 
 3. Start the app by running `yarn start` from the root directory.
+
+4. Run the tests by running `yarn test` from the root directory.
 
 ## Running the starter-kit
 
