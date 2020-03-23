@@ -13,29 +13,22 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React from 'react';
+const initialState = {
+  depositModal: false,
+  transferModal: false,
+  exitModal: false,
+  mergeModal: false
+};
 
-import * as styles from './Tabs.module.scss';
-
-function Tabs ({ tabs, activeTab, onClick, className }) {
-  return (
-    <div className={[styles.Tabs, className].join(' ')}>
-      {tabs.map((i, index) => {
-        return (
-          <div
-            key={index}
-            onClick={() => onClick(i)}
-            className={[
-              styles.tab,
-              activeTab === i ? styles.active : ''
-            ].join(' ')}
-          >
-            {i}
-          </div>
-        )
-      })}
-    </div>
-  );
+function uiReducer (state = initialState, action) {
+  switch (action.type) {
+    case 'UI/MODAL/OPEN':
+      return { ...state, [action.payload]: true }
+    case 'UI/MODAL/CLOSE':
+      return { ...state, [action.payload]: false }
+    default:
+      return state;
+  }
 }
 
-export default React.memo(Tabs);
+export default uiReducer;

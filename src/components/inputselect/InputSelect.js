@@ -68,4 +68,4 @@ function InputSelect ({
   );
 }
 
-export default InputSelect;
+export default React.memo(InputSelect);

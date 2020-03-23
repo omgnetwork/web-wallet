@@ -15,11 +15,15 @@ limitations under the License. */
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { isEqual } from 'lodash';
 import BN from 'bignumber.js';
 
+import { selectChildchainBalance } from 'selectors/balanceSelector';
 import { selectLoading } from 'selectors/loadingSelector';
+import { selectFees } from 'selectors/feeSelector';
 import { transfer } from 'actions/networkAction';
 import { getToken } from 'actions/tokenAction';
+import { closeModal } from 'actions/uiAction';
 
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
@@ -32,21 +36,26 @@ import { logAmount, powAmount } from 'util/amountConvert';
 
 import * as styles from './TransferModal.module.scss';
 
-function TransferModal ({ open, toggle, balances = [] }) {
+function TransferModal ({ open }) {
   const dispatch = useDispatch();
+  
   const [ currency, setCurrency ] = useState('');
   const [ value, setValue ] = useState('');
   const [ feeToken, setFeeToken ] = useState('');
-  const [ usableFees, setUsableFees ] = useState([]);
   const [ recipient, setRecipient ] = useState('');
   const [ metadata, setMetadata ] = useState('');
+  const [ usableFees, setUsableFees ] = useState([]);
+  
+  const balances = useSelector(selectChildchainBalance, isEqual);
+  const fees = useSelector(selectFees, isEqual);
+
+  const feesLoading = useSelector(selectLoading(['FEE/GET']));
   const loading = useSelector(selectLoading(['TRANSFER/CREATE']));
 
   useEffect(() => {
-    async function fetchFees () {
-      const fees = await networkService.fetchFees();
+    if (Object.keys(fees).length) {
       const usableFees = balances.filter(balance => {
-        const feeObject = fees.find(fee => fee.currency === balance.currency);
+        const feeObject = fees[balance.currency];
         if (feeObject) {
           if (new BN(balance.amount).gte(new BN(feeObject.amount))) {
             return true;
@@ -54,7 +63,7 @@ function TransferModal ({ open, toggle, balances = [] }) {
         }
         return false;
       }).map(i => {
-        const feeObject = fees.find(fee => fee.currency === i.currency);
+        const feeObject = fees[i.currency];
         const feeAmount = new BN(feeObject.amount).div(new BN(feeObject.subunit_to_unit));
         return {
           title: i.name,
@@ -62,14 +71,11 @@ function TransferModal ({ open, toggle, balances = [] }) {
           subTitle: `Fee Amount: ${feeAmount.toFixed()}`
         }
       });
-
-      setUsableFees(usableFees);
+      if (usableFees.length) {
+        setUsableFees(usableFees);
+      }
     }
-
-    if (open) {
-      fetchFees();
-    }
-  }, [open, balances]);
+  }, [balances, fees]);
 
   useEffect(() => {
     if (balances.length && !currency) {
@@ -96,8 +102,8 @@ function TransferModal ({ open, toggle, balances = [] }) {
       feeToken &&
       networkService.web3.utils.isAddress(recipient)
     ) {
-      const valueTokenInfo = await getToken(currency);
       try {
+        const valueTokenInfo = await getToken(currency);
         await dispatch(transfer({
           recipient,
           value: powAmount(value, valueTokenInfo.decimals),
@@ -118,7 +124,7 @@ function TransferModal ({ open, toggle, balances = [] }) {
     setFeeToken('');
     setRecipient('');
     setMetadata('');
-    toggle();
+    dispatch(closeModal('transferModal'));
   }
 
   return (
@@ -148,7 +154,8 @@ function TransferModal ({ open, toggle, balances = [] }) {
       />
 
       <Select
-        label='Fee Token'
+        loading={feesLoading}
+        label='Fee'
         value={feeToken}
         options={usableFees}
         onSelect={i => setFeeToken(i.target.value)}
@@ -190,4 +197,4 @@ function TransferModal ({ open, toggle, balances = [] }) {
   );
 }
 
-export default TransferModal;
+export default React.memo(TransferModal);

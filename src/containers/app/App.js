@@ -13,9 +13,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { forOwn, capitalize } from 'lodash';
+import { forOwn, capitalize, isEqual } from 'lodash';
 
 import { clearError } from 'actions/errorAction';
 import networkService from 'services/networkService';
@@ -29,7 +29,7 @@ import * as styles from './App.module.scss';
 
 function App () {
   const dispatch = useDispatch();
-  const errors = useSelector(selectAllErrors());
+  const errors = useSelector(selectAllErrors, isEqual);
 
   const [ loading, setLoading ] = useState(true);
   const [ error, setError ] = useState({});
@@ -42,7 +42,7 @@ function App () {
         setLoading(false);
       }
     }
-    checkNetwork()
+    checkNetwork();
   }, []);
 
   useEffect(() => {
@@ -55,22 +55,25 @@ function App () {
         setIsError(false);
       }
     })
-  }, [errors, dispatch]);
+  }, [errors]);
 
-  function renderLoading () {
-    return (
-      <div className={styles.loading}>
-        <img src='omisego-blue.svg' alt='logo' />
-        <span>Waiting for Web3...</span>
-        <span>{`Please make sure you are on the ${capitalize(config.network)} network.`}</span>
-      </div>
-    );
-  }
+  const handleErrorClose = useCallback(
+    () => dispatch(clearError(error)),
+    [dispatch, error]
+  );
+
+  const renderLoading = (
+    <div className={styles.loading}>
+      <img src='omisego-blue.svg' alt='logo' />
+      <span>Waiting for Web3...</span>
+      <span>{`Please make sure you are on the ${capitalize(config.network)} network.`}</span>
+    </div>
+  );
 
   return (
     <div className={styles.App}>
       {loading
-        ? renderLoading()
+        ? renderLoading
         : <Home />
       }
 
@@ -78,7 +81,7 @@ function App () {
         type='error'
         duration={5000}
         open={isError}
-        onClose={() => dispatch(clearError(error))}
+        onClose={handleErrorClose}
       >
         {`Oops! Something went wrong! ${isError ? Object.values(error)[0] : ''}`}
       </Alert>

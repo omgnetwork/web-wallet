@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { selectLoading } from 'selectors/loadingSelector';
 import { deposit } from 'actions/networkAction';
+import { closeModal } from 'actions/uiAction';
 import { getToken } from 'actions/tokenAction';
 import { powAmount } from 'util/amountConvert';
 
@@ -30,8 +31,9 @@ import networkService from 'services/networkService';
 
 import * as styles from './DepositModal.module.scss';
 
-function DepositModal ({ open, toggle }) {
-  const ETH = networkService.OmgUtil.transaction.ETH_CURRENCY;
+const ETH = networkService.OmgUtil.transaction.ETH_CURRENCY;
+
+function DepositModal ({ open }) {
   const dispatch = useDispatch();
   const loading = useSelector(selectLoading(['DEPOSIT/CREATE']));
 
@@ -49,7 +51,7 @@ function DepositModal ({ open, toggle }) {
         setTokenInfo({});
       }
     }
-    getTokenInfo()
+    getTokenInfo();
   }, [currency]);
   
   async function submit () {
@@ -57,7 +59,7 @@ function DepositModal ({ open, toggle }) {
       const amount = powAmount(value, tokenInfo.decimals);
       try {
         await dispatch(deposit(amount, currency));
-        toggle();
+        handleClose();
       } catch(err) {
         console.warn(err);
       }
@@ -65,10 +67,10 @@ function DepositModal ({ open, toggle }) {
   }
 
   function handleClose () {
-    setActiveTab('ETH')
-    setValue('')
-    setCurrency(ETH)
-    toggle()
+    setActiveTab('ETH');
+    setValue('');
+    setCurrency(ETH);
+    dispatch(closeModal('depositModal'));
   }
 
   return (
@@ -78,10 +80,8 @@ function DepositModal ({ open, toggle }) {
       <Tabs
         className={styles.tabs}
         onClick={i => {
-          i === 'ETH'
-            ? setCurrency(ETH)
-            : setCurrency('');
-          setActiveTab(i)
+          i === 'ETH' ? setCurrency(ETH) : setCurrency('');
+          setActiveTab(i);
         }}
         activeTab={activeTab}
         tabs={[ 'ETH', 'ERC20' ]}
@@ -137,4 +137,4 @@ function DepositModal ({ open, toggle }) {
   );
 }
 
-export default DepositModal;
+export default React.memo(DepositModal);

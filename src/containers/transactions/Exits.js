@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import React, { useState } from 'react';
-import { orderBy } from 'lodash';
+import { orderBy, isEqual } from 'lodash';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
@@ -32,10 +32,10 @@ import * as styles from './Transactions.module.scss';
 function Exits ({ searchHistory }) {
   const [ processExitModal, setProcessExitModal ] = useState(false);
 
-  const queues = useSelector(selectAllQueues);
-  const rawQueues = useSelector(selectQueues);
-  const pendingExits = orderBy(useSelector(selectPendingExits), i => i.blockNumber, 'desc');
-  const exitedExits = orderBy(useSelector(selectExitedExits), i => i.blockNumber, 'desc');
+  const queues = useSelector(selectAllQueues, isEqual);
+  const rawQueues = useSelector(selectQueues, isEqual);
+  const pendingExits = orderBy(useSelector(selectPendingExits, isEqual), i => i.blockNumber, 'desc');
+  const exitedExits = orderBy(useSelector(selectExitedExits, isEqual), i => i.blockNumber, 'desc');
 
   // add extra data to pending exits using data from the queue
   function enhanceExits (exits) {
@@ -130,4 +130,4 @@ function Exits ({ searchHistory }) {
   );
 }
 
-export default Exits;
+export default React.memo(Exits);

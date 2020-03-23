@@ -33,7 +33,8 @@ const useStyles = makeStyles({
     padding: '20px',
     border: 'none',
     outline: 'none',
-    width: '500px'
+    width: '500px',
+    maxWidth: '100%'
   }
 });
 

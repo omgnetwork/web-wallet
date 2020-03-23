@@ -15,6 +15,7 @@ limitations under the License. */
 
 import networkService from 'services/networkService';
 import { createAction } from './createAction';
+import store from 'store';
 
 export function checkWatcherStatus () {
   return createAction(
@@ -91,4 +92,27 @@ export function mergeUtxos (utxos) {
     'TRANSFER/CREATE',
     () => networkService.mergeUtxos(utxos)
   );
+}
+
+export function fetchFees () {
+  return async function (dispatch) {
+    const state = store.getState();
+    if (Object.keys(state.fees).length) {
+      return;
+    }
+
+    dispatch({ type: 'FEE/GET/REQUEST' });
+    try {
+      const fees = await networkService.fetchFees();
+      if (fees.length) {
+        dispatch({
+          type: 'FEE/GET/SUCCESS',
+          payload: fees
+        });
+      }
+    } catch (error) {
+      console.warn('Couldnt fetch fees, retrying...');
+      return;
+    }
+  }
 }

@@ -91,4 +91,4 @@ function Transaction ({
   );
 }
 
-export default Transaction;
+export default React.memo(Transaction);

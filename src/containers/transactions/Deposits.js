@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import React from 'react';
-import { orderBy } from 'lodash';
+import { orderBy, isEqual } from 'lodash';
 import { useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
 
@@ -27,8 +27,8 @@ import { logAmount } from 'util/amountConvert';
 import * as styles from './Transactions.module.scss';
 
 function Deposits ({ searchHistory }) {
-  const ethDeposits = useSelector(selectEthDeposits);
-  const erc20Deposits = useSelector(selectErc20Deposits);
+  const ethDeposits = useSelector(selectEthDeposits, isEqual);
+  const erc20Deposits = useSelector(selectErc20Deposits, isEqual);
 
   const deposits = orderBy(
     [...ethDeposits, ...erc20Deposits],
@@ -63,4 +63,4 @@ function Deposits ({ searchHistory }) {
   );
 }
 
-export default Deposits;
+export default React.memo(Deposits);

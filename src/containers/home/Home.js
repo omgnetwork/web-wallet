@@ -13,10 +13,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { uniq, flatten } from 'lodash';
+import React, { useEffect, useMemo } from 'react';
+import { useDispatch, useSelector, batch } from 'react-redux';
+import { uniq, flatten, isEqual } from 'lodash';
 
+import { selectModalState } from 'selectors/uiSelector';
 import { selectChildchainTransactions } from 'selectors/transactionSelector';
 import config from 'util/config';
 import useInterval from 'util/useInterval';
@@ -26,8 +27,14 @@ import {
   fetchTransactions,
   fetchExits,
   fetchDeposits,
-  getExitQueue
+  getExitQueue,
+  fetchFees
 } from 'actions/networkAction';
+
+import DepositModal from 'containers/modals/DepositModal';
+import TransferModal from 'containers/modals/TransferModal';
+import ExitModal from 'containers/modals/ExitModal';
+import MergeModal from 'containers/modals/MergeModal';
 
 import Status from 'containers/status/Status';
 import Account from 'containers/account/Account';
@@ -43,36 +50,51 @@ function Home () {
     window.scrollTo(0, 0);
   }, []);
 
-  const transactions = useSelector(selectChildchainTransactions);
-  const inputs = flatten(
-    transactions
+  const depositModalState = useSelector(selectModalState('depositModal'));
+  const transferModalState = useSelector(selectModalState('transferModal'));
+  const exitModalState = useSelector(selectModalState('exitModal'));
+  const mergeModalState = useSelector(selectModalState('mergeModal'));
+
+  const transactions = useSelector(selectChildchainTransactions, isEqual);
+  const transactedTokens = useMemo(() => {
+    const inputs = flatten(transactions
       .filter(i => i.status !== 'Pending')
       .map(i => i.inputs)
-  );
-  const transactedTokens = uniq(inputs.map(i => i.currency));
+    );
+    return uniq(inputs.map(i => i.currency));
+  }, [ transactions ]);
 
   useInterval(() => {
-    dispatch(checkWatcherStatus());
-    dispatch(fetchBalances());
-    dispatch(fetchDeposits());
-    dispatch(fetchExits());
-    dispatch(fetchTransactions());
-
-    for (const token of transactedTokens) {
-      dispatch(getExitQueue(token));
-    }
+    batch(() => {
+      dispatch(checkWatcherStatus());
+      dispatch(fetchBalances());
+      dispatch(fetchDeposits());
+      dispatch(fetchExits());
+      dispatch(fetchTransactions());
+      dispatch(fetchFees());
+  
+      for (const token of transactedTokens) {
+        dispatch(getExitQueue(token));
+      }
+    });
   }, POLL_INTERVAL);
 
   return (
-    <div className={styles.Home}>
-      <Status />
+    <>
+      <DepositModal open={depositModalState} />
+      <TransferModal open={transferModalState} />
+      <ExitModal open={exitModalState} />
+      <MergeModal open={mergeModalState} />
 
-      <div className={styles.main}>
-        <Account/>
-        <Transactions/>
+      <div className={styles.Home}>
+        <Status />
+        <div className={styles.main}>
+          <Account/>
+          <Transactions/>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
-export default Home;
+export default React.memo(Home);

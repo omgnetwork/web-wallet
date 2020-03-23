@@ -20,6 +20,7 @@ import { Check } from '@material-ui/icons';
 
 import { selectLoading } from 'selectors/loadingSelector';
 import { mergeUtxos } from 'actions/networkAction';
+import { closeModal } from 'actions/uiAction';
 
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
@@ -29,7 +30,7 @@ import { logAmount } from 'util/amountConvert';
 
 import * as styles from './MergeModal.module.scss';
 
-function MergeModal ({ open, toggle }) {
+function MergeModal ({ open }) {
   const dispatch = useDispatch();
   const [ selectedUTXOs, setSelectedUTXOs ] = useState([]);
   const [ searchUTXO, setSearchUTXO ] = useState('');
@@ -50,12 +51,12 @@ function MergeModal ({ open, toggle }) {
 
   useEffect(() => {
     if (selectedUTXOs.length) {
-      setSearchUTXO(selectedUTXOs[0].currency)
+      setSearchUTXO(selectedUTXOs[0].currency);
     }
     if (!selectedUTXOs.length) {
-      setSearchUTXO('')
+      setSearchUTXO('');
     }
-  }, [selectedUTXOs])
+  }, [selectedUTXOs]);
 
   async function submit () {
     if (selectedUTXOs.length > 1 && selectedUTXOs.length < 5) {
@@ -71,7 +72,7 @@ function MergeModal ({ open, toggle }) {
   function handleClose () {
     setSelectedUTXOs([]);
     setSearchUTXO('');
-    toggle();
+    dispatch(closeModal('mergeModal'));
   }
 
   function handleUtxoClick (utxo) {
@@ -87,6 +88,7 @@ function MergeModal ({ open, toggle }) {
   const _utxos = utxos
     .filter(i => i.currency.includes(searchUTXO))
     .filter(i => i);
+
   return (
     <Modal open={open} onClose={handleClose}>
       <h2>Merge UTXO's</h2>
@@ -149,4 +151,4 @@ function MergeModal ({ open, toggle }) {
   );
 }
 
-export default MergeModal;
+export default React.memo(MergeModal);

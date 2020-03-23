@@ -13,29 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React from 'react';
+import { keyBy } from 'lodash';
+const initialState = {};
 
-import * as styles from './Tabs.module.scss';
-
-function Tabs ({ tabs, activeTab, onClick, className }) {
-  return (
-    <div className={[styles.Tabs, className].join(' ')}>
-      {tabs.map((i, index) => {
-        return (
-          <div
-            key={index}
-            onClick={() => onClick(i)}
-            className={[
-              styles.tab,
-              activeTab === i ? styles.active : ''
-            ].join(' ')}
-          >
-            {i}
-          </div>
-        )
-      })}
-    </div>
-  );
+function feeReducer (state = initialState, action) {
+  switch (action.type) {
+    case 'FEE/GET/SUCCESS':
+      return { ...state, ...keyBy(action.payload, 'currency') };
+    default:
+      return state;
+  }
 }
 
-export default React.memo(Tabs);
+export default feeReducer;

@@ -13,13 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { orderBy } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { Check } from '@material-ui/icons';
 
 import { selectLoading } from 'selectors/loadingSelector';
 import { exitUtxo } from 'actions/networkAction';
+import { closeModal } from 'actions/uiAction';
 
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
@@ -30,7 +31,7 @@ import { logAmount } from 'util/amountConvert';
 
 import * as styles from './ExitModal.module.scss';
 
-function ExitModal ({ open, toggle }) {
+function ExitModal ({ open }) {
   const dispatch = useDispatch();
   const loading = useSelector(selectLoading(['EXIT/CREATE']));
 
@@ -63,16 +64,17 @@ function ExitModal ({ open, toggle }) {
   function handleClose () {
     setSelectedUTXO();
     setSearchUTXO('');
-    toggle();
+    dispatch(closeModal('exitModal'));
   }
 
-  
-  const _utxos = utxos
-    .filter(i => {
+  const _utxos = useMemo(() => {
+    return utxos.filter(i => {
       return i.currency.toLowerCase().includes(searchUTXO.toLowerCase()) ||
         i.tokenInfo.name.toLowerCase().includes(searchUTXO.toLowerCase())
-    })
-    .filter(i => !!i);
+      })
+      .filter(i => !!i);
+  }, [ utxos, searchUTXO ]);
+
   return (
     <Modal open={open} onClose={handleClose}>
       <h2>Start Standard Exit</h2>
@@ -139,4 +141,4 @@ function ExitModal ({ open, toggle }) {
   );
 }
 
-export default ExitModal;
+export default React.memo(ExitModal);

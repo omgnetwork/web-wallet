@@ -13,29 +13,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React from 'react';
-
-import * as styles from './Tabs.module.scss';
-
-function Tabs ({ tabs, activeTab, onClick, className }) {
-  return (
-    <div className={[styles.Tabs, className].join(' ')}>
-      {tabs.map((i, index) => {
-        return (
-          <div
-            key={index}
-            onClick={() => onClick(i)}
-            className={[
-              styles.tab,
-              activeTab === i ? styles.active : ''
-            ].join(' ')}
-          >
-            {i}
-          </div>
-        )
-      })}
-    </div>
-  );
+export function selectFees (state) {
+  return state.fees;
 }
-
-export default React.memo(Tabs);

@@ -24,6 +24,8 @@ import balanceReducer from './balanceReducer';
 import exitReducer from './exitReducer';
 import queueReducer from './queueReducer';
 import tokenReducer from './tokenReducer';
+import feeReducer from './feeReducer';
+import uiReducer from './uiReducer';
 
 const rootReducer = combineReducers({
   loading: loadingReducer,
@@ -34,7 +36,9 @@ const rootReducer = combineReducers({
   balance: balanceReducer,
   exit: exitReducer,
   queue: queueReducer,
-  token: tokenReducer
+  token: tokenReducer,
+  fees: feeReducer,
+  ui: uiReducer
 });
 
 export default rootReducer;
