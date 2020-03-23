@@ -24,3 +24,6 @@ yarn-debug.log*
 yarn-error.log*
 
 public/env.js
+
+# enforce yarn
+package-lock.json

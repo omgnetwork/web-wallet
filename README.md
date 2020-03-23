@@ -19,11 +19,12 @@ Make sure you have access to a Watcher endpoint. The wallet also requires an in-
 REACT_APP_WATCHER_URL=        the watcher url
 REACT_APP_PLASMA_ADDRESS=     the plasma framework address
 REACT_APP_BLOCKEXPLORER_URL=  the block explorer url 
-REACT_APP_ETHERSCAN_URL=      the etherscan url 
+REACT_APP_ETHERSCAN_URL=      the etherscan url (https://etherscan.io, etc.)
 REACT_APP_SYNC_INTERVAL=      max seconds watcher has to sync to ethereum before blocking further transactions
 REACT_APP_POLL_INTERVAL=      number of seconds to poll account data
 REACT_APP_NETWORK=            the network your environment is on (ropsten, rinkeby, private, main, etc.)
 REACT_APP_SENTRY_DSN=         *optional* sentry dsn handler
+REACT_APP_GTM_ID=             *optional* google tag manager id (GTM-XXXXXXX)
 ```
 
 3. Start the app by running `yarn start` from the root directory.
