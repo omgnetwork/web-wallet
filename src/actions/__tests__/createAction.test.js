@@ -30,6 +30,10 @@ function fakeAsyncRequestFailure () {
 }
 
 describe('createAction', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should return false to caller on async failure', async () => {
     const store = mockStore({});
     const res = await store.dispatch(

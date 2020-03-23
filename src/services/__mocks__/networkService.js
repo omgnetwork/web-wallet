@@ -17,7 +17,21 @@ const networkService = {
   OmgUtil: {
     ethErrorReason: jest.fn().mockImplementationOnce(() => Promise.resolve('toto'))
   },
-  web3: null,
+  web3: {
+    eth: {
+      Contract: jest.fn(() => ({
+        methods: {
+          symbol: () => ({
+            call: jest.fn(() => Promise.resolve('OMG'))
+          }),
+          decimals: () => ({
+            call: jest.fn(() => Promise.resolve(18))
+          })
+
+        }
+      }))
+    }
+  },
   checkStatus: jest.fn(() => Promise.resolve('toto')),
   getBalances: jest.fn(() => Promise.resolve('toto')),
   getAllTransactions: jest.fn(() => Promise.resolve('toto')),

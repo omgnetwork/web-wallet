@@ -38,7 +38,7 @@ describe('sanitizeError', () => {
     const res = await sanitizeError(error);
     expect(networkService.OmgUtil.ethErrorReason).toBeCalled();
     expect(networkService.OmgUtil.ethErrorReason).toBeCalledWith({
-      web3: null,
+      web3: expect.anything(),
       hash: '0xaed58f7d6c230f41b30c2d6f45e057e4d63188fa1542540767ee90aa9f567ba8'
     });
     expect(res).toBe('toto');
