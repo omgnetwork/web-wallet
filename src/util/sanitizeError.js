@@ -22,6 +22,11 @@ async function sanitizeError (error) {
     return error.message;
   }
 
+  // ignore metamask rpc header not found errors
+  if (error.code === -32000) {
+    return null;
+  }
+
   // try get reason from evm error message
   const revertedMessage = 'Transaction has been reverted by the EVM:'
   if (error.message && error.message.includes(revertedMessage)) {

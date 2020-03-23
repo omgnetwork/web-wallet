@@ -26,6 +26,10 @@ function fakeAsyncRequestFailure () {
   return Promise.reject(Error('toto-failed'));
 }
 
+function fakeSilencedError () {
+  return Promise.reject({ code: -32000, message: 'header not found' });
+}
+
 describe('createAction', () => {
   beforeEach(() => {
     store.clearActions();
@@ -65,6 +69,17 @@ describe('createAction', () => {
     ];
     await store.dispatch(
       createAction('TEST/GET', () => fakeAsyncRequestFailure())
+    );
+    expect(store.getActions()).toEqual(expectedActions);
+  });
+
+  it('should not dispatch uiError on intentionally silenced errors', async () => {
+    const expectedActions = [
+      { type: 'TEST/GET/REQUEST' },
+      { type: 'TEST/GET/ERROR' }
+    ];
+    await store.dispatch(
+      createAction('TEST/GET', () => fakeSilencedError())
     );
     expect(store.getActions()).toEqual(expectedActions);
   });

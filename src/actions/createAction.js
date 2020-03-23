@@ -28,8 +28,13 @@ export function createAction (key, asyncAction, customErrorMessage) {
 
       // show error in ui
       const sanitizedError = await sanitizeError(error);
-      dispatch({ type: 'UI/ERROR/UPDATE', payload: customErrorMessage || sanitizedError });
-      
+
+      // if null returned, error is intentionally silenced
+      if (!sanitizedError) {
+        return false;
+      }
+
+      dispatch({ type: 'UI/ERROR/UPDATE', payload: customErrorMessage || sanitizedError });      
       // resolve the result to the view
       return false;
     };

@@ -33,6 +33,15 @@ describe('sanitizeError', () => {
     expect(res).toBe(error.message);
   });
 
+  it('should ignore metamask -32000 header not found error', async () => {
+    const error = {
+      code: -32000,
+      message: 'header not found'
+    };
+    const res = await sanitizeError(error);
+    expect(res).toBe(null);
+  });
+
   it('should return reason on EVM error if possible', async () => {
     const error = { message: exampleEVMError };
     const res = await sanitizeError(error);
