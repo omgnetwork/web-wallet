@@ -16,12 +16,13 @@ limitations under the License. */
 import env from '@beam-australia/react-env';
 
 export default {
-  watcherUrl: env('WATCHER_URL') || 'http://localhost:7534',
-  plasmaAddress: env('PLASMA_ADDRESS') || '',
-  blockExplorerUrl: env('BLOCKEXPLORER_URL') || '',
-  etherscanUrl: env('ETHERSCAN_URL') || 'https://ropsten.etherscan.io',
-  checkSyncInterval: env('SYNC_INTERVAL') || 120,
-  pollInterval: env('POLL_INTERVAL') || 5,
-  network: env('NETWORK') || 'ropsten',
-  sentry: env('SENTRY_DSN')
+  watcherUrl: env('WATCHER_URL'),
+  plasmaAddress: env('PLASMA_ADDRESS'),
+  blockExplorerUrl: env('BLOCKEXPLORER_URL'),
+  etherscanUrl: env('ETHERSCAN_URL'),
+  checkSyncInterval: env('SYNC_INTERVAL'),
+  pollInterval: env('POLL_INTERVAL'),
+  network: env('NETWORK'),
+  sentry: env('SENTRY_DSN'),
+  gtmId: env('GTM_ID')
 }

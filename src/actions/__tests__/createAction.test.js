@@ -17,6 +17,7 @@ import { createAction } from 'actions/createAction';
 import store from 'store';
 
 jest.mock('store');
+jest.mock('services/networkService');
 
 function fakeAsyncRequestSuccess () {
   return Promise.resolve('toto-success');
