@@ -23,7 +23,7 @@ import { selectLoading } from 'selectors/loadingSelector';
 import { selectFees } from 'selectors/feeSelector';
 import { transfer } from 'actions/networkAction';
 import { getToken } from 'actions/tokenAction';
-import { closeModal } from 'actions/uiAction';
+import { closeModal, openAlert } from 'actions/uiAction';
 
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
@@ -71,17 +71,15 @@ function TransferModal ({ open }) {
           subTitle: `Fee Amount: ${feeAmount.toFixed()}`
         }
       });
-      if (usableFees.length) {
-        setUsableFees(usableFees);
-      }
+      setUsableFees(usableFees);
     }
-  }, [balances, fees]);
+  }, [balances, fees, open]);
 
   useEffect(() => {
     if (balances.length && !currency) {
       setCurrency(balances[0].currency)
     }
-  }, [balances, currency])
+  }, [balances, currency, open]);
 
   useEffect(() => {
     if (usableFees.length && !feeToken) {
@@ -104,14 +102,17 @@ function TransferModal ({ open }) {
     ) {
       try {
         const valueTokenInfo = await getToken(currency);
-        await dispatch(transfer({
+        const res = await dispatch(transfer({
           recipient,
           value: powAmount(value, valueTokenInfo.decimals),
           currency,
           feeToken,
           metadata
-        }))
-        handleClose();
+        }));
+        if (res) {
+          dispatch(openAlert('Transfer submitted. You will be blocked from making further transactions until the transfer is confirmed.'));
+          handleClose();
+        }
       } catch (err) {
         console.warn(err);
       }
@@ -181,6 +182,7 @@ function TransferModal ({ open }) {
           type='primary'
           style={{ flex: 0 }}
           loading={loading}
+          tooltip='Your transfer transaction is still pending. Please wait for confirmation.'
           disabled={
             value <= 0 ||
             !currency ||

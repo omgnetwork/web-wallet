@@ -13,18 +13,30 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-export function createAction (key, asyncAction) {
-  return function (dispatch) {
-    return new Promise (async (resolve, reject) => {
-      dispatch({ type: `${key}/REQUEST` })
-      try {
-        const response = await asyncAction();
-        dispatch({ type: `${key}/SUCCESS`, payload: response });
-        return resolve();
-      } catch (error) {
-        dispatch({ type: `${key}/ERROR`, payload: error.message || 'Unknown error' });
-        return;
+import sanitizeError from 'util/sanitizeError';
+
+export function createAction (key, asyncAction, customErrorMessage) {
+  return async function (dispatch) {
+    dispatch({ type: `${key}/REQUEST` });
+    try {
+      const response = await asyncAction();
+      dispatch({ type: `${key}/SUCCESS`, payload: response });
+      return true;
+    } catch (error) {
+      // cancel request loading state
+      dispatch({ type: `${key}/ERROR` });
+
+      // show error in ui
+      const sanitizedError = await sanitizeError(error);
+
+      // if null returned, error is intentionally silenced
+      if (!sanitizedError) {
+        return false;
       }
-    });
+
+      dispatch({ type: 'UI/ERROR/UPDATE', payload: customErrorMessage || sanitizedError });      
+      // resolve the result to the view
+      return false;
+    };
   }
 }

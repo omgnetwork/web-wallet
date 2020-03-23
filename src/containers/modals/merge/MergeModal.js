@@ -20,7 +20,7 @@ import { Check } from '@material-ui/icons';
 
 import { selectLoading } from 'selectors/loadingSelector';
 import { mergeUtxos } from 'actions/networkAction';
-import { closeModal } from 'actions/uiAction';
+import { closeModal, openAlert } from 'actions/uiAction';
 
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
@@ -60,11 +60,10 @@ function MergeModal ({ open }) {
 
   async function submit () {
     if (selectedUTXOs.length > 1 && selectedUTXOs.length < 5) {
-      try {
-        await dispatch(mergeUtxos(selectedUTXOs));
+      const res = await dispatch(mergeUtxos(selectedUTXOs));
+      if (res) {
+        dispatch(openAlert('Merge submitted. You will be blocked from making further transactions until the merge is confirmed.'));
         handleClose();
-      } catch (err) {
-        console.warn(err);
       }
     }
   }
@@ -142,6 +141,7 @@ function MergeModal ({ open }) {
           type='primary'
           style={{ flex: 0 }}
           loading={loading}
+          tooltip='Your merge transaction is still pending. Please wait for confirmation.'
           disabled={selectedUTXOs.length <= 1 || selectedUTXOs.length > 4}
         >
           MERGE

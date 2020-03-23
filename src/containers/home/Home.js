@@ -28,13 +28,14 @@ import {
   fetchExits,
   fetchDeposits,
   getExitQueue,
-  fetchFees
+  fetchFees,
+  fetchGas
 } from 'actions/networkAction';
 
-import DepositModal from 'containers/modals/DepositModal';
-import TransferModal from 'containers/modals/TransferModal';
-import ExitModal from 'containers/modals/ExitModal';
-import MergeModal from 'containers/modals/MergeModal';
+import DepositModal from 'containers/modals/deposit/DepositModal';
+import TransferModal from 'containers/modals/transfer/TransferModal';
+import ExitModal from 'containers/modals/exit/ExitModal';
+import MergeModal from 'containers/modals/merge/MergeModal';
 
 import Status from 'containers/status/Status';
 import Account from 'containers/account/Account';
@@ -78,6 +79,10 @@ function Home () {
       }
     });
   }, POLL_INTERVAL);
+
+  useInterval(() => {
+    dispatch(fetchGas());
+  }, POLL_INTERVAL * 10);
 
   return (
     <>

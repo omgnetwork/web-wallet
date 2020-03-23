@@ -17,9 +17,10 @@ import erc20abi from 'human-standard-token-abi';
 import networkService from 'services/networkService';
 import truncate from 'truncate-middle';
 import store from 'store';
-// import axios from 'axios';
 
-export async function getToken (currency) {
+export async function getToken (_currency) {
+  const currency = _currency.toLowerCase();
+
   const state = store.getState();
   if (state.token[currency]) {
     return state.token[currency]
@@ -31,25 +32,13 @@ export async function getToken (currency) {
     tokenContract.methods.decimals().call()
   ]).catch(e => null);
 
-  let icon = ''
-  try {
-    // const iconAddress = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${currency}/logo.png`
-    // const validIcon = await axios.get(iconAddress);
-    // if (validIcon) {
-    //   icon = iconAddress
-    // }
-  } catch (err) {
-    //
-  }
-
   const decimals = _decimals ? Number(_decimals.toString()) : 0;
   const name = _name || truncate(currency, 6, 4, '...');
 
   const tokenInfo = {
     currency,
     decimals,
-    name,
-    icon
+    name
   }
 
   store.dispatch({

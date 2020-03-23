@@ -13,25 +13,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-const initialErrorState = {};
+import depositReducer from '../depositReducer';
 
-function errorReducer (state = initialErrorState, action) {
-  const segments = action.type.split('/');
-  const requestName = `${segments[0]}/${segments[1]}`;
-  const requestState = segments[2];
+describe('depositReducer', () => {
+  it('should return the initial state', () => {
+    const newState = depositReducer(undefined, { type: '@@INIT' });
+    expect(newState).toEqual({ eth: [], erc20: [] });
+  });
 
-  if (
-    requestState !== 'REQUEST' &&
-    requestState !== 'SUCCESS' &&
-    requestState !== 'ERROR'
-  ) {
-    return state
-  }
-
-  return {
-    ...state,
-    [requestName]: requestState === 'ERROR' ? action.payload : null
-  }
-}
-
-export default errorReducer;
+  it('should handle deposit fetch success', () => {
+    const action = {
+      type: 'DEPOSIT/GETALL/SUCCESS',
+      payload: { eth: ['toto'], erc20: ['toto'] }
+    }
+    const newState = depositReducer(undefined, action);
+    expect(newState).toEqual(action.payload);
+  });
+});

@@ -13,10 +13,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-export function clearError (error) {
-  return function (dispatch) {
-    if (Object.keys(error).length) {
-      return dispatch({ type: `${Object.keys(error)[0]}/ERROR`, payload: null });
+import queueReducer from '../queueReducer';
+
+describe('queueReducer', () => {
+  it('should return the initial state', () => {
+    const newState = queueReducer(undefined, { type: '@@INIT' });
+    expect(newState).toEqual({});
+  });
+
+  it('should handle queue fetch success', () => {
+    const action = {
+      type: 'QUEUE/GET/SUCCESS',
+      payload: { currency: 'ETH', queue: [1,2,3] }
     }
-  }
-};
+    const newState = queueReducer(undefined, action);
+    expect(newState).toEqual({ ETH: [1,2,3] });
+  });
+});

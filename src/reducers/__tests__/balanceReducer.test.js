@@ -13,16 +13,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-export function selectModalState (modal) {
-  return function (state) {
-    return state.ui[modal];
-  }
-}
+import balanceReducer from '../balanceReducer';
 
-export function selectAlert (state) {
-  return state.ui.alert;
-}
+describe('balanceReducer', () => {
+  it('should return the initial state', () => {
+    const newState = balanceReducer(undefined, { type: '@@INIT' });
+    expect(newState).toEqual({ rootchain: [], childchain: [] });
+  });
 
-export function selectError (state) {
-  return state.ui.error;
-}
+  it('should handle balance success', () => {
+    const action = {
+      type: 'BALANCE/GET/SUCCESS',
+      payload: { rootchain: ['toto'], childchain: ['toto'] }
+    }
+    const newState = balanceReducer(undefined, action);
+    expect(newState).toEqual(action.payload);
+  });
+});

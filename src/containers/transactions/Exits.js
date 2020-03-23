@@ -24,7 +24,7 @@ import networkService from 'services/networkService';
 import { selectAllQueues, selectQueues } from 'selectors/queueSelector';
 import { selectPendingExits, selectExitedExits } from 'selectors/exitSelector';
 
-import ProcessExitsModal from 'containers/modals/ProcessExitsModal';
+import ProcessExitsModal from 'containers/modals/processexit/ProcessExitsModal';
 import Transaction from 'components/transaction/Transaction';
 
 import * as styles from './Transactions.module.scss';

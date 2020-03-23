@@ -13,13 +13,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { forOwn, capitalize, isEqual } from 'lodash';
+import { capitalize } from 'lodash';
 
-import { clearError } from 'actions/errorAction';
+import { closeAlert, closeError } from 'actions/uiAction';
+import { selectAlert, selectError } from 'selectors/uiSelector';
 import networkService from 'services/networkService';
-import { selectAllErrors } from 'selectors/errorSelector';
 
 import Home from 'containers/home/Home';
 import Alert from 'components/alert/Alert';
@@ -29,11 +29,10 @@ import * as styles from './App.module.scss';
 
 function App () {
   const dispatch = useDispatch();
-  const errors = useSelector(selectAllErrors, isEqual);
 
+  const errorMessage = useSelector(selectError);
+  const alertMessage = useSelector(selectAlert);
   const [ loading, setLoading ] = useState(true);
-  const [ error, setError ] = useState({});
-  const [ isError, setIsError ] = useState(false);
 
   useEffect(() => {
     async function checkNetwork() {
@@ -45,22 +44,8 @@ function App () {
     checkNetwork();
   }, []);
 
-  useEffect(() => {
-    forOwn(errors, function(value, key) {
-      if (!!value) {
-        setError({ [key]: value });
-        setIsError(true);
-      } else {
-        setError({});
-        setIsError(false);
-      }
-    })
-  }, [errors]);
-
-  const handleErrorClose = useCallback(
-    () => dispatch(clearError(error)),
-    [dispatch, error]
-  );
+  const handleErrorClose = () => dispatch(closeError());
+  const handleAlertClose = () => dispatch(closeAlert());
 
   const renderLoading = (
     <div className={styles.loading}>
@@ -80,10 +65,19 @@ function App () {
       <Alert
         type='error'
         duration={5000}
-        open={isError}
+        open={!!errorMessage}
         onClose={handleErrorClose}
       >
-        {`Oops! Something went wrong! ${isError ? Object.values(error)[0] : ''}`}
+        {`Error! ${errorMessage}`}
+      </Alert>
+
+      <Alert
+        type='success'
+        duration={20000}
+        open={!!alertMessage}
+        onClose={handleAlertClose}
+      >
+        {alertMessage}
       </Alert>
     </div>
   );

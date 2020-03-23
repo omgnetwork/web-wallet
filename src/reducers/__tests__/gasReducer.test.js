@@ -13,6 +13,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-export function selectAllErrors (state) {
-  return state.error;
-}
+import gasReducer from '../gasReducer';
+
+describe('gasReducer', () => {
+  it('should return the initial state', () => {
+    const newState = gasReducer(undefined, { type: '@@INIT' });
+    expect(newState).toEqual({ slow: 0, normal: 0, fast: 0 });
+  });
+
+  it('should handle gas fetch success', () => {
+    const action = {
+      type: 'GAS/GET/SUCCESS',
+      payload: { slow: 1, normal: 10, fast: 100 }
+    }
+    const newState = gasReducer(undefined, action);
+    expect(newState).toEqual(action.payload);
+  });
+});

@@ -13,31 +13,43 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { orderBy } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { Check } from '@material-ui/icons';
 
-import { selectLoading } from 'selectors/loadingSelector';
-import { exitUtxo } from 'actions/networkAction';
-import { closeModal } from 'actions/uiAction';
-
-import Button from 'components/button/Button';
-import Modal from 'components/modal/Modal';
-import Input from 'components/input/Input';
-
 import networkService from 'services/networkService';
+import { openAlert } from 'actions/uiAction';
+import { checkForExitQueue, exitUtxo } from 'actions/networkAction';
+import { selectLoading } from 'selectors/loadingSelector';
+
+import GasPicker from 'components/gaspicker/GasPicker';
+import Input from 'components/input/Input';
+import Button from 'components/button/Button';
+
 import { logAmount } from 'util/amountConvert';
 
-import * as styles from './ExitModal.module.scss';
+import * as styles from '../ExitModal.module.scss';
 
-function ExitModal ({ open }) {
+function SelectStep ({
+  setSelectedUTXO,
+  selectedUTXO,
+  handleClose,
+  setStep,
+  gasPrice,
+  setGasPrice,
+  selectedSpeed,
+  setSelectedSpeed
+}) {
   const dispatch = useDispatch();
-  const loading = useSelector(selectLoading(['EXIT/CREATE']));
 
-  const [ selectedUTXO, setSelectedUTXO ] = useState();
-  const [ searchUTXO, setSearchUTXO ] = useState('');
   const [ utxos, setUtxos ] = useState([]);
+  const [ searchUTXO, setSearchUTXO ] = useState('');
+
+  const submitLoading = useSelector(selectLoading([
+    `QUEUE/GET_${selectedUTXO ? selectedUTXO.currency : ''}`,
+    'EXIT/CREATE'
+  ]));
 
   useEffect(() => {
     async function fetchUTXOS () {
@@ -45,26 +57,23 @@ function ExitModal ({ open }) {
       const utxos = orderBy(_utxos, i => i.currency, 'desc');
       setUtxos(utxos);
     }
-    if (open) {
-      fetchUTXOS();
-    }
-  }, [open]);
+    fetchUTXOS();
+  }, []);
 
-  async function submit () {
-    if (selectedUTXO) {
-      try {
-        await dispatch(exitUtxo(selectedUTXO));
-        handleClose();
-      } catch (err) {
-        console.warn(err);
-      }
+  async function doCheckExitQueue () {
+    const res = await dispatch(checkForExitQueue(selectedUTXO.currency));
+    if (!res) {
+      return setStep(2);
     }
+    return doExit();
   }
 
-  function handleClose () {
-    setSelectedUTXO();
-    setSearchUTXO('');
-    dispatch(closeModal('exitModal'));
+  async function doExit () {
+    const res = await dispatch(exitUtxo(selectedUTXO, gasPrice));
+    if (res) {
+      dispatch(openAlert('Exit submitted. You will be blocked from making further transactions until the exit is confirmed.'));
+      handleClose();
+    }
   }
 
   const _utxos = useMemo(() => {
@@ -75,8 +84,14 @@ function ExitModal ({ open }) {
       .filter(i => !!i);
   }, [ utxos, searchUTXO ]);
 
+  function closeModal () {
+    setSearchUTXO('');
+    setSelectedSpeed('normal');
+    handleClose();
+  }
+
   return (
-    <Modal open={open} onClose={handleClose}>
+    <>
       <h2>Start Standard Exit</h2>
 
       <Input
@@ -119,26 +134,33 @@ function ExitModal ({ open }) {
         })}
       </div>
 
+      <GasPicker
+        selectedSpeed={selectedSpeed}
+        setSelectedSpeed={setSelectedSpeed}
+        setGasPrice={setGasPrice}
+      />
+
       <div className={styles.buttons}>
         <Button
-          onClick={handleClose}
+          onClick={closeModal}
           type='outline'
           style={{ flex: 0 }}
         >
           CANCEL
         </Button>
         <Button
-          onClick={submit}
+          onClick={doCheckExitQueue}
           type='primary'
           style={{ flex: 0 }}
-          loading={loading}
+          loading={submitLoading}
+          tooltip='Your exit transaction is still pending. Please wait for confirmation.'
           disabled={!selectedUTXO}
         >
           SUBMIT EXIT
         </Button>
       </div>
-    </Modal>
+    </>
   );
 }
 
-export default React.memo(ExitModal);
+export default React.memo(SelectStep);

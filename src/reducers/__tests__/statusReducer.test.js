@@ -13,16 +13,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-export function selectModalState (modal) {
-  return function (state) {
-    return state.ui[modal];
-  }
-}
+import statusReducer from '../statusReducer';
 
-export function selectAlert (state) {
-  return state.ui.alert;
-}
+describe('statusReducer', () => {
+  it('should return the initial state', () => {
+    const newState = statusReducer(undefined, { type: '@@INIT' });
+    expect(newState).toEqual({ connection: false, byzantine: false });
+  });
 
-export function selectError (state) {
-  return state.ui.error;
-}
+  it('should handle status fetch success', () => {
+    const action = {
+      type: 'STATUS/GET/SUCCESS',
+      payload: { connection: true, byzantine: false }
+    }
+    const newState = statusReducer(undefined, action);
+    expect(newState).toEqual(action.payload);
+  });
+});

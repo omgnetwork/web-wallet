@@ -14,27 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 const initialState = {
-  depositModal: false,
-  transferModal: false,
-  exitModal: false,
-  mergeModal: false,
-  alert: null,
-  error: null
+  slow: 0,
+  normal: 0,
+  fast: 0
 };
 
-function uiReducer (state = initialState, action) {
+function gasReducer (state = initialState, action) {
   switch (action.type) {
-    case 'UI/MODAL/OPEN':
-      return { ...state, [action.payload]: true }
-    case 'UI/MODAL/CLOSE':
-      return { ...state, [action.payload]: false }
-    case 'UI/ALERT/UPDATE':
-      return { ...state, alert: action.payload }
-    case 'UI/ERROR/UPDATE':
-      return { ...state, error: action.payload }
+    case 'GAS/GET/SUCCESS':
+      return { ...state, ...action.payload };
     default:
       return state;
   }
 }
 
-export default uiReducer;
+export default gasReducer;

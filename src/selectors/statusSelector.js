@@ -23,7 +23,7 @@ export function selectByzantine (state) {
   return state.status.byzantine;
 }
 
-export function selectLastSync (state) {
+export function selectIsSynced (state) {
   const lastSync = state.status.secondsSinceLastSync;
   return lastSync <= config.checkSyncInterval;
 }
