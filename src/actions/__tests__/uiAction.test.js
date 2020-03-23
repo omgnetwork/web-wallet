@@ -13,57 +13,49 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-
 import * as actions from 'actions/uiAction';
+import store from 'store';
 
-const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
+jest.mock('store');
 
 describe('uiActions', () => {
   beforeEach(() => {
+    store.clearActions();
     jest.clearAllMocks();
   });
 
   it('should dispatch correct actions on openModal', async () => {
     const expectedActions = [{ type: 'UI/MODAL/OPEN', payload: 'toto' }];
-    const store = mockStore({});
     await store.dispatch(actions.openModal('toto'));
     expect(store.getActions()).toEqual(expectedActions);
   });
 
   it('should dispatch correct actions on closeModal', async () => {
     const expectedActions = [{ type: 'UI/MODAL/CLOSE', payload: 'toto' }];
-    const store = mockStore({});
     await store.dispatch(actions.closeModal('toto'));
     expect(store.getActions()).toEqual(expectedActions);
   });
 
   it('should dispatch correct actions on openAlert', async () => {
     const expectedActions = [{ type: 'UI/ALERT/UPDATE', payload: 'toto' }];
-    const store = mockStore({});
     await store.dispatch(actions.openAlert('toto'));
     expect(store.getActions()).toEqual(expectedActions);
   });
 
   it('should dispatch correct actions on closeAlert', async () => {
     const expectedActions = [{ type: 'UI/ALERT/UPDATE', payload: null }];
-    const store = mockStore({});
     await store.dispatch(actions.closeAlert());
     expect(store.getActions()).toEqual(expectedActions);
   });
 
   it('should dispatch correct actions on openError', async () => {
     const expectedActions = [{ type: 'UI/ERROR/UPDATE', payload: 'toto' }];
-    const store = mockStore({});
     await store.dispatch(actions.openError('toto'));
     expect(store.getActions()).toEqual(expectedActions);
   });
 
   it('should dispatch correct actions on closeError', async () => {
     const expectedActions = [{ type: 'UI/ERROR/UPDATE', payload: null }];
-    const store = mockStore({});
     await store.dispatch(actions.closeError());
     expect(store.getActions()).toEqual(expectedActions);
   });

@@ -13,18 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-
 import * as actions from 'actions/networkAction';
 import networkService from 'services/networkService';
+import store from 'store';
 
-const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
 jest.mock('services/networkService');
+jest.mock('store');
 
 describe('networkActions', () => {
   beforeEach(() => {
+    store.clearActions();
     jest.clearAllMocks();
   });
 
@@ -33,7 +31,6 @@ describe('networkActions', () => {
       { type: 'STATUS/GET/REQUEST' },
       { type: 'STATUS/GET/SUCCESS', payload: 'toto' }
     ];
-    const store = mockStore({});
     await store.dispatch(actions.checkWatcherStatus());
     expect(networkService.checkStatus).toHaveBeenCalled();
     expect(store.getActions()).toEqual(expectedActions);
@@ -44,7 +41,6 @@ describe('networkActions', () => {
       { type: 'BALANCE/GET/REQUEST' },
       { type: 'BALANCE/GET/SUCCESS', payload: 'toto' }
     ];
-    const store = mockStore({});
     await store.dispatch(actions.fetchBalances());
     expect(networkService.getBalances).toHaveBeenCalled();
     expect(store.getActions()).toEqual(expectedActions);
@@ -55,7 +51,6 @@ describe('networkActions', () => {
       { type: 'TRANSACTION/GETALL/REQUEST' },
       { type: 'TRANSACTION/GETALL/SUCCESS', payload: 'toto' }
     ];
-    const store = mockStore({});
     await store.dispatch(actions.fetchTransactions());
     expect(networkService.getAllTransactions).toHaveBeenCalled();
     expect(store.getActions()).toEqual(expectedActions);
@@ -66,7 +61,6 @@ describe('networkActions', () => {
       { type: 'DEPOSIT/GETALL/REQUEST' },
       { type: 'DEPOSIT/GETALL/SUCCESS', payload: 'toto' }
     ];
-    const store = mockStore({});
     await store.dispatch(actions.fetchDeposits());
     expect(networkService.getDeposits).toHaveBeenCalled();
     expect(store.getActions()).toEqual(expectedActions);
@@ -77,7 +71,6 @@ describe('networkActions', () => {
       { type: 'EXIT/GETALL/REQUEST' },
       { type: 'EXIT/GETALL/SUCCESS', payload: 'toto' }
     ];
-    const store = mockStore({});
     await store.dispatch(actions.fetchExits());
     expect(networkService.getExits).toHaveBeenCalled();
     expect(store.getActions()).toEqual(expectedActions);
@@ -89,7 +82,6 @@ describe('networkActions', () => {
       { type: 'QUEUE/GET/SUCCESS', payload: 'toto' },
       { type: 'QUEUE/GET_0x/SUCCESS' }
     ];
-    const store = mockStore({});
     const res = await store.dispatch(actions.checkForExitQueue('0x'));
     expect(res).toBe(true);
     expect(networkService.checkForExitQueue).toHaveBeenCalledWith('0x');
@@ -102,7 +94,6 @@ describe('networkActions', () => {
       { type: 'QUEUE/GET/REQUEST' },
       { type: 'QUEUE/GET/SUCCESS', payload: 'toto' }
     ];
-    const store = mockStore({});
     await store.dispatch(actions.getExitQueue('0x'));
     expect(networkService.getExitQueue).toHaveBeenCalledWith('0x');
     expect(store.getActions()).toEqual(expectedActions);
@@ -113,7 +104,6 @@ describe('networkActions', () => {
       { type: 'QUEUE/CREATE/REQUEST' },
       { type: 'QUEUE/CREATE/SUCCESS', payload: 'toto' }
     ];
-    const store = mockStore({});
     await store.dispatch(actions.addExitQueue('0x', 1));
     expect(networkService.addExitQueue).toHaveBeenCalledWith('0x', 1);
     expect(store.getActions()).toEqual(expectedActions);
@@ -124,7 +114,6 @@ describe('networkActions', () => {
       { type: 'EXIT/CREATE/REQUEST' },
       { type: 'EXIT/CREATE/SUCCESS', payload: 'toto' }
     ];
-    const store = mockStore({});
     await store.dispatch(actions.exitUtxo({ foo: 'bar' }, 1));
     expect(networkService.exitUtxo).toHaveBeenCalledWith({ foo: 'bar' }, 1);
     expect(store.getActions()).toEqual(expectedActions);
@@ -135,7 +124,6 @@ describe('networkActions', () => {
       { type: 'DEPOSIT/CREATE/REQUEST' },
       { type: 'DEPOSIT/CREATE/SUCCESS', payload: 'toto' }
     ];
-    const store = mockStore({});
     await store.dispatch(actions.deposit(1, '0x', 1));
     expect(networkService.deposit).toHaveBeenCalledWith(1, '0x', 1);
     expect(store.getActions()).toEqual(expectedActions);
@@ -146,7 +134,6 @@ describe('networkActions', () => {
       { type: 'QUEUE/PROCESS/REQUEST' },
       { type: 'QUEUE/PROCESS/SUCCESS', payload: 'toto' }
     ];
-    const store = mockStore({});
     await store.dispatch(actions.processExits(1, '0x', 1));
     expect(networkService.processExits).toHaveBeenCalledWith(1, '0x', 1);
     expect(store.getActions()).toEqual(expectedActions);
@@ -157,7 +144,6 @@ describe('networkActions', () => {
       { type: 'TRANSFER/CREATE/REQUEST' },
       { type: 'TRANSFER/CREATE/SUCCESS', payload: 'toto' }
     ];
-    const store = mockStore({});
     await store.dispatch(actions.transfer('data'));
     expect(networkService.transfer).toHaveBeenCalledWith('data');
     expect(store.getActions()).toEqual(expectedActions);
@@ -168,7 +154,6 @@ describe('networkActions', () => {
       { type: 'TRANSFER/CREATE/REQUEST' },
       { type: 'TRANSFER/CREATE/SUCCESS', payload: 'toto' }
     ];
-    const store = mockStore({});
     await store.dispatch(actions.mergeUtxos('data'));
     expect(networkService.mergeUtxos).toHaveBeenCalledWith('data');
     expect(store.getActions()).toEqual(expectedActions);
@@ -179,7 +164,6 @@ describe('networkActions', () => {
       { type: 'GAS/GET/REQUEST' },
       { type: 'GAS/GET/SUCCESS', payload: 'toto' }
     ];
-    const store = mockStore({});
     await store.dispatch(actions.fetchGas());
     expect(networkService.getGasPrice).toHaveBeenCalled();
     expect(store.getActions()).toEqual(expectedActions);
@@ -190,7 +174,6 @@ describe('networkActions', () => {
       { type: 'FEE/GET/REQUEST' },
       { type: 'FEE/GET/SUCCESS', payload: [1,2,3] }
     ];
-    const store = mockStore({});
     await store.dispatch(actions.fetchFees());
     expect(networkService.fetchFees).toHaveBeenCalled();
     expect(store.getActions()).toEqual(expectedActions);

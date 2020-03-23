@@ -13,13 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-
 import { createAction } from 'actions/createAction';
+import store from 'store';
 
-const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
+jest.mock('store');
 
 function fakeAsyncRequestSuccess () {
   return Promise.resolve('toto-success');
@@ -31,11 +28,11 @@ function fakeAsyncRequestFailure () {
 
 describe('createAction', () => {
   beforeEach(() => {
+    store.clearActions();
     jest.clearAllMocks();
   });
 
   it('should return false to caller on async failure', async () => {
-    const store = mockStore({});
     const res = await store.dispatch(
       createAction('TEST/GET', () => fakeAsyncRequestFailure())
     );
@@ -43,7 +40,6 @@ describe('createAction', () => {
   });
 
   it('should return true to caller on async success', async () => {
-    const store = mockStore({});
     const res = await store.dispatch(
       createAction('TEST/GET', () => fakeAsyncRequestSuccess())
     );
@@ -55,7 +51,6 @@ describe('createAction', () => {
       { type: 'TEST/GET/REQUEST' },
       { type: 'TEST/GET/SUCCESS', payload: 'toto-success' }
     ];
-    const store = mockStore({});
     await store.dispatch(
       createAction('TEST/GET', () => fakeAsyncRequestSuccess())
     );
@@ -68,7 +63,6 @@ describe('createAction', () => {
       { type: 'TEST/GET/ERROR' },
       { type: 'UI/ERROR/UPDATE', payload: 'toto-failed' },
     ];
-    const store = mockStore({});
     await store.dispatch(
       createAction('TEST/GET', () => fakeAsyncRequestFailure())
     );
@@ -81,7 +75,6 @@ describe('createAction', () => {
       { type: 'TEST/GET/ERROR' },
       { type: 'UI/ERROR/UPDATE', payload: 'custom-error-message' },
     ];
-    const store = mockStore({});
     await store.dispatch(
       createAction(
         'TEST/GET',
