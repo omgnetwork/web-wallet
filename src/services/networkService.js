@@ -23,8 +23,6 @@ import config from 'util/config';
 
 import { getToken } from 'actions/tokenAction';
 
-const GAS_LIMIT = 6000000;
-
 class NetworkService {
   constructor () {
     this.childChain = new ChildChain({ watcherUrl: config.watcherUrl });
@@ -135,7 +133,6 @@ class NetworkService {
           amount: value,
           txOptions: {
             from: this.account,
-            gas: GAS_LIMIT,
             gasPrice: gasPrice.toString()
           }
         });
@@ -148,7 +145,6 @@ class NetworkService {
       ...currency !== OmgUtil.transaction.ETH_CURRENCY ? { currency } : {},
       txOptions: {
         from: this.account,
-        gas: GAS_LIMIT,
         gasPrice: gasPrice.toString()
       }
     })
@@ -355,7 +351,6 @@ class NetworkService {
       token,
       txOptions: {
         from: this.account,
-        gas: GAS_LIMIT,
         gasPrice: gasPrice.toString()
       }
     });
@@ -369,7 +364,6 @@ class NetworkService {
       inclusionProof: exitData.proof,
       txOptions: {
         from: this.account,
-        gas: GAS_LIMIT,
         gasPrice: gasPrice.toString()
       }
     });
@@ -382,7 +376,6 @@ class NetworkService {
       maxExitsToProcess: maxExits,
       txOptions: {
         from: this.account,
-        gas: GAS_LIMIT,
         gasPrice: gasPrice.toString()
       }
     })
