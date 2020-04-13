@@ -55,7 +55,7 @@
     ]
   },
   "devDependencies": {
-    "@beam-australia/react-env": "^2.1.2",
+    "@beam-australia/react-env": "2.1.2",
     "audit-ci": "^2.5.1"
   }
 }
