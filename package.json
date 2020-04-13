@@ -36,7 +36,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --watchAll=false",
-    "test:coverage": "yarn test --coverage"
+    "test:coverage": "yarn test --coverage",
+    "audit-check": "audit-ci --moderate"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -54,6 +55,7 @@
     ]
   },
   "devDependencies": {
-    "@beam-australia/react-env": "^2.1.2"
+    "@beam-australia/react-env": "^2.1.2",
+    "audit-ci": "^2.5.1"
   }
 }

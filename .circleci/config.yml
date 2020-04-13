@@ -28,6 +28,7 @@ jobs:
           apk update && apk upgrade
           apk add --no-cache git openssh make gcc g++ python
       - run: yarn install
+      - run: yarn audit-check
       - run: yarn test
       - run: yarn build
 
