@@ -19,9 +19,11 @@ import { Provider } from 'react-redux';
 import * as Sentry from '@sentry/browser';
 import TagManager from 'react-gtm-module';
 
-import App from 'containers/app/App';
+import networkService from 'services/networkService';
 import config from 'util/config';
 import store from 'store';
+
+import App from 'containers/app/App';
 
 import './index.scss';
 
@@ -31,6 +33,15 @@ if (config.sentry) {
 if (config.gtmId) {
   TagManager.initialize({ gtmId: config.gtmId });
 }
+
+window.ethereum.on('accountsChanged', function (accounts) {
+  if (
+    networkService.account
+    && networkService.account.toLowerCase() !== accounts[0].toLowerCase()
+  ) {
+    window.location.reload(false);
+  }
+});
 
 ReactDOM.render(
   <Provider store={store}>
