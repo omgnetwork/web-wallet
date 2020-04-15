@@ -23,6 +23,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# generated runtime envs
 public/env.js
 
 # enforce yarn

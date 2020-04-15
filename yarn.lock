@@ -1025,7 +1025,7 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@beam-australia/react-env@^2.1.2":
+"@beam-australia/react-env@2.1.2":
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/@beam-australia/react-env/-/react-env-2.1.2.tgz#12581373fcb20f68ac206cd8317a74261a9dde0c"
   integrity sha512-gXcCGGGb2oRM/oeqT861JXsSTJjOxGTBMkj7J5ujEBb6Vmv5I108NcALPYYdGdzFCV6ebdVP+E5k0W1xAbzA7w==
@@ -10928,7 +10928,7 @@ terser-webpack-plugin@1.4.1:
     find-cache-dir "^2.1.0"
     is-wsl "^1.1.0"
     schema-utils "^1.0.0"
-    serialize-javascript "^2.1.2"
+    serialize-javascript "2.1.2"
     source-map "^0.6.1"
     terser "^4.1.2"
     webpack-sources "^1.4.0"
