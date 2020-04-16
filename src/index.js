@@ -34,14 +34,16 @@ if (config.gtmId) {
   TagManager.initialize({ gtmId: config.gtmId });
 }
 
-window.ethereum.on('accountsChanged', function (accounts) {
-  if (
-    networkService.account
-    && networkService.account.toLowerCase() !== accounts[0].toLowerCase()
-  ) {
-    window.location.reload(false);
-  }
-});
+if (window.ethereum) {
+  window.ethereum.on('accountsChanged', function (accounts) {
+    if (
+      networkService.account
+      && networkService.account.toLowerCase() !== accounts[0].toLowerCase()
+    ) {
+      window.location.reload(false);
+    }
+  });
+}
 
 ReactDOM.render(
   <Provider store={store}>
