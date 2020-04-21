@@ -34,7 +34,7 @@ if (config.gtmId) {
   TagManager.initialize({ gtmId: config.gtmId });
 }
 
-if (window.ethereum) {
+try {
   window.ethereum.on('accountsChanged', function (accounts) {
     if (
       networkService.account
@@ -43,6 +43,8 @@ if (window.ethereum) {
       window.location.reload(false);
     }
   });
+} catch (err) {
+  console.warn('web3 event handling not available on this browser')
 }
 
 ReactDOM.render(
