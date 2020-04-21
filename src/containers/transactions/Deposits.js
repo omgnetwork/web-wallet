@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { orderBy, isEqual } from 'lodash';
 import { useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
@@ -21,14 +21,23 @@ import truncate from 'truncate-middle';
 import { selectEthDeposits, selectErc20Deposits } from 'selectors/transactionSelector';
 
 import Transaction from 'components/transaction/Transaction';
+import Pager from 'components/pager/Pager';
+
 import config from 'util/config';
 import { logAmount } from 'util/amountConvert';
 
 import * as styles from './Transactions.module.scss';
 
+const PER_PAGE = 10;
+
 function Deposits ({ searchHistory }) {
+  const [ page, setPage ] = useState(1);
   const ethDeposits = useSelector(selectEthDeposits, isEqual);
   const erc20Deposits = useSelector(selectErc20Deposits, isEqual);
+
+  useEffect(() => {
+    setPage(1);
+  }, [ searchHistory ]);
 
   const deposits = orderBy(
     [...ethDeposits, ...erc20Deposits],
@@ -38,13 +47,24 @@ function Deposits ({ searchHistory }) {
     return i.transactionHash.includes(searchHistory) || i.returnValues.token.includes(searchHistory);
   });
 
+  const startingIndex = page === 1 ? 0 : ((page - 1) * PER_PAGE);
+  const endingIndex = page * PER_PAGE;
+  const paginatedDeposits = _deposits.slice(startingIndex, endingIndex);
+
   return (
     <div className={styles.transactionSection}>
       <div className={styles.transactions}>
-        {!_deposits.length && (
+        <Pager
+          currentPage={page}
+          isLastPage={paginatedDeposits.length < PER_PAGE}
+          onClickNext={() => setPage(page + 1)}
+          onClickBack={() => setPage(page - 1)}
+        />
+
+        {!paginatedDeposits.length && (
           <div className={styles.disclaimer}>No deposit history.</div>
         )}
-        {_deposits.map((i, index) => {
+        {paginatedDeposits.map((i, index) => {
           return (
             <Transaction
               key={index}
