@@ -1,0 +1,36 @@
+@import 'index.scss';
+
+.Pager {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 20px;
+
+  .number {
+    font-size: 12px;
+    margin-right: 10px;
+  }
+
+  .box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    width: 50px;
+    height: 20px;
+    margin-left: 3px;
+    background-color: $darkgray;
+    transition: all 200ms ease-in-out;
+    cursor: pointer;
+    &:hover {
+      background-color: $midgray;
+    }
+  }
+
+  .disabled {
+    pointer-events: none;
+    cursor: initial;
+    opacity: 0.5;
+  }
+}
