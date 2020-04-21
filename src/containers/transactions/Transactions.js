@@ -84,7 +84,10 @@ function Transactions () {
       <div className={styles.data}>
         <div className={styles.section}>
           <Tabs
-            onClick={setActiveTab}
+            onClick={tab => {
+              setPage(1);
+              setActiveTab(tab);
+            }}
             activeTab={activeTab}
             tabs={[ 'Transactions', 'Deposits' ]}
           />
