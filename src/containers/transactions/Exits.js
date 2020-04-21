@@ -26,10 +26,14 @@ import { selectPendingExits, selectExitedExits } from 'selectors/exitSelector';
 
 import ProcessExitsModal from 'containers/modals/processexit/ProcessExitsModal';
 import Transaction from 'components/transaction/Transaction';
+import Pager from 'components/pager/Pager';
 
 import * as styles from './Transactions.module.scss';
 
+const PER_PAGE = 10;
+
 function Exits ({ searchHistory }) {
+  const [ page, setPage ] = useState(1);
   const [ processExitModal, setProcessExitModal ] = useState(false);
 
   const queues = useSelector(selectAllQueues, isEqual);
@@ -66,9 +70,57 @@ function Exits ({ searchHistory }) {
   const _pendingExits = enhanceExits(pendingExits).filter(i => {
     return i.transactionHash.includes(searchHistory);
   });
+
   const _exitedExits = exitedExits.filter(i => {
     return i.transactionHash.includes(searchHistory);
   });
+
+  const renderPending = _pendingExits.map((i, index) => {
+    const exitableMoment = moment.unix(i.exitableAt);
+    const isExitable = moment().isAfter(exitableMoment);
+    return (
+      <Transaction
+        key={`pending-${index}`}
+        button={
+          isExitable
+            ? {
+              onClick: () => setProcessExitModal(i),
+              text: 'Process Exit'
+            }
+            : undefined
+        }
+        link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
+        status={
+          i.status === 'Confirmed' && i.pendingPercentage >= 100
+            ? 'Challenge Period'
+            : i.status
+        }
+        subStatus={`Block ${i.blockNumber}`}
+        statusPercentage={i.pendingPercentage <= 100 ? i.pendingPercentage : ''}
+        title={truncate(i.transactionHash, 10, 4, '...')}
+        midTitle={i.exitableAt ? `Exitable ${exitableMoment.format('lll')}` : ''}
+        subTitle={i.currency ? truncate(i.currency, 10, 4, '...'): ''}
+      />
+    );
+  });
+
+  const renderExited = _exitedExits.map((i, index) => {
+    return (
+      <Transaction
+        key={`exited-${index}`}
+        link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
+        status='Exited'
+        subStatus={`Block ${i.blockNumber}`}
+        title={truncate(i.transactionHash, 10, 4, '...')}
+      />
+    );
+  });
+
+  const allExits = [ ...renderPending, ...renderExited ];
+
+  const startingIndex = page === 1 ? 0 : ((page - 1) * PER_PAGE);
+  const endingIndex = page * PER_PAGE;
+  const paginatedExits = allExits.slice(startingIndex, endingIndex);
 
   return (
     <>
@@ -81,48 +133,16 @@ function Exits ({ searchHistory }) {
         <div className={styles.subTitle}>Exits</div>
         <div className={styles.transactionSection}>
           <div className={styles.transactions}>
-            {(!_pendingExits.length && !_exitedExits.length) && (
+            <Pager
+              currentPage={page}
+              isLastPage={paginatedExits.length < PER_PAGE}
+              onClickNext={() => setPage(page + 1)}
+              onClickBack={() => setPage(page - 1)}
+            />
+            {!allExits.length && (
               <div className={styles.disclaimer}>No exit history.</div>
             )}
-            {_pendingExits.map((i, index) => {
-              const exitableMoment = moment.unix(i.exitableAt);
-              const isExitable = moment().isAfter(exitableMoment);
-              return (
-                <Transaction
-                  key={index}
-                  button={
-                    isExitable
-                      ? {
-                        onClick: () => setProcessExitModal(i),
-                        text: 'Process Exit'
-                      }
-                      : undefined
-                  }
-                  link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
-                  status={
-                    i.status === 'Confirmed' && i.pendingPercentage >= 100
-                      ? 'Challenge Period'
-                      : i.status
-                  }
-                  subStatus={`Block ${i.blockNumber}`}
-                  statusPercentage={i.pendingPercentage <= 100 ? i.pendingPercentage : ''}
-                  title={truncate(i.transactionHash, 10, 4, '...')}
-                  midTitle={i.exitableAt ? `Exitable ${exitableMoment.format('lll')}` : ''}
-                  subTitle={i.currency ? truncate(i.currency, 10, 4, '...'): ''}
-                />
-              );
-            })}
-            {_exitedExits.map((i, index) => {
-              return (
-                <Transaction
-                  key={index}
-                  link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
-                  status='Exited'
-                  subStatus={`Block ${i.blockNumber}`}
-                  title={truncate(i.transactionHash, 10, 4, '...')}
-                />
-              );
-            })}
+            {React.Children.toArray(paginatedExits)}
           </div>
         </div>
       </div>

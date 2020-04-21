@@ -27,13 +27,17 @@ import config from 'util/config';
 import Tabs from 'components/tabs/Tabs';
 import Input from 'components/input/Input';
 import Transaction from 'components/transaction/Transaction';
+import Pager from 'components/pager/Pager';
 
 import Exits from './Exits';
 import Deposits from './Deposits';
 
 import * as styles from './Transactions.module.scss';
 
+const PER_PAGE = 10;
+
 function Transactions () {
+  const [ page, setPage ] = useState(1);
   const [ searchHistory, setSearchHistory ] = useState('');
   const [ activeTab, setActiveTab ] = useState('Transactions');
 
@@ -57,6 +61,10 @@ function Transactions () {
     return i.txhash.includes(searchHistory) || i.metadata.toLowerCase().includes(searchHistory);
   });
 
+  const startingIndex = page === 1 ? 0 : ((page - 1) * PER_PAGE);
+  const endingIndex = page * PER_PAGE;
+  const paginatedTransactions = _transactions.slice(startingIndex, endingIndex);
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -65,7 +73,10 @@ function Transactions () {
           icon
           placeholder='Search history'
           value={searchHistory}
-          onChange={i => setSearchHistory(i.target.value.toLowerCase())}
+          onChange={i => {
+            setPage(1);
+            setSearchHistory(i.target.value.toLowerCase());
+          }}
           className={styles.searchBar}
         />
       </div>
@@ -73,17 +84,27 @@ function Transactions () {
       <div className={styles.data}>
         <div className={styles.section}>
           <Tabs
-            onClick={setActiveTab}
+            onClick={tab => {
+              setPage(1);
+              setActiveTab(tab);
+            }}
             activeTab={activeTab}
             tabs={[ 'Transactions', 'Deposits' ]}
           />
 
           {activeTab === 'Transactions' && (
             <div className={styles.transactions}>
-              {!_transactions.length && (
+              <Pager
+                currentPage={page}
+                isLastPage={paginatedTransactions.length < PER_PAGE}
+                onClickNext={() => setPage(page + 1)}
+                onClickBack={() => setPage(page - 1)}
+              />
+
+              {!paginatedTransactions.length && (
                 <div className={styles.disclaimer}>No transaction history.</div>
               )}
-              {_transactions.map((i, index) => {
+              {paginatedTransactions.map((i, index) => {
                 return (
                   <Transaction
                     key={index}
