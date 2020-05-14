@@ -1,8 +1,8 @@
-# react-starter-kit
+# Web Wallet
 
 [![CircleCI](https://circleci.com/gh/omisego/react-starter-kit/tree/master.svg?style=svg)](https://circleci.com/gh/omisego/react-starter-kit/tree/master)
 
-This is an example client side wallet built in React.js which allows you to make interactions with the OMG network from the browser.
+This is an example client side wallet built with React.js which allows you to make interactions with the OMG network from the browser.
 To run this application locally, make sure you have a local instance of elixir-omg running or have access to an already deployed network.
 
 - This example application is using [`omg-js`](https://github.com/omisego/omg-js)
