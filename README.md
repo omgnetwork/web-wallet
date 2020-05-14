@@ -31,7 +31,7 @@ REACT_APP_GTM_ID=             *optional* google tag manager id (GTM-XXXXXXX)
 
 4. Run the tests by running `yarn test` from the root directory.
 
-## Running the starter-kit
+## Running the wallet
 
 Open up your browser and navigate to `http://localhost:3000`, Make sure your Metamask is currently unlocked. You should be able to see your account balance on both the Root chain and Child chain.
 
