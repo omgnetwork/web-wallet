@@ -153,8 +153,11 @@ class NetworkService {
   // normalize signing methods across wallet providers
   async signTypedData (typedData) {
     if (!!window.imToken) {
-      // TODO: this doenst actually work
-      const signature = await this.web3.eth.sign(typedData, this.web3.utils.toChecksumAddress(this.account));
+      const typedDataHash = OmgUtil.transaction.getToSignHash(typedData);
+      const signature = await this.web3.eth.sign(
+        JSON.stringify(typedDataHash),
+        this.web3.utils.toChecksumAddress(this.account)
+      );
       return signature;
     }
 
