@@ -63,5 +63,9 @@
   "devDependencies": {
     "@beam-australia/react-env": "2.1.2",
     "audit-ci": "^2.5.1"
+  },
+  "resolutions": {
+    "**/**/**/http-proxy": "^1.18.1",
+    "**/**/serialize-javascript": "^2.1.1"
   }
 }
