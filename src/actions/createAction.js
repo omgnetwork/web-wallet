@@ -13,6 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
+import * as Sentry from '@sentry/browser';
+
 import sanitizeError from 'util/sanitizeError';
 
 export function createAction (key, asyncAction, customErrorMessage) {
@@ -23,6 +25,11 @@ export function createAction (key, asyncAction, customErrorMessage) {
       dispatch({ type: `${key}/SUCCESS`, payload: response });
       return true;
     } catch (error) {
+
+      // log to sentry for testing TODO: REMOVE
+      console.log(`key: ${key}, action: ${asyncAction} errorObject: ${JSON.stringify(error)}`);
+      Sentry.captureException(error);
+
       // cancel request loading state
       dispatch({ type: `${key}/ERROR` });
 
@@ -34,7 +41,7 @@ export function createAction (key, asyncAction, customErrorMessage) {
         return false;
       }
 
-      dispatch({ type: 'UI/ERROR/UPDATE', payload: customErrorMessage || sanitizedError });      
+      dispatch({ type: 'UI/ERROR/UPDATE', payload: customErrorMessage || sanitizedError });
       // resolve the result to the view
       return false;
     };

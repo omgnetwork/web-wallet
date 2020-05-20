@@ -150,6 +150,24 @@ class NetworkService {
     })
   }
 
+  // normalize signing methods across wallet providers
+  async signTypedData (typedData) {
+    if (!!window.imToken) {
+      // TODO: this doenst actually work
+      const signature = await this.web3.eth.sign(typedData, this.web3.utils.toChecksumAddress(this.account));
+      return signature;
+    }
+
+    const signature = await this.web3.currentProvider.send(
+      'eth_signTypedData_v3',
+      [
+        this.web3.utils.toChecksumAddress(this.account),
+        JSONBigNumber.stringify(typedData)
+      ]
+    );
+    return signature;
+  }
+
   async mergeUtxos (utxos) {
     const _metadata = 'Merge UTXOs'
     const payments = [{
@@ -171,13 +189,7 @@ class NetworkService {
       metadata: OmgUtil.transaction.encodeMetadata(_metadata)
     });
     const typedData = OmgUtil.transaction.getTypedData(txBody, this.plasmaContractAddress);
-    const signature = await this.web3.currentProvider.send(
-      'eth_signTypedData_v3',
-      [
-        this.web3.utils.toChecksumAddress(this.account),
-        JSONBigNumber.stringify(typedData)
-      ]
-    );
+    const signature = await this.signTypedData(typedData);
     const signatures = new Array(txBody.inputs.length).fill(signature);
     const signedTxn = this.childChain.buildSignedTransaction(typedData, signatures);
     const submittedTransaction = await this.childChain.submitTransaction(signedTxn);
@@ -228,13 +240,7 @@ class NetworkService {
       metadata
     });
     const typedData = OmgUtil.transaction.getTypedData(txBody, this.plasmaContractAddress);
-    const signature = await this.web3.currentProvider.send(
-      'eth_signTypedData_v3',
-      [
-        this.web3.utils.toChecksumAddress(this.account),
-        JSONBigNumber.stringify(typedData)
-      ]
-    );
+    const signature = await this.signTypedData(typedData);
     const signatures = new Array(txBody.inputs.length).fill(signature);
     const signedTxn = this.childChain.buildSignedTransaction(typedData, signatures);
     const submittedTransaction = await this.childChain.submitTransaction(signedTxn);
@@ -264,10 +270,16 @@ class NetworkService {
     const { contract: erc20Vault } = await this.rootChain.getErc20Vault();
     const ethBlockNumber = await this.web3.eth.getBlockNumber();
 
-    const _ethDeposits = await ethVault.getPastEvents('DepositCreated', {
-      filter: { depositor: this.account },
-      fromBlock: 0
-    });
+    let _ethDeposits = [];
+    try {
+      _ethDeposits = await ethVault.getPastEvents('DepositCreated', {
+        filter: { depositor: this.account },
+        fromBlock: 0
+      });
+    } catch (error) {
+      console.log('Getting past ETH DepositCreated events timed out. Trying again...');
+    }
+
     const ethDeposits = await Promise.all(_ethDeposits.map(async i => {
       const tokenInfo = await getToken(i.returnValues.token);
       const status = ethBlockNumber - i.blockNumber >= depositFinality ? 'Confirmed' : 'Pending';
@@ -275,10 +287,16 @@ class NetworkService {
       return { ...i, status, pendingPercentage: (pendingPercentage * 100).toFixed(), tokenInfo }
     }));
 
-    const _erc20Deposits = await erc20Vault.getPastEvents('DepositCreated', {
-      filter: { depositor: this.account },
-      fromBlock: 0
-    });
+    let _erc20Deposits = [];
+    try {
+      _erc20Deposits = await erc20Vault.getPastEvents('DepositCreated', {
+        filter: { depositor: this.account },
+        fromBlock: 0
+      });
+    } catch (error) {
+      console.log('Getting past ERC20 DepositCreated events timed out. Trying again...');
+    }
+
     const erc20Deposits = await Promise.all(_erc20Deposits.map(async i => {
       const tokenInfo = await getToken(i.returnValues.token);
       const status = ethBlockNumber - i.blockNumber >= depositFinality ? 'Confirmed' : 'Pending';
@@ -293,17 +311,28 @@ class NetworkService {
     const finality = 12;
     const ethBlockNumber = await this.web3.eth.getBlockNumber();
     const { contract } = await this.rootChain.getPaymentExitGame();
-    let allExits = await contract.getPastEvents('ExitStarted', {
-      filter: { owner: this.account },
-      fromBlock: 0
-    });
+
+    let allExits = [];
+    try {
+      allExits = await contract.getPastEvents('ExitStarted', {
+        filter: { owner: this.account },
+        fromBlock: 0
+      });
+    } catch (error) {
+      console.log('Getting past ExitStarted events timed out. Trying again...');
+    }
 
     const exitedExits = [];
     for (const exit of allExits) {
-      const isFinalized = await contract.getPastEvents('ExitFinalized', {
-        filter: { exitId: exit.returnValues.exitId.toString() },
-        fromBlock: 0
-      });
+      let isFinalized = [];
+      try {
+        isFinalized = await contract.getPastEvents('ExitFinalized', {
+          filter: { exitId: exit.returnValues.exitId.toString() },
+          fromBlock: 0
+        });
+      } catch (error) {
+        console.log('Getting past ExitFinalized events timed out. Trying again...');
+      }
       if (isFinalized.length) {
         exitedExits.push(exit);
       }
@@ -336,7 +365,13 @@ class NetworkService {
 
   async getExitQueue (_currency) {
     const currency = _currency.toLowerCase();
-    const queue = await this.rootChain.getExitQueue(currency);
+    let queue = [];
+    try {
+      queue = await this.rootChain.getExitQueue(currency);
+    } catch (error) {
+      console.log('Getting the exitQueue timed out. Trying again...');
+    }
+
     return {
       currency,
       queue: queue.map(i => ({
