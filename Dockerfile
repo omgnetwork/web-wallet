@@ -1,4 +1,4 @@
-FROM node:12.16.1-alpine3.11 as build
+FROM node:12.16.1-alpine3.11
 
 RUN apk update && apk upgrade && \
     apk add --no-cache git openssh make gcc g++ python
@@ -9,11 +9,9 @@ USER omg
 
 WORKDIR /home/omg
 
-COPY package.json /home/omg
-COPY yarn.lock /home/omg
+ADD . .
 
 RUN yarn install
-ADD . .
 RUN yarn build
 
 EXPOSE 3000
