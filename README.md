@@ -6,7 +6,7 @@ This is an example client side wallet built with React.js which allows you to ma
 To run this application locally, make sure you have a local instance of elixir-omg running or have access to an already deployed network.
 
 - This example application is using [`omg-js`](https://github.com/omisego/omg-js)
-- Requires Node >= 9 < 13
+- Requires Node 12.16.1
 
 ## Initial Setup
 
