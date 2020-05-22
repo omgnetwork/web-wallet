@@ -9,7 +9,7 @@ USER omg
 
 WORKDIR /home/omg
 
-ADD . .
+COPY . .
 
 RUN yarn install
 RUN yarn build
