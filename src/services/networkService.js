@@ -19,6 +19,7 @@ import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
 import BN from 'bn.js';
 import axios from 'axios';
 import JSONBigNumber from 'omg-json-bigint';
+import { bufferToHex } from 'ethereumjs-util';
 import config from 'util/config';
 
 import { getToken } from 'actions/tokenAction';
@@ -151,22 +152,20 @@ class NetworkService {
   }
 
   // normalize signing methods across wallet providers
-  // discover all possible signing methods...
   // detecting providers: https://ethereum.stackexchange.com/questions/24266/elegant-way-to-detect-current-provider-int-web3-js
-
   async signTypedData (typedData) {
-    if (true) {
-      const typedDataHash = OmgUtil.transaction.getToSignHash(typedData);
-      const signature = await this.web3.eth.sign(
-        JSON.stringify(typedDataHash),
-        this.web3.utils.toChecksumAddress(this.account)
-      );
-      console.log('signature: ', signature);
-      return signature;
+
+    function isValidMethod (message) {
+      if (
+        message.includes('The method eth_signTypedData_v3 does not exist')
+        || message.includes('Invalid JSON RPC response')
+      ) {
+        return false;
+      }
+      return true;
     }
 
-    // this forsure works
-    if (false) {
+    try {
       const signature = await this.web3.currentProvider.send(
         'eth_signTypedData_v3',
         [
@@ -175,7 +174,21 @@ class NetworkService {
         ]
       );
       return signature;
+    } catch (error) {
+      if (isValidMethod(error.message)) {
+        // method exists but other error
+        throw error;
+      }
+      // method doesnt exist try another
     }
+
+    // fallback signing method if signTypedData is not implemented by the provider
+    const typedDataHash = OmgUtil.transaction.getToSignHash(typedData);
+    const signature = await this.web3.eth.sign(
+      bufferToHex(typedDataHash),
+      this.web3.utils.toChecksumAddress(this.account)
+    );
+    return signature;
   }
 
   async mergeUtxos (utxos) {
