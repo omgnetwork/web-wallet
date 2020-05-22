@@ -6,12 +6,13 @@ RUN apk update && apk upgrade && \
 RUN addgroup -g 10000 -S omg && \
     adduser -u 10000 -S omg -G omg
 USER omg
-
 WORKDIR /home/omg
 
-COPY . .
-
+COPY package.json .
+COPY yarn.lock .
 RUN yarn install
+
+COPY . .
 RUN yarn build
 
 EXPOSE 3000
