@@ -25,7 +25,7 @@ import { getToken } from 'actions/tokenAction';
 
 class NetworkService {
   constructor () {
-    this.childChain = new ChildChain({ watcherUrl: config.watcherUrl });
+    this.childChain = new ChildChain({ watcherUrl: config.watcherUrl, plasmaContractAddress: config.plasmaAddress });
     this.OmgUtil = OmgUtil;
     this.plasmaContractAddress = config.plasmaAddress;
   }
@@ -151,24 +151,31 @@ class NetworkService {
   }
 
   // normalize signing methods across wallet providers
+  // discover all possible signing methods...
+  // detecting providers: https://ethereum.stackexchange.com/questions/24266/elegant-way-to-detect-current-provider-int-web3-js
+
   async signTypedData (typedData) {
-    if (!!window.imToken) {
+    if (true) {
       const typedDataHash = OmgUtil.transaction.getToSignHash(typedData);
       const signature = await this.web3.eth.sign(
         JSON.stringify(typedDataHash),
         this.web3.utils.toChecksumAddress(this.account)
       );
+      console.log('signature: ', signature);
       return signature;
     }
 
-    const signature = await this.web3.currentProvider.send(
-      'eth_signTypedData_v3',
-      [
-        this.web3.utils.toChecksumAddress(this.account),
-        JSONBigNumber.stringify(typedData)
-      ]
-    );
-    return signature;
+    // this forsure works
+    if (false) {
+      const signature = await this.web3.currentProvider.send(
+        'eth_signTypedData_v3',
+        [
+          this.web3.utils.toChecksumAddress(this.account),
+          JSONBigNumber.stringify(typedData)
+        ]
+      );
+      return signature;
+    }
   }
 
   async mergeUtxos (utxos) {
