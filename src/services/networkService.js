@@ -154,15 +154,14 @@ class NetworkService {
   // normalize signing methods across wallet providers
   // detecting providers: https://ethereum.stackexchange.com/questions/24266/elegant-way-to-detect-current-provider-int-web3-js
   async signTypedData (typedData) {
-
-    function isValidMethod (message) {
+    function isExpectedError (message) {
       if (
         message.includes('The method eth_signTypedData_v3 does not exist')
         || message.includes('Invalid JSON RPC response')
       ) {
-        return false;
+        return true;
       }
-      return true;
+      return false;
     }
 
     try {
@@ -175,8 +174,8 @@ class NetworkService {
       );
       return signature;
     } catch (error) {
-      if (isValidMethod(error.message)) {
-        // method exists but other error
+      if (!isExpectedError(error.message)) {
+        // not an expected error
         throw error;
       }
       // method doesnt exist try another
