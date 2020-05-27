@@ -34,6 +34,7 @@ const useStyles = makeStyles({
     border: 'none',
     outline: 'none',
     width: '500px',
+    boxSizing: 'border-box',
     maxWidth: '100%'
   }
 });

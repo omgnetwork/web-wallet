@@ -18,7 +18,7 @@ import { useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
 import { Tooltip } from '@material-ui/core';
 import { Dvr, GitHub } from '@material-ui/icons';
-import omg_network from './omisego-blue.svg';
+import omg_logo from './omg_logo.svg';
 
 import { selectConnection, selectByzantine, selectIsSynced } from 'selectors/statusSelector';
 
@@ -97,7 +97,7 @@ function Status () {
   return (
     <div className={styles.Status}>
       <div>
-        <img className={styles.logo} src={omg_network} alt='omg-network' />
+        <img className={styles.logo} src={omg_logo} alt='omg-network' />
         <Info
           data={[
             {

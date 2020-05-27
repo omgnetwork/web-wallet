@@ -23,6 +23,11 @@ export function createAction (key, asyncAction, customErrorMessage) {
       dispatch({ type: `${key}/SUCCESS`, payload: response });
       return true;
     } catch (error) {
+
+      // UNCOMMENT FOR REMOTE DEBUGGING WITH DAPP BROWSERS
+      // console.log(`key: ${key}, action: ${asyncAction} errorObject: ${JSON.stringify(error)}`);
+      // Sentry.captureException(error);
+
       // cancel request loading state
       dispatch({ type: `${key}/ERROR` });
 
@@ -34,7 +39,7 @@ export function createAction (key, asyncAction, customErrorMessage) {
         return false;
       }
 
-      dispatch({ type: 'UI/ERROR/UPDATE', payload: customErrorMessage || sanitizedError });      
+      dispatch({ type: 'UI/ERROR/UPDATE', payload: customErrorMessage || sanitizedError });
       // resolve the result to the view
       return false;
     };

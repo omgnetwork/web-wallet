@@ -44,7 +44,7 @@ try {
     }
   });
 } catch (err) {
-  console.warn('web3 event handling not available on this browser')
+  console.warn('Web3 event handling not available on this browser')
 }
 
 ReactDOM.render(
