@@ -8,6 +8,7 @@
   margin-bottom: 5px;
   @include mobile {
     flex-direction: column;
+    padding: 15px 10px;
   }
 }
 

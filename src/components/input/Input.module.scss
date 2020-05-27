@@ -11,6 +11,7 @@
   }
 
   .field {
+    position: relative;
     padding: 10px;
     border: 2px solid $primary;
     transition: all 200ms ease-in-out;
@@ -29,7 +30,9 @@
       color: $white;
     }
     .unit {
-      margin-left: 10px;
+      margin: 0 10px;
+      position: absolute;
+      right: 0;
     }
     .paste {
       color: $blue;
