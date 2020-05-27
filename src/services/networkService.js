@@ -152,7 +152,8 @@ class NetworkService {
   }
 
   // normalize signing methods across wallet providers
-  // detecting providers: https://ethereum.stackexchange.com/questions/24266/elegant-way-to-detect-current-provider-int-web3-js
+  // another unimplemented way to do the check is to detect the provider
+  // https://ethereum.stackexchange.com/questions/24266/elegant-way-to-detect-current-provider-int-web3-js
   async signTypedData (typedData) {
     function isExpectedError (message) {
       if (
