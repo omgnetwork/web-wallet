@@ -27,6 +27,10 @@
     display: flex;
     flex-direction: column;
     flex: 1;
+    @include mobile {
+      font-size: 0.8rem;
+    }
+
     &:first-child {
       margin-right: 20px;
       @include mobile {
@@ -62,7 +66,7 @@
         display: flex;
         flex-direction: column;
         span:first-child {
-          font-size: 10px;
+          font-size: 0.8em;
         }
         @include mobile {
           margin-bottom: 10px;
@@ -72,12 +76,12 @@
         cursor: pointer;
         border-radius: 20px;
         padding: 5px 10px;
-        border: 2px solid $blue;
+        border: 2px solid $primary;
+        filter: brightness(100%);
         display: flex;
         flex-direction: row;
         align-items: center;
-        color: $blue;
-        font-size: 14px;
+        color: $white;
         svg {
           margin-right: 10px;
           width: 15px;
@@ -98,6 +102,7 @@
     .row {
       display: flex;
       flex-direction: row;
+      align-items: center;
       justify-content: space-between;
       color: $white;
       margin-bottom: 5px;

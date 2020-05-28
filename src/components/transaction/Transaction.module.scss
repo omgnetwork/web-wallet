@@ -18,7 +18,7 @@
   flex: 1;
   div:last-child {
     margin-top: 10px;
-    font-size: 10px;
+    font-size: 0.7em;
   }
   @include mobile {
     margin-bottom: 10px;
@@ -28,7 +28,6 @@
 .midTitle {
   margin-top: 10px;
   color: $white;
-  font-size: 12px;
 }
 
 .statusContainer {
@@ -42,7 +41,7 @@
   }
   div:last-child {
     margin-top: 10px;
-    font-size: 10px;
+    font-size: 0.8em;
   }
 }
 
@@ -52,7 +51,7 @@
   align-items: center;
   justify-content: flex-end;
   div:last-child {
-    font-size: 10px;
+    font-size: 0.8em;
   }
   @include mobile {
     flex-direction: row-reverse;
@@ -60,8 +59,8 @@
   }
   .indicator {
     margin: 0 10px 0 0;
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 100%;
     @include mobile {
       margin-left: 10px;
@@ -87,6 +86,5 @@
   background-color: $blue;
   border-radius: 20px;
   padding: 5px 10px;
-  font-size: 12px;
   cursor: pointer;
 }

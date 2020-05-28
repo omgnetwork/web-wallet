@@ -12,7 +12,6 @@
 }
 
 .disclaimer {
-  font-size: 14px;
   margin-top: 20px;
 }
 
@@ -21,7 +20,7 @@
   overflow-y: auto;
   margin-bottom: 10px;
   .utxo {
-    font-size: 12px;
+    font-size: 0.8em;
     display: flex;
     flex-direction: row;
     align-items: center;

@@ -11,6 +11,18 @@ $darkgray: #26252a;
 $midgray: #302f36;
 $gray: #36353d;
 
+@mixin mobile {
+  @media screen and (max-width: 1000px) {
+    @content
+  }
+}
+
+@mixin tablet {
+  @media screen and (max-width: 1000px) {
+    @content
+  }
+}
+
 @font-face {
   font-family: 'Messina';
   src: url(./fonts/MessinaRegular.woff) format('woff');
@@ -32,11 +44,12 @@ body {
   color: $primary;
   background-color: $background;
   font-family: 'MessinaMono', monospace;
+  font-size: 14px;
 }
 
 input {
   font-family: 'MessinaMono', monospace;
-  font-size: 14px;
+  font-size: 1em;
   border: none;
   outline: none;
 }
@@ -52,7 +65,7 @@ h1 {
   white-space: pre;
   font-family: 'Messina';
   font-weight: 400;
-  font-size: 25px;
+  font-size: 2em;
   color: $blue;
 }
 
@@ -61,16 +74,8 @@ h2 {
   font-family: 'Messina';
   font-weight: 100;
   margin: 0 0 10px 0;
-}
-
-@mixin mobile {
-  @media screen and (max-width: 1000px) {
-    @content
-  }
-}
-
-@mixin tablet {
-  @media screen and (max-width: 1000px) {
-    @content
+  font-size: 1.5em;
+  @include mobile {
+    font-size: 1.2em;
   }
 }

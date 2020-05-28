@@ -11,13 +11,29 @@
     max-height: initial;
   }
 
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    background-color: #1f1e23;
+    align-items: flex-start;
+
+    .logo {
+      width: 130px;
+      padding: 50px 0px 10px 40px;
+    }
+
+    @include mobile {
+      display: none;
+    }
+  }
+
   .main {
     padding: 40px;
     background-color: $background;
     flex: 1;
     overflow: auto;
     @include mobile {
-      padding: 10px;
+      padding: 15px;
     }
   }
 }

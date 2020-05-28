@@ -15,13 +15,18 @@
   margin-right: auto;
   flex: 1;
   padding: 20px;
+  @include mobile {
+    font-size: 0.9em;
+  }
   span:last-child {
     margin-top: 20px;
-    font-size: 14px;
   }
 
   img {
     margin-bottom: 20px;
     height: 80px;
+    @include mobile {
+      height: 50px;
+    }
   }
 }

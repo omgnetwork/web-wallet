@@ -5,7 +5,6 @@
   flex-direction: column;
 
   .label {
-    font-size: 14px;
     margin-bottom: 10px;
   }
 
@@ -23,11 +22,9 @@
       justify-content: center;
       transition: all 100ms ease-in-out;
       padding: 10px;
-      font-size: 12px;
       color: $primary;
       border: 2px solid $primary;
       .title {
-        font-size: 14px;
         font-weight: bold;
         color: $white;
         padding-bottom: 5px;
