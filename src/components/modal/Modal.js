@@ -29,7 +29,7 @@ const useStyles = makeStyles({
     outline: 'none'
   },
   paper: {
-    backgroundColor: '#36353d',
+    backgroundColor: '#35353f',
     padding: '20px',
     border: 'none',
     outline: 'none',

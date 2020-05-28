@@ -1,15 +1,15 @@
-$primary: #788292;
-$white: white;
-$red: #f76b6b;
-$yellow: #ecb937;
-$green: #20ac92;
-$blue: #186cf3;
-$background: #0f0f0f;
-$black: black;
-$lightbackground: #0a1320;
-$darkgray: #26252a;
-$midgray: #302f36;
-$gray: #36353d;
+$red: #ff6868;
+$yellow: #f0ba31;
+$green: #0ebf9a;
+$blue: #4967ff;
+
+// black to white
+$gray1: #101010;
+$gray2: #29292e;
+$gray3: #35353f;
+$gray4: #585868;
+$gray5: #b3b3bf;
+$gray6: #ffffff;
 
 @mixin mobile {
   @media screen and (max-width: 1000px) {
@@ -41,8 +41,8 @@ a {
 body {
   margin: 0;
   padding: 0;
-  color: $primary;
-  background-color: $background;
+  color: $gray5;
+  background-color: $gray1;
   font-family: 'MessinaMono', monospace;
   font-size: 14px;
 }
@@ -70,7 +70,7 @@ h1 {
 }
 
 h2 {
-  color: $white;
+  color: $gray6;
   font-family: 'Messina';
   font-weight: 100;
   margin: 0 0 10px 0;

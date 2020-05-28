@@ -11,7 +11,7 @@
 
   .field {
     position: relative;
-    border: 2px solid $primary;
+    border: 2px solid $gray4;
     transition: all 200ms ease-in-out;
     display: flex;
     flex-direction: row;
@@ -25,8 +25,8 @@
     padding-right: 10px;
     -webkit-appearance: none;
     -webkit-border-radius: 0px;
-    background-color: $gray;
-    color: $primary;
+    background-color: $gray3;
+    color: $gray3;
     position: absolute;
     left: 0;
     top: 0;

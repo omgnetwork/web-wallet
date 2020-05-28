@@ -28,7 +28,7 @@
   }
 
   .box {
-    background-color: $gray;
+    background-color: $gray3;
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -84,12 +84,12 @@
         cursor: pointer;
         border-radius: 20px;
         padding: 5px 10px;
-        border: 2px solid $primary;
+        border: 2px solid $gray6;
         filter: brightness(100%);
         display: flex;
         flex-direction: row;
         align-items: center;
-        color: $white;
+        color: $gray6;
         svg {
           margin-right: 10px;
           width: 15px;
@@ -105,8 +105,8 @@
       }
       .disabled {
         pointer-events: none;
-        border: 2px solid $primary;
-        color: $primary;
+        border: 2px solid $gray3;
+        color: $gray3;
         filter: brightness(75%);
       }
     }
@@ -116,7 +116,7 @@
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-      color: $white;
+      color: $gray6;
       margin-bottom: 5px;
 
       .token {

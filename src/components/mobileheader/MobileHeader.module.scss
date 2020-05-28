@@ -20,7 +20,7 @@
   display: none;
   flex-direction: row;
   justify-content: space-between;
-  background: $background;
+  background-color: $gray1;
   align-items: center;
   padding: 20px 15px;
 
@@ -33,7 +33,7 @@
 }
 
 .menu {
-  background: $background;
+  background-color: $gray1;
   padding: 15px;
   max-width: initial;
   display: none;

@@ -14,7 +14,7 @@
   .sidebar {
     display: flex;
     flex-direction: column;
-    background-color: #1f1e23;
+    background-color: $gray2;
     align-items: flex-start;
 
     .logo {
@@ -29,7 +29,7 @@
 
   .main {
     padding: 40px;
-    background-color: $background;
+    background-color: $gray1;
     flex: 1;
     overflow: auto;
     @include mobile {

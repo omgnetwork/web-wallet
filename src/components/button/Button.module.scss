@@ -4,7 +4,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  color: $white;
+  color: $gray6;
   padding: 15px;
   flex: 1;
   cursor: pointer;
@@ -20,11 +20,11 @@
 }
 
 .secondary {
-  background-color: $primary;
+  background-color: $gray4;
 }
 
 .outline {
-  border: 1px solid $primary;
+  border: 2px solid $gray4;
 }
 
 .disabled {

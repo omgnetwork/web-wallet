@@ -13,7 +13,7 @@
   .field {
     position: relative;
     padding: 10px;
-    border: 2px solid $primary;
+    border: 2px solid $gray4;
     transition: all 200ms ease-in-out;
     display: flex;
     flex-direction: row;
@@ -26,8 +26,8 @@
     }
     .input {
       flex: 1;
-      background-color: $gray;
-      color: $white;
+      background-color: $gray3;
+      color: $gray6;
     }
     .unit {
       margin: 0 10px;
