@@ -28,7 +28,7 @@ import networkService from 'services/networkService';
 
 import * as styles from './Status.module.scss';
 
-function Status () {
+function Status ({ className }) {
   const watcherConnection = useSelector(selectConnection);
   const byzantineChain = useSelector(selectByzantine);
   const isSynced = useSelector(selectIsSynced);
@@ -112,7 +112,12 @@ function Status () {
   );
 
   return (
-    <div className={styles.Status}>
+    <div
+      className={[
+        styles.Status,
+        className
+      ].join(' ')}
+    >
       <div>
         <Info
           data={[

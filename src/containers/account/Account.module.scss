@@ -9,8 +9,14 @@
   flex-direction: row;
   align-items: center;
   margin-bottom: 20px;
+  @include mobile {
+    justify-content: space-between;
+  }
   .address {
     margin-right: 20px;
+    @include mobile {
+      font-size: 0.8em;
+    }
   }
 }
 
@@ -29,6 +35,7 @@
     flex: 1;
     @include mobile {
       font-size: 0.8rem;
+      padding: 15px;
     }
 
     &:first-child {
@@ -41,6 +48,9 @@
 
     .buttons {
       margin: 20px -20px -20px -20px;
+      @include mobile {
+        margin: 15px -15px -15px -15px;
+      }
       display: flex;
       flex-direction: row;
       button {
@@ -52,24 +62,22 @@
       display: flex;
       flex-direction: row;
       justify-content: space-between;
+      align-items: center;
       margin-bottom: 20px;
-      @include mobile {
-        flex-direction: column;
-        margin-bottom: 10px;
-      }
       .actions {
         display: flex;
         flex-direction: row;
         align-items: center;
+        @include mobile {
+          flex-direction: column;
+          align-items: flex-end;
+        }
       }
       .title {
         display: flex;
         flex-direction: column;
         span:first-child {
           font-size: 0.8em;
-        }
-        @include mobile {
-          margin-bottom: 10px;
         }
       }
       .transfer {
@@ -89,6 +97,10 @@
         }
         &:first-child {
           margin-right: 10px;
+          @include mobile {
+            margin-right: 0px;
+            margin-bottom: 5px;
+          }
         }
       }
       .disabled {
