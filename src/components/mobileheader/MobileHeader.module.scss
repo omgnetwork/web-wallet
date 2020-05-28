@@ -38,6 +38,6 @@
   max-width: initial;
   display: none;
   @include mobile {
-    display: initial;
+    display: flex;
   }
 }
