@@ -21,6 +21,8 @@ import {
   Fade
 } from '@material-ui/core';
 
+import { gray3 } from 'index.scss';
+
 const useStyles = makeStyles({
   modal: {
     display: 'flex',
@@ -29,7 +31,7 @@ const useStyles = makeStyles({
     outline: 'none'
   },
   paper: {
-    backgroundColor: '#35353f',
+    backgroundColor: gray3,
     padding: '20px',
     border: 'none',
     outline: 'none',

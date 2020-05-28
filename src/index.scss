@@ -3,13 +3,25 @@ $yellow: #f0ba31;
 $green: #0ebf9a;
 $blue: #4967ff;
 
-// black to white
 $gray1: #101010;
 $gray2: #29292e;
 $gray3: #35353f;
 $gray4: #585868;
 $gray5: #b3b3bf;
 $gray6: #ffffff;
+
+:export {
+  red: $red;
+  yellow: $yellow;
+  green: $green;
+  blue: $blue;
+  gray1: $gray1;
+  gray2: $gray2;
+  gray3: $gray3;
+  gray4: $gray4;
+  gray5: $gray5;
+  gray6: $gray6;
+}
 
 @mixin mobile {
   @media screen and (max-width: 1000px) {
