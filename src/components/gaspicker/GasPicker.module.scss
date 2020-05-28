@@ -5,7 +5,6 @@
   flex-direction: column;
 
   .label {
-    font-size: 14px;
     margin-bottom: 10px;
   }
 
@@ -23,13 +22,11 @@
       justify-content: center;
       transition: all 100ms ease-in-out;
       padding: 10px;
-      font-size: 12px;
-      color: $primary;
-      border: 2px solid $primary;
+      color: $gray5;
+      border: 2px solid $gray4;
       .title {
-        font-size: 14px;
         font-weight: bold;
-        color: $white;
+        color: $gray6;
         padding-bottom: 5px;
       }
       &:last-child {
@@ -38,7 +35,7 @@
     }
   
     .selected {
-      background-color: $darkgray;
+      background-color: $gray3;
       border: 2px solid $blue;
     }
   }

@@ -5,14 +5,8 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 40px;
-  background-color: #1f1e23;
   max-width: 300px;
   flex: 1;
-  font-size: 14px;
-  @include mobile {
-    max-width: 100%;
-    padding: 20px 10px;
-  }
 
   h1 {
     margin-bottom: 40px;
@@ -20,8 +14,8 @@
 
   .statusCircle {
     border-radius: 100%;
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     margin-left: 10px;
   }
   .healthy {
@@ -29,6 +23,12 @@
   }
   .unhealthy {
     background-color: $red;
+  }
+  .healthyText {
+    color: $green;
+  }
+  .unhealthyText {
+    color: $red;
   }
 
   .indicator {
@@ -39,7 +39,7 @@
 
   .icon {
     cursor: pointer;
-    background-color: $gray;
+    background-color: $gray3;
     border-radius: 100%;
     width: 25px;
     height: 25px;
@@ -55,7 +55,7 @@
 
   .github {
     cursor: pointer;
-    color: $gray;
+    color: $gray3;
     svg {
       width: 40px;
       height: 40px;

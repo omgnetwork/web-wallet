@@ -96,7 +96,6 @@ function Account () {
               <div key={index} className={styles.row}>
                 <div className={styles.token}>
                   <span className={styles.symbol}>{i.name}</span>
-                  <Copy light value={i.currency} />
                 </div>
                 <span>{logAmount(i.amount, i.decimals)}</span>
               </div>
@@ -133,7 +132,6 @@ function Account () {
               <div key={index} className={styles.row}>
                 <div className={styles.token}>
                   <span className={styles.symbol}>{i.name}</span>
-                  <Copy light value={i.currency} />
                 </div>
                 <span>{logAmount(i.amount, i.decimals)}</span>
               </div>

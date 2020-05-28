@@ -12,7 +12,6 @@
 }
 
 .disclaimer {
-  font-size: 14px;
   margin-top: 20px;
 }
 
@@ -21,15 +20,15 @@
   overflow-y: auto;
   margin-bottom: 10px;
   .utxo {
-    font-size: 12px;
+    font-size: 0.8em;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     padding: 10px;
     height: 25px;
-    background-color: $midgray;
-    margin-bottom: 2px;
+    background-color: $gray3;
+    border-bottom: 2px solid $gray4;
     transition: all 200ms ease-in-out;
     cursor: pointer;
     .title {
@@ -55,7 +54,7 @@
     }
   }
   .selected {
-    background-color: $darkgray;
-    color: $white;
+    background-color: $gray2;
+    color: $gray6;
   }
 }

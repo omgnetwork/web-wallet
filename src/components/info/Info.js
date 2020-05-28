@@ -26,7 +26,9 @@ function Info ({ data }) {
             <div className={styles.header}>{i.header}</div>
           )}
           <div className={styles.item}>
-            <span>{i.title}</span>
+            <span className={!i.header ? styles.headerFont : ''}>
+              {i.title}
+            </span>
             <span>{i.value}</span>
           </div>
         </div>

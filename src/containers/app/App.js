@@ -25,6 +25,8 @@ import Home from 'containers/home/Home';
 import Alert from 'components/alert/Alert';
 import config from 'util/config';
 
+import logo from 'images/omg_logo.svg';
+
 import * as styles from './App.module.scss';
 
 function App () {
@@ -49,7 +51,7 @@ function App () {
 
   const renderLoading = (
     <div className={styles.loading}>
-      <img src='omg_logo.svg' alt='logo' />
+      <img src={logo} alt='logo' />
       <span>Waiting for Web3...</span>
       <span>{`Please make sure you are on the ${capitalize(config.network)} network.`}</span>
     </div>

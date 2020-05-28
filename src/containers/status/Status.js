@@ -18,7 +18,6 @@ import { useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
 import { Tooltip } from '@material-ui/core';
 import { Dvr, GitHub } from '@material-ui/icons';
-import omg_logo from './omg_logo.svg';
 
 import { selectConnection, selectByzantine, selectIsSynced } from 'selectors/statusSelector';
 
@@ -29,7 +28,7 @@ import networkService from 'services/networkService';
 
 import * as styles from './Status.module.scss';
 
-function Status () {
+function Status ({ className }) {
   const watcherConnection = useSelector(selectConnection);
   const byzantineChain = useSelector(selectByzantine);
   const isSynced = useSelector(selectIsSynced);
@@ -40,13 +39,15 @@ function Status () {
       arrow
     >
       <div className={styles.indicator}>
-        <span>No Connection</span>
         <div
           className={[
             styles.statusCircle,
             styles.unhealthy
           ].join(' ')}
         />
+        <span className={styles.unhealthyText}>
+          No Connection
+        </span>
       </div>
     </Tooltip>
   )
@@ -61,13 +62,21 @@ function Status () {
       arrow
     >
       <div className={styles.indicator}>
-        <span>{byzantineChain ? 'Unhealthy' : 'Healthy'}</span>
         <div
           className={[
             styles.statusCircle,
             byzantineChain ? styles.unhealthy : styles.healthy
           ].join(' ')}
         />
+        <span
+          className={
+            byzantineChain
+              ? styles.unhealthyText
+              : styles.healthyText
+          }
+        >
+          {byzantineChain ? 'Unhealthy' : 'Healthy'}
+        </span>
       </div>
     </Tooltip>
   );
@@ -82,7 +91,6 @@ function Status () {
       arrow
     >
       <div className={styles.indicator}>
-        <span>{isSynced ? 'Connected' : 'Syncing'}</span>
         <div
           className={[
             styles.statusCircle,
@@ -90,14 +98,27 @@ function Status () {
             !isSynced ? styles.unhealthy : ''
           ].join(' ')}
         />
+        <span
+          className={
+            isSynced
+              ? styles.healthyText
+              : styles.unhealthyText
+          }
+        >
+          {isSynced ? 'Connected' : 'Syncing'}
+        </span>
       </div>
     </Tooltip>
   );
 
   return (
-    <div className={styles.Status}>
+    <div
+      className={[
+        styles.Status,
+        className
+      ].join(' ')}
+    >
       <div>
-        <img className={styles.logo} src={omg_logo} alt='omg-network' />
         <Info
           data={[
             {

@@ -1,24 +1,48 @@
-$primary: #788292;
-$white: white;
-$red: #f76b6b;
-$yellow: #ecb937;
-$green: #20ac92;
-$blue: #186cf3;
-$background: #0f0f0f;
-$black: black;
-$lightbackground: #0a1320;
-$darkgray: #26252a;
-$midgray: #302f36;
-$gray: #36353d;
+$red: #ff6868;
+$yellow: #f0ba31;
+$green: #0ebf9a;
+$blue: #4967ff;
+
+$gray1: #101010;
+$gray2: #29292e;
+$gray3: #35353f;
+$gray4: #585868;
+$gray5: #b3b3bf;
+$gray6: #ffffff;
+
+:export {
+  red: $red;
+  yellow: $yellow;
+  green: $green;
+  blue: $blue;
+  gray1: $gray1;
+  gray2: $gray2;
+  gray3: $gray3;
+  gray4: $gray4;
+  gray5: $gray5;
+  gray6: $gray6;
+}
+
+@mixin mobile {
+  @media screen and (max-width: 1000px) {
+    @content
+  }
+}
+
+@mixin tablet {
+  @media screen and (max-width: 1000px) {
+    @content
+  }
+}
 
 @font-face {
   font-family: 'Messina';
-  src: url(./fonts/MessinaRegular.woff) format('woff');
+  src: url(./fonts/MessinaSans-Regular.otf) format('opentype');
 }
 
 @font-face {
   font-family: 'MessinaMono';
-  src: url(./fonts/MessinaMono.woff) format('woff');
+  src: url(./fonts/MessinaSansMono-Regular.otf) format('opentype');
 }
 
 a {
@@ -29,14 +53,15 @@ a {
 body {
   margin: 0;
   padding: 0;
-  color: $primary;
-  background-color: $background;
+  color: $gray5;
+  background-color: $gray1;
   font-family: 'MessinaMono', monospace;
+  font-size: 14px;
 }
 
 input {
   font-family: 'MessinaMono', monospace;
-  font-size: 14px;
+  font-size: 1em;
   border: none;
   outline: none;
 }
@@ -52,25 +77,17 @@ h1 {
   white-space: pre;
   font-family: 'Messina';
   font-weight: 400;
-  font-size: 25px;
+  font-size: 2em;
   color: $blue;
 }
 
 h2 {
-  color: $white;
+  color: $gray6;
   font-family: 'Messina';
   font-weight: 100;
   margin: 0 0 10px 0;
-}
-
-@mixin mobile {
-  @media screen and (max-width: 1000px) {
-    @content
-  }
-}
-
-@mixin tablet {
-  @media screen and (max-width: 1000px) {
-    @content
+  font-size: 1.5em;
+  @include mobile {
+    font-size: 1.2em;
   }
 }

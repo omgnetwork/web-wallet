@@ -41,6 +41,9 @@ import Status from 'containers/status/Status';
 import Account from 'containers/account/Account';
 import Transactions from 'containers/transactions/Transactions';
 
+import MobileHeader from 'components/mobileheader/MobileHeader';
+
+import logo from 'images/omg_logo.svg';
 import * as styles from './Home.module.scss';
 
 const POLL_INTERVAL = config.pollInterval * 1000;
@@ -92,8 +95,12 @@ function Home () {
       <MergeModal open={mergeModalState} />
 
       <div className={styles.Home}>
-        <Status />
+        <div className={styles.sidebar}>
+          <img className={styles.logo} src={logo} alt='omg-network' />
+          <Status />
+        </div>
         <div className={styles.main}>
+          <MobileHeader />
           <Account/>
           <Transactions/>
         </div>
