@@ -6,6 +6,7 @@
 
   .header {
     padding-bottom: 10px;
+    font-family: 'Messina';
   }
 
   .item {
@@ -17,9 +18,11 @@
     padding-bottom: 15px;
     margin-bottom: 15px;
     border-bottom: 1px solid $gray3;
-    
     span:last-child {
       margin-left: 10px;
+    }
+    .headerFont {
+      font-family: 'Messina';
     }
   }
 }
