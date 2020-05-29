@@ -260,7 +260,7 @@ class NetworkService {
       fromUtxos: utxos,
       payments,
       fee,
-      metadata
+      metadata: metadata || OmgUtil.transaction.NULL_METADATA
     });
     const typedData = OmgUtil.transaction.getTypedData(txBody, this.plasmaContractAddress);
     const signature = await this.signTypedData(typedData);
