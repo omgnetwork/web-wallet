@@ -188,7 +188,6 @@ function TransferModal ({ open }) {
             !currency ||
             !feeToken ||
             !recipient ||
-            !metadata ||
             !networkService.web3.utils.isAddress(recipient)
           }
         >
