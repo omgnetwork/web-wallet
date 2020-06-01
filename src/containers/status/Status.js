@@ -158,7 +158,7 @@ function Status ({ className }) {
       </div>
       <div>
         <a
-          href='https://github.com/omisego/web-wallet'
+          href='https://github.com/omgnetwork/web-wallet'
           target='_blank'
           rel='noopener noreferrer'
           className={styles.github}
