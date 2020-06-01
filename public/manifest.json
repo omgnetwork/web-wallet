@@ -1,21 +1,11 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "OMG Network | Web Wallet",
+  "name": "OMG Network | Web Wallet",
   "icons": [
     {
       "src": "favicon.png",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "omisego-blue.svg",
-      "type": "image/svg",
-      "sizes": "192x192"
-    },
-    {
-      "src": "omisego-blue.svg",
-      "type": "image/svg",
-      "sizes": "512x512"
+      "type": "image/png",
+      "sizes": "236x236"
     }
   ],
   "start_url": ".",
