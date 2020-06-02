@@ -36,7 +36,7 @@ if (config.gtmId) {
 
 try {
   window.ethereum.on('accountsChanged', function (accounts) {
-    const providerRegisteredAccount = accounts[0];
+    const providerRegisteredAccount = accounts ? accounts[0] : null;
     const appRegisteredAcount = networkService.account;
     if (!providerRegisteredAccount || !appRegisteredAcount) {
       return;
