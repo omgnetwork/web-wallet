@@ -416,15 +416,32 @@ class NetworkService {
 
   async exitUtxo (utxo, gasPrice) {
     const exitData = await this.childChain.getExitData(utxo);
-    return this.rootChain.startStandardExit({
-      utxoPos: exitData.utxo_pos,
-      outputTx: exitData.txbytes,
-      inclusionProof: exitData.proof,
-      txOptions: {
-        from: this.account,
-        gasPrice: gasPrice.toString()
-      }
-    });
+    try {
+      const res = await this.rootChain.startStandardExit({
+        utxoPos: exitData.utxo_pos,
+        outputTx: exitData.txbytes,
+        inclusionProof: exitData.proof,
+        txOptions: {
+          from: this.account,
+          gasPrice: gasPrice.toString()
+        }
+      });
+      return res;
+    } catch (error) {
+      // some providers will fail on gas estimation
+      // so try again but set the gas explicitly to avoid the estimiate
+      // this has a negative effect of making the price estimation more expensive
+      return this.rootChain.startStandardExit({
+        utxoPos: exitData.utxo_pos,
+        outputTx: exitData.txbytes,
+        inclusionProof: exitData.proof,
+        txOptions: {
+          from: this.account,
+          gasPrice: gasPrice.toString(),
+          gas: 6000000
+        }
+      });
+    }
   }
 
   async processExits (maxExits, currency, gasPrice) {

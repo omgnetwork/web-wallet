@@ -1,43 +1,17 @@
 @import 'index.scss';
 
-.Container {
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 70px;
-  overflow: hidden;
-  transition: all 300ms ease-in-out;
-  z-index: 2;
-  &.open {
-    height: 100%;
-  }
-}
-
 .MobileHeader {
   display: none;
   flex-direction: row;
   justify-content: space-between;
   background-color: $gray1;
   align-items: center;
-  padding: 20px 15px;
+  margin-bottom: 15px;
 
   @include mobile {
     display: flex;
   }
   .logo {
     height: 30px;
-  }
-}
-
-.menu {
-  background-color: $gray1;
-  padding: 15px;
-  max-width: initial;
-  display: none;
-  @include mobile {
-    display: flex;
   }
 }

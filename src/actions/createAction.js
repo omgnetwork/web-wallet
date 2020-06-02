@@ -13,6 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
+import * as Sentry from '@sentry/browser';
+
 import sanitizeError from 'util/sanitizeError';
 
 export function createAction (key, asyncAction, customErrorMessage) {
@@ -24,9 +26,11 @@ export function createAction (key, asyncAction, customErrorMessage) {
       return true;
     } catch (error) {
 
-      // UNCOMMENT FOR REMOTE DEBUGGING WITH DAPP BROWSERS
-      // console.log(`key: ${key}, action: ${asyncAction} errorObject: ${JSON.stringify(error)}`);
-      // Sentry.captureException(error);
+      // toggle to report every ui error to sentry, useful for debugging remote dapp browsers
+      if (false) {
+        console.log(`key: ${key}, action: ${asyncAction} errorObject: ${JSON.stringify(error)}`);
+        Sentry.captureException(error);
+      }
 
       // cancel request loading state
       dispatch({ type: `${key}/ERROR` });

@@ -21,7 +21,8 @@ function Select ({
   value,
   options,
   onSelect,
-  loading
+  loading,
+  error = ''
 }) {
   const selected = options.find(i => i.value === value);
 
@@ -49,7 +50,7 @@ function Select ({
       </select>
       <div className={styles.selected}>
         <div className={styles.details}>
-          <div className={styles.title}>{selected ? selected.title : ''}</div>
+          <div className={styles.title}>{selected ? selected.title : error}</div>
           <div className={styles.subTitle}>{selected ? selected.subTitle : ''}</div>
         </div>
       </div>
