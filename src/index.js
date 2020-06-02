@@ -36,10 +36,12 @@ if (config.gtmId) {
 
 try {
   window.ethereum.on('accountsChanged', function (accounts) {
-    if (
-      networkService.account
-      && networkService.account.toLowerCase() !== accounts[0].toLowerCase()
-    ) {
+    const providerRegisteredAccount = accounts[0];
+    const appRegisteredAcount = networkService.account;
+    if (!providerRegisteredAccount || !appRegisteredAcount) {
+      return;
+    }
+    if (appRegisteredAcount.toLowerCase() !== providerRegisteredAccount.toLowerCase()) {
       window.location.reload(false);
     }
   });
