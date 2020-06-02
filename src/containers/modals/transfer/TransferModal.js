@@ -160,6 +160,7 @@ function TransferModal ({ open }) {
         value={feeToken}
         options={usableFees}
         onSelect={i => setFeeToken(i.target.value)}
+        error="No balance to pay fees"
       />
 
       <Input
