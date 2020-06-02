@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector, batch } from 'react-redux';
 import { uniq, flatten, isEqual } from 'lodash';
 
@@ -42,6 +42,7 @@ import Account from 'containers/account/Account';
 import Transactions from 'containers/transactions/Transactions';
 
 import MobileHeader from 'components/mobileheader/MobileHeader';
+import MobileMenu from 'components/mobilemenu/MobileMenu';
 
 import logo from 'images/omg_logo.svg';
 import * as styles from './Home.module.scss';
@@ -54,6 +55,7 @@ function Home () {
     window.scrollTo(0, 0);
   }, []);
 
+  const [ mobileMenuOpen, setMobileMenuOpen ] = useState(false);
   const depositModalState = useSelector(selectModalState('depositModal'));
   const transferModalState = useSelector(selectModalState('transferModal'));
   const exitModalState = useSelector(selectModalState('exitModal'));
@@ -67,6 +69,13 @@ function Home () {
     );
     return uniq(inputs.map(i => i.currency));
   }, [ transactions ]);
+
+  useEffect(() => {
+    const body = document.getElementsByTagName('body')[0]
+    mobileMenuOpen
+      ? body.style.overflow = 'hidden'
+      : body.style.overflow = 'auto'
+  }, [ mobileMenuOpen ])
 
   useInterval(() => {
     batch(() => {
@@ -100,7 +109,11 @@ function Home () {
           <Status />
         </div>
         <div className={styles.main}>
-          <MobileHeader />
+          <MobileHeader
+            mobileMenuOpen={mobileMenuOpen}
+            onHamburgerClick={() => setMobileMenuOpen(open => !open)}
+          />
+          <MobileMenu mobileMenuOpen={mobileMenuOpen} />
           <Account/>
           <Transactions/>
         </div>

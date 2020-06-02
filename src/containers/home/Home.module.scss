@@ -32,9 +32,9 @@
     background-color: $gray1;
     flex: 1;
     overflow: auto;
+    position: relative;
     @include mobile {
       padding: 15px;
-      margin-top: 70px;
     }
   }
 }
