@@ -130,7 +130,7 @@ function ApproveStep ({
       {allowance && allowance !== '0' && allowance !== weiAmount.toString() && (
         <>
           <p>
-            {`You are already approved to deposit ${logAmount(allowance, tokenInfo.decimals)} ${tokenName}. Since this amount does not match how much you want to deposit now, you will need to reset your allowance.`}
+            {`You are already approved to deposit ${logAmount(allowance, tokenInfo.decimals)} ${tokenName}. Since this amount does not match the ${value} ${tokenName} you want to deposit now, you will need to reset your allowance.`}
           </p>
           <p>
             You will be prompted with 2 approval transactions. One to reset the allowance to 0, and another for the new amount.
