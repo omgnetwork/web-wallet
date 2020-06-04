@@ -37,10 +37,10 @@ function ApproveStep ({
         ? setAllowDeposit(true)
         : setAllowDeposit(false);
     } catch (error) {
-      // TODO: handle...
-      console.log('error: ', error);
+      dispatch(openAlert('Something went wrong checking approval allowance.'));
+      onClose();
     }
-  }, [currency, weiAmount]);
+  }, [dispatch, onClose, currency, weiAmount]);
 
   useEffect(() => {
     checkAllowance();
