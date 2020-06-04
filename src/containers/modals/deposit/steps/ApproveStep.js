@@ -102,7 +102,9 @@ function ApproveStep ({
       <h2>Approval</h2>
 
       {!allowance && (
-        <div>Checking allowance...</div>
+        <div className={styles.loader}>
+          <span>Checking allowance...</span>
+        </div>
       )}
 
       {allowance === '0' && (
@@ -173,7 +175,6 @@ function ApproveStep ({
           </div>
         </>
       )}
-
     </>
   );
 }
