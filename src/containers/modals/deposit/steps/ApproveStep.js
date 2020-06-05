@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import BN from 'bn.js';
 
 import Button from 'components/button/Button';
 import GasPicker from 'components/gaspicker/GasPicker';
@@ -33,7 +34,9 @@ function ApproveStep ({
     try {
       const allowance = await networkService.checkAllowance(currency);
       setAllowance(allowance);
-      allowance === weiAmount.toString()
+      const allowanceBN = new BN(allowance);
+      const weiAmountBN = new BN(weiAmount.toString());
+      allowanceBN.gte(weiAmountBN)
         ? setAllowDeposit(true)
         : setAllowDeposit(false);
     } catch (error) {
@@ -77,8 +80,6 @@ function ApproveStep ({
     }
   }
 
-  const tokenName = tokenInfo.name || tokenInfo.currency;
-
   const renderCancelButton = (
     <Button
       onClick={handleClose}
@@ -96,6 +97,10 @@ function ApproveStep ({
       setGasPrice={setGasPrice}
     />
   );
+
+  const allowanceBN = new BN(allowance);
+  const weiAmountBN = new BN(weiAmount.toString());
+  const tokenName = tokenInfo.name || tokenInfo.currency;
 
   return (
     <>
@@ -129,10 +134,10 @@ function ApproveStep ({
         </>
       )}
 
-      {allowance && allowance !== '0' && allowance !== weiAmount.toString() && (
+      {allowance && allowance !== '0' && allowanceBN.lt(weiAmountBN) && (
         <>
           <p>
-            {`You are already approved to deposit ${logAmount(allowance, tokenInfo.decimals)} ${tokenName}. Since this amount does not match the ${value} ${tokenName} you want to deposit now, you will need to reset your allowance.`}
+            {`You are only approved to deposit ${logAmount(allowance, tokenInfo.decimals)} ${tokenName}. Since you want to deposit ${value} ${tokenName}, you will need to reset your allowance.`}
           </p>
           <p>
             You will be prompted with 2 approval transactions. One to reset the allowance to 0, and another for the new amount.
@@ -157,7 +162,7 @@ function ApproveStep ({
       {allowDeposit && (
         <>
           <p>
-            {`You are approved to deposit ${logAmount(allowance, tokenInfo.decimals)} ${tokenName}. Click below to make the deposit.`}
+            {`You are approved to deposit ${value} ${tokenName}. Click below to make the deposit.`}
           </p>
           {renderGasPicker}
           <div className={styles.buttons}>
