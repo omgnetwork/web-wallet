@@ -35,7 +35,7 @@ function ApproveStep ({
       const allowance = await networkService.checkAllowance(currency);
       setAllowance(allowance);
       const allowanceBN = new BN(allowance);
-      const weiAmountBN = new BN(weiAmount.toString());
+      const weiAmountBN = new BN(weiAmount);
       allowanceBN.gte(weiAmountBN)
         ? setAllowDeposit(true)
         : setAllowDeposit(false);
@@ -98,8 +98,6 @@ function ApproveStep ({
     />
   );
 
-  const allowanceBN = new BN(allowance);
-  const weiAmountBN = new BN(weiAmount.toString());
   const tokenName = tokenInfo.name || tokenInfo.currency;
 
   return (
@@ -134,7 +132,7 @@ function ApproveStep ({
         </>
       )}
 
-      {allowance && allowance !== '0' && allowanceBN.lt(weiAmountBN) && (
+      {allowance && allowance !== '0' && new BN(allowance).lt(new BN(weiAmount)) && (
         <>
           <p>
             {`You are only approved to deposit ${logAmount(allowance, tokenInfo.decimals)} ${tokenName}. Since you want to deposit ${value} ${tokenName}, you will need to reset your allowance.`}
