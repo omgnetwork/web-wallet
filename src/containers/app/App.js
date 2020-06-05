@@ -52,7 +52,7 @@ function App () {
   const renderLoading = (
     <div className={styles.loading}>
       <img src={logo} alt='logo' />
-      <span>Waiting for Web3...</span>
+      <span>Waiting for wallet...</span>
       <span>{`Please make sure you are on the ${capitalize(config.network)} network.`}</span>
     </div>
   );

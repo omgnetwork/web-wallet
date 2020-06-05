@@ -13,16 +13,28 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
+import { keyBy } from 'lodash';
+
 const initialState = {
-  eth: [],
-  erc20: []
+  eth: {},
+  erc20: {}
 };
 
 function depositReducer (state = initialState, action) {
   switch (action.type) {
     case 'DEPOSIT/GETALL/SUCCESS':
       const { eth, erc20 } = action.payload;
-      return { ...state, eth, erc20 };
+      return {
+        ...state,
+        eth: {
+          ...state.eth,
+          ...keyBy(eth, 'transactionHash')
+        },
+        erc20: {
+          ...state.erc20,
+          ...keyBy(erc20, 'transactionHash')
+        }
+      };
     default:
       return state;
   }

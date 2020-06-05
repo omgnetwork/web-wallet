@@ -14,44 +14,49 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import Web3 from 'web3';
+import WalletConnectProvider from '@walletconnect/web3-provider';
 import { orderBy, flatten, uniq } from 'lodash';
 import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
 import BN from 'bn.js';
 import axios from 'axios';
 import JSONBigNumber from 'omg-json-bigint';
 import { bufferToHex } from 'ethereumjs-util';
-import config from 'util/config';
 
 import { getToken } from 'actions/tokenAction';
+import config from 'util/config';
 
 class NetworkService {
   constructor () {
     this.childChain = new ChildChain({ watcherUrl: config.watcherUrl, plasmaContractAddress: config.plasmaAddress });
     this.OmgUtil = OmgUtil;
     this.plasmaContractAddress = config.plasmaAddress;
+    this.isWalletConnect = false;
   }
 
   async enableNetwork () {
+    // find a provider
+    let provider
     if (window.ethereum) {
-      this.web3 = new Web3(window.ethereum, null, { transactionConfirmationBlocks: 1 });
-      this.rootChain = new RootChain({ web3: this.web3, plasmaContractAddress: this.plasmaContractAddress });
-      try {
-        await window.ethereum.enable();
-        const accounts = await this.web3.eth.getAccounts();
-        this.account = accounts[0];
-        const network = await this.web3.eth.net.getNetworkType();
-        return network === config.network
-      } catch {
-        return false;
-      }
+      provider = window.ethereum
+      await window.ethereum.enable();
     } else if (window.web3) {
-      this.web3 = new Web3(window.web3.currentProvider, null, { transactionConfirmationBlocks: 1 });
-      this.rootChain = new RootChain({ web3: this.web3, plasmaContractAddress: this.plasmaContractAddress });
+      provider = window.web3.currentProvider
+    } else {
+      provider = new WalletConnectProvider({ infuraId: config.infuraId });
+      await provider.enable();
+      this.isWalletConnect = true;
+    }
+    // insantiate eth object
+    this.web3 = new Web3(provider, null, { transactionConfirmationBlocks: 1 });
+    this.rootChain = new RootChain({ web3: this.web3, plasmaContractAddress: this.plasmaContractAddress });
+
+    // check account and network
+    try {
       const accounts = await this.web3.eth.getAccounts();
       this.account = accounts[0];
       const network = await this.web3.eth.net.getNetworkType();
       return network === config.network
-    } else {
+    } catch {
       return false;
     }
   }
@@ -155,6 +160,10 @@ class NetworkService {
   // another unimplemented way to do the check is to detect the provider
   // https://ethereum.stackexchange.com/questions/24266/elegant-way-to-detect-current-provider-int-web3-js
   async signTypedData (typedData) {
+    if (this.isWalletConnect) {
+      return this.web3.eth.signTypedData(typedData);
+    }
+
     function isExpectedError (message) {
       if (
         message.includes('The method eth_signTypedData_v3 does not exist')
@@ -300,7 +309,7 @@ class NetworkService {
         fromBlock: 0
       });
     } catch (error) {
-      console.log('Getting past ETH DepositCreated events timed out. Trying again...');
+      console.log('Getting past ETH DepositCreated events timed out: ', error.message);
     }
 
     const ethDeposits = await Promise.all(_ethDeposits.map(async i => {
@@ -317,7 +326,7 @@ class NetworkService {
         fromBlock: 0
       });
     } catch (error) {
-      console.log('Getting past ERC20 DepositCreated events timed out. Trying again...');
+      console.log('Getting past ERC20 DepositCreated events timed out: ', error.message);
     }
 
     const erc20Deposits = await Promise.all(_erc20Deposits.map(async i => {
@@ -342,7 +351,7 @@ class NetworkService {
         fromBlock: 0
       });
     } catch (error) {
-      console.log('Getting past ExitStarted events timed out. Trying again...');
+      console.log('Getting past ExitStarted events timed out: ', error.message);
     }
 
     const exitedExits = [];
@@ -354,7 +363,7 @@ class NetworkService {
           fromBlock: 0
         });
       } catch (error) {
-        console.log('Getting past ExitFinalized events timed out. Trying again...');
+        console.log('Getting past ExitFinalized events timed out: ', error.message);
       }
       if (isFinalized.length) {
         exitedExits.push(exit);
@@ -392,7 +401,7 @@ class NetworkService {
     try {
       queue = await this.rootChain.getExitQueue(currency);
     } catch (error) {
-      console.log('Getting the exitQueue timed out. Trying again...');
+      console.log('Getting the exitQueue timed out: ', error.message);
     }
 
     return {

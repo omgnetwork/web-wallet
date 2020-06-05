@@ -24,5 +24,6 @@ export default {
   pollInterval: env('POLL_INTERVAL'),
   network: env('NETWORK'),
   sentry: env('SENTRY_DSN'),
-  gtmId: env('GTM_ID')
+  gtmId: env('GTM_ID'),
+  infuraId: env('INFURAID')
 }
