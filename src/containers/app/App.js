@@ -59,7 +59,7 @@ function App () {
   const renderLoading = (
     <div className={styles.loading}>
       <img src={logo} alt='logo' />
-      <span>Waiting for Web3...</span>
+      <span>Waiting for wallet access...</span>
       <span>{`Please make sure your wallet is set to the ${getNetworkName()} Network.`}</span>
     </div>
   );
