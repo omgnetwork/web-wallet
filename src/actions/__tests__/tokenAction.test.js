@@ -44,14 +44,14 @@ describe('tokenAction', () => {
 
   it('should dispatch token success using getToken', async () => {
     await getToken('0x123');
-    const expectedActions = [{
+    const expectedActions = [ {
       type: 'TOKEN/GET/SUCCESS',
       payload: {
         currency: '0x123',
         decimals: 18,
         name: 'OMG'
       }
-    }];
+    } ];
     expect(store.getActions()).toEqual(expectedActions);
   });
 });

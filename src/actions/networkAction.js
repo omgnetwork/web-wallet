@@ -60,7 +60,7 @@ export function checkForExitQueue (_token) {
       const hasToken = await networkService.checkForExitQueue(token);
       if (hasToken) {
         const queue = await networkService.getExitQueue(token);
-        dispatch({ type: `QUEUE/GET/SUCCESS`, payload: queue });
+        dispatch({ type: 'QUEUE/GET/SUCCESS', payload: queue });
         dispatch({ type: `QUEUE/GET_${token}/SUCCESS` });
         return true;
       }
@@ -70,7 +70,7 @@ export function checkForExitQueue (_token) {
       dispatch({ type: 'UI/ERROR/UPDATE', payload: `Unable to check exit queue for ${token}` });
       return false;
     }
-  }
+  };
 }
 
 export function getExitQueue (currency) {
@@ -94,10 +94,31 @@ export function exitUtxo (utxo, gasPrice) {
   );
 }
 
-export function deposit (value, currency, gasPrice) {
+export function depositEth (value, gasPrice) {
   return createAction(
     'DEPOSIT/CREATE',
-    () => networkService.deposit(value, currency, gasPrice)
+    () => networkService.depositEth(value, gasPrice)
+  );
+}
+
+export function approveErc20 (value, currency, gasPrice) {
+  return createAction(
+    'APPROVE/CREATE',
+    () => networkService.approveErc20(value, currency, gasPrice)
+  );  
+}
+
+export function resetApprove (value, currency, gasPrice) {
+  return createAction(
+    'APPROVE/RESET',
+    () => networkService.resetApprove(value, currency, gasPrice)
+  );  
+}
+
+export function depositErc20 (value, currency, gasPrice) {
+  return createAction(
+    'DEPOSIT/CREATE',
+    () => networkService.depositErc20(value, currency, gasPrice)
   );
 }
 
@@ -149,5 +170,5 @@ export function fetchFees () {
       console.warn('Couldnt fetch fees, retrying...');
       return;
     }
-  }
+  };
 }

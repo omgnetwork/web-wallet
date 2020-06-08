@@ -25,7 +25,7 @@ describe('gasReducer', () => {
     const action = {
       type: 'GAS/GET/SUCCESS',
       payload: { slow: 1, normal: 10, fast: 100 }
-    }
+    };
     const newState = gasReducer(undefined, action);
     expect(newState).toEqual(action.payload);
   });

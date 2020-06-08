@@ -28,7 +28,7 @@ async function sanitizeError (error) {
   }
 
   // try get reason from evm error message
-  const revertedMessage = 'Transaction has been reverted by the EVM:'
+  const revertedMessage = 'Transaction has been reverted by the EVM:';
   if (error.message && error.message.includes(revertedMessage)) {
     try {
       const errorTx = JSON5.parse(error.message.split(revertedMessage)[1]);

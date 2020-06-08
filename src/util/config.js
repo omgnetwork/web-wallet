@@ -26,4 +26,4 @@ export default {
   sentry: env('SENTRY_DSN'),
   gtmId: env('GTM_ID'),
   infuraId: env('INFURAID')
-}
+};

@@ -25,13 +25,13 @@ const initialState = {
 function uiReducer (state = initialState, action) {
   switch (action.type) {
     case 'UI/MODAL/OPEN':
-      return { ...state, [action.payload]: true }
+      return { ...state, [action.payload]: true };
     case 'UI/MODAL/CLOSE':
-      return { ...state, [action.payload]: false }
+      return { ...state, [action.payload]: false };
     case 'UI/ALERT/UPDATE':
-      return { ...state, alert: action.payload }
+      return { ...state, alert: action.payload };
     case 'UI/ERROR/UPDATE':
-      return { ...state, error: action.payload }
+      return { ...state, error: action.payload };
     default:
       return state;
   }

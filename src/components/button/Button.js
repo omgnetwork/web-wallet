@@ -36,7 +36,7 @@ function Button ({
         type === 'secondary' ? styles.secondary : '',
         type === 'outline' ? styles.outline : '',
         loading ? styles.disabled : '',
-        disabled ? styles.disabled : '',
+        disabled ? styles.disabled : ''
       ].join(' ')}
       onClick={loading || disabled ? null : onClick}
     >
@@ -52,7 +52,7 @@ function Button ({
         </Tooltip>
       )}
     </div>
-  )
+  );
 }
 
 export default React.memo(Button);

@@ -23,7 +23,7 @@ export async function getToken (_currency) {
 
   const state = store.getState();
   if (state.token[currency]) {
-    return state.token[currency]
+    return state.token[currency];
   }
 
   const tokenContract = new networkService.web3.eth.Contract(erc20abi, currency);
@@ -39,11 +39,11 @@ export async function getToken (_currency) {
     currency,
     decimals,
     name
-  }
+  };
 
   store.dispatch({
     type: 'TOKEN/GET/SUCCESS',
     payload: tokenInfo
-  })
-  return tokenInfo
+  });
+  return tokenInfo;
 }

@@ -41,12 +41,12 @@ const networkService = {
   getExitQueue: jest.fn(() => Promise.resolve('toto')),
   addExitQueue: jest.fn(() => Promise.resolve('toto')),
   exitUtxo: jest.fn(() => Promise.resolve('toto')),
-  deposit: jest.fn(() => Promise.resolve('toto')),
+  depositEth: jest.fn(() => Promise.resolve('toto')),
   processExits: jest.fn(() => Promise.resolve('toto')),
   transfer: jest.fn(() => Promise.resolve('toto')),
   mergeUtxos: jest.fn(() => Promise.resolve('toto')),
   getGasPrice: jest.fn(() => Promise.resolve('toto')),
-  fetchFees: jest.fn(() => Promise.resolve([1, 2, 3]))
+  fetchFees: jest.fn(() => Promise.resolve([ 1, 2, 3 ]))
 };
 
 export default networkService;

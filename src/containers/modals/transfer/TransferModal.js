@@ -49,8 +49,8 @@ function TransferModal ({ open }) {
   const balances = useSelector(selectChildchainBalance, isEqual);
   const fees = useSelector(selectFees, isEqual);
 
-  const feesLoading = useSelector(selectLoading(['FEE/GET']));
-  const loading = useSelector(selectLoading(['TRANSFER/CREATE']));
+  const feesLoading = useSelector(selectLoading([ 'FEE/GET' ]));
+  const loading = useSelector(selectLoading([ 'TRANSFER/CREATE' ]));
 
   useEffect(() => {
     if (Object.keys(fees).length) {
@@ -69,23 +69,23 @@ function TransferModal ({ open }) {
           title: i.name,
           value: i.currency,
           subTitle: `Fee Amount: ${feeAmount.toFixed()}`
-        }
+        };
       });
       setUsableFees(usableFees);
     }
-  }, [balances, fees, open]);
+  }, [ balances, fees, open ]);
 
   useEffect(() => {
     if (balances.length && !currency) {
-      setCurrency(balances[0].currency)
+      setCurrency(balances[0].currency);
     }
-  }, [balances, currency, open]);
+  }, [ balances, currency, open ]);
 
   useEffect(() => {
     if (usableFees.length && !feeToken) {
-      setFeeToken(usableFees[0].value)
+      setFeeToken(usableFees[0].value);
     }
-  }, [usableFees, feeToken])
+  }, [ usableFees, feeToken ]);
 
   const selectOptions = balances.map(i => ({
     title: i.name,

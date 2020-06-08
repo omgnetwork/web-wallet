@@ -22,7 +22,7 @@ const initialState = {
   mergeModal: false,
   alert: null,
   error: null
-}
+};
 
 describe('uiReducer', () => {
   it('should return the initial state', () => {
@@ -34,7 +34,7 @@ describe('uiReducer', () => {
     const action = {
       type: 'UI/MODAL/OPEN',
       payload: 'depositModal'
-    }
+    };
     const newState = uiReducer(undefined, action);
     expect(newState).toEqual({ ...initialState, depositModal: true });
   });
@@ -43,7 +43,7 @@ describe('uiReducer', () => {
     const action = {
       type: 'UI/MODAL/CLOSE',
       payload: 'depositModal'
-    }
+    };
     const newState = uiReducer(undefined, action);
     expect(newState).toEqual(initialState);
   });
@@ -52,7 +52,7 @@ describe('uiReducer', () => {
     const action = {
       type: 'UI/ALERT/UPDATE',
       payload: 'oops'
-    }
+    };
     const newState = uiReducer(undefined, action);
     expect(newState).toEqual({ ...initialState, alert: 'oops' });
   });
@@ -61,7 +61,7 @@ describe('uiReducer', () => {
     const action = {
       type: 'UI/ERROR/UPDATE',
       payload: 'oops'
-    }
+    };
     const newState = uiReducer(undefined, action);
     expect(newState).toEqual({ ...initialState, error: 'oops' });
   });

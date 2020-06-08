@@ -20,10 +20,10 @@ export default function useInterval (callback, delay) {
 
   useEffect(() => {
     savedCallback.current = callback;
-  }, [callback]);
+  }, [ callback ]);
 
   useEffect(() => {
-    function tick() {
+    function tick () {
       savedCallback.current();
     }
     if (delay !== null) {
@@ -31,5 +31,5 @@ export default function useInterval (callback, delay) {
       let id = setInterval(tick, delay);
       return () => clearInterval(id);
     }
-  }, [delay]);
+  }, [ delay ]);
 }

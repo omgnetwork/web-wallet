@@ -21,6 +21,7 @@ import BN from 'bn.js';
 import axios from 'axios';
 import JSONBigNumber from 'omg-json-bigint';
 import { bufferToHex } from 'ethereumjs-util';
+import erc20abi from 'human-standard-token-abi';
 
 import { getToken } from 'actions/tokenAction';
 import config from 'util/config';
@@ -35,12 +36,12 @@ class NetworkService {
 
   async enableNetwork () {
     // find a provider
-    let provider
+    let provider;
     if (window.ethereum) {
-      provider = window.ethereum
+      provider = window.ethereum;
       await window.ethereum.enable();
     } else if (window.web3) {
-      provider = window.web3.currentProvider
+      provider = window.web3.currentProvider;
     } else {
       provider = new WalletConnectProvider({ infuraId: config.infuraId });
       await provider.enable();
@@ -55,7 +56,7 @@ class NetworkService {
       const accounts = await this.web3.eth.getAccounts();
       this.account = accounts[0];
       const network = await this.web3.eth.net.getNetworkType();
-      return network === config.network
+      return network === config.network;
     } catch {
       return false;
     }
@@ -73,7 +74,7 @@ class NetworkService {
       byzantine: !!filteredByzantineEvents.length,
       secondsSinceLastSync: currentUnix - last_seen_eth_block_timestamp,
       lastSeenBlock: last_seen_eth_block_timestamp
-    }
+    };
   }
 
   async getAllTransactions () {
@@ -85,8 +86,8 @@ class NetworkService {
       return {
         ...i,
         metadata: OmgUtil.transaction.decodeMetadata(i.metadata)
-      }
-    })
+      };
+    });
     return transactions;
   }
 
@@ -94,13 +95,13 @@ class NetworkService {
     const _childchainBalances = await this.childChain.getBalance(this.account);
     const childchainBalances = await Promise.all(_childchainBalances.map(
       async i => {
-        const token = await getToken(i.currency)
+        const token = await getToken(i.currency);
         return {
           ...token,
           amount: i.amount.toString()
-        }
+        };
       }
-    ))
+    ));
 
     const rootErc20Balances = await Promise.all(childchainBalances.map(
       async i => {
@@ -109,51 +110,94 @@ class NetworkService {
             web3: this.web3,
             address: this.account,
             erc20Address: i.currency
-          })
+          });
           return {
             ...i,
             amount: balance.toString()
-          }
+          };
         }
       }
-    ))
+    ));
 
     const _rootEthBalance = await this.web3.eth.getBalance(this.account);
-    const ethToken = await getToken(OmgUtil.transaction.ETH_CURRENCY)
+    const ethToken = await getToken(OmgUtil.transaction.ETH_CURRENCY);
     const rootchainEthBalance = {
       ...ethToken,
       amount: _rootEthBalance
-    }
+    };
 
     return {
-      rootchain: orderBy([rootchainEthBalance, ...rootErc20Balances.filter(i => !!i)], i => i.currency),
+      rootchain: orderBy([ rootchainEthBalance, ...rootErc20Balances.filter(i => !!i) ], i => i.currency),
       childchain: orderBy(childchainBalances, i => i.currency)
-    }
+    };
   }
 
-  async deposit (value, currency, gasPrice) {
-    if (currency !== OmgUtil.transaction.ETH_CURRENCY) {
-      try {
-        await this.rootChain.approveToken({
-          erc20Address: currency,
-          amount: value,
-          txOptions: {
-            from: this.account,
-            gasPrice: gasPrice.toString()
-          }
-        });
-      } catch (error) {
-        throw new Error(`Approval to deposit ${value} ${currency} failed.`);
-      }
-    }
+  async depositEth (value, gasPrice) {
+    const valueBN = new BN(value.toString());
     return this.rootChain.deposit({
-      amount: new BN(value),
-      ...currency !== OmgUtil.transaction.ETH_CURRENCY ? { currency } : {},
+      amount: valueBN,
       txOptions: {
         from: this.account,
         gasPrice: gasPrice.toString()
       }
-    })
+    });
+  }
+
+  async checkAllowance (currency) {
+    try {
+      const tokenContract = new this.web3.eth.Contract(erc20abi, currency);
+      const { address: erc20VaultAddress } = await this.rootChain.getErc20Vault();
+      const allowance = await tokenContract.methods.allowance(this.account, erc20VaultAddress).call();
+      return allowance.toString();
+    } catch (error) {
+      throw new Error('Error checking deposit allowance for ERC20');
+    }
+  }
+
+  async approveErc20 (value, currency, gasPrice) {
+    const valueBN = new BN(value.toString());
+    return this.rootChain.approveToken({
+      erc20Address: currency,
+      amount: valueBN,
+      txOptions: {
+        from: this.account,
+        gasPrice: gasPrice.toString()
+      }
+    });
+  }
+
+  async resetApprove (value, currency, gasPrice) {
+    const valueBN = new BN(value.toString());
+    // the reset approval
+    await this.rootChain.approveToken({
+      erc20Address: currency,
+      amount: 0,
+      txOptions: {
+        from: this.account,
+        gasPrice: gasPrice.toString()
+      }
+    });
+    // approval for new amount
+    return this.rootChain.approveToken({
+      erc20Address: currency,
+      amount: valueBN,
+      txOptions: {
+        from: this.account,
+        gasPrice: gasPrice.toString()
+      }
+    });
+  }
+
+  async depositErc20 (value, currency, gasPrice) {
+    const valueBN = new BN(value.toString());
+    return this.rootChain.deposit({
+      amount: valueBN,
+      currency,
+      txOptions: {
+        from: this.account,
+        gasPrice: gasPrice.toString()
+      }
+    });
   }
 
   // normalize signing methods across wallet providers
@@ -201,14 +245,14 @@ class NetworkService {
   }
 
   async mergeUtxos (utxos) {
-    const _metadata = 'Merge UTXOs'
-    const payments = [{
+    const _metadata = 'Merge UTXOs';
+    const payments = [ {
       owner: this.account,
       currency: utxos[0].currency,
       amount: utxos.reduce((prev, curr) => {
-        return prev.add(new BN(curr.amount))
+        return prev.add(new BN(curr.amount));
       }, new BN(0))
-    }];
+    } ];
     const fee = {
       currency: OmgUtil.transaction.ETH_CURRENCY,
       amount: 0
@@ -255,11 +299,11 @@ class NetworkService {
     const feeInfo = allFees.find(i => i.currency === feeToken);
     if (!feeInfo) throw new Error(`${feeToken} is not a supported fee token.`);
 
-    const payments = [{
+    const payments = [ {
       owner: recipient,
       currency,
       amount: new BN(value)
-    }];
+    } ];
     const fee = {
       currency: feeToken,
       amount: new BN(feeInfo.amount)
@@ -291,7 +335,7 @@ class NetworkService {
     const _utxos = await this.childChain.getUtxos(this.account);
     const utxos = await Promise.all(_utxos.map(async utxo => {
       const tokenInfo = await getToken(utxo.currency);
-      return { ...utxo, tokenInfo }
+      return { ...utxo, tokenInfo };
     }));
     return utxos;
   }
@@ -316,7 +360,7 @@ class NetworkService {
       const tokenInfo = await getToken(i.returnValues.token);
       const status = ethBlockNumber - i.blockNumber >= depositFinality ? 'Confirmed' : 'Pending';
       const pendingPercentage = (ethBlockNumber - i.blockNumber) / depositFinality;
-      return { ...i, status, pendingPercentage: (pendingPercentage * 100).toFixed(), tokenInfo }
+      return { ...i, status, pendingPercentage: (pendingPercentage * 100).toFixed(), tokenInfo };
     }));
 
     let _erc20Deposits = [];
@@ -333,7 +377,7 @@ class NetworkService {
       const tokenInfo = await getToken(i.returnValues.token);
       const status = ethBlockNumber - i.blockNumber >= depositFinality ? 'Confirmed' : 'Pending';
       const pendingPercentage = (ethBlockNumber - i.blockNumber) / depositFinality;
-      return { ...i, status, pendingPercentage: (pendingPercentage * 100).toFixed(), tokenInfo }
+      return { ...i, status, pendingPercentage: (pendingPercentage * 100).toFixed(), tokenInfo };
     }));
 
     return { eth: ethDeposits, erc20: erc20Deposits };
@@ -388,7 +432,7 @@ class NetworkService {
     return {
       pending: pendingExits,
       exited: exitedExits
-    }
+    };
   }
 
   async checkForExitQueue (token) {
@@ -410,7 +454,7 @@ class NetworkService {
         ...i,
         currency
       }))
-    }
+    };
   }
 
   async addExitQueue (token, gasPrice) {
@@ -462,7 +506,7 @@ class NetworkService {
         from: this.account,
         gasPrice: gasPrice.toString()
       }
-    })
+    });
   }
 
   async getGasPrice () {
@@ -473,7 +517,7 @@ class NetworkService {
         slow: safeLow * 100000000,
         normal: average * 100000000,
         fast: fast * 100000000
-      }
+      };
     } catch (error) {
       //
     }
@@ -486,7 +530,7 @@ class NetworkService {
         slow: Math.max(medianEstimate / 2, 1000000000),
         normal: medianEstimate,
         fast: medianEstimate * 5
-      }
+      };
     } catch (error) {
       //
     }
@@ -496,7 +540,7 @@ class NetworkService {
       slow: 1000000000,
       normal: 2000000000,
       fast: 10000000000
-    }
+    };
   }
 }
 

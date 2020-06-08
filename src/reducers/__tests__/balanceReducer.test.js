@@ -24,8 +24,8 @@ describe('balanceReducer', () => {
   it('should handle balance success', () => {
     const action = {
       type: 'BALANCE/GET/SUCCESS',
-      payload: { rootchain: ['toto'], childchain: ['toto'] }
-    }
+      payload: { rootchain: [ 'toto' ], childchain: [ 'toto' ] }
+    };
     const newState = balanceReducer(undefined, action);
     expect(newState).toEqual(action.payload);
   });
