@@ -138,7 +138,7 @@ function ApproveStep ({
             {`You are only approved to deposit ${logAmount(allowance, tokenInfo.decimals)} ${tokenName}. Since you want to deposit ${value} ${tokenName}, you will need to reset your allowance.`}
           </p>
           <p>
-            You will be prompted with 2 approval transactions. One to reset the allowance to 0, and another for the new amount.
+            You will be prompted with 2 approval requests. One to reset the allowance to 0, and another for the new amount.
           </p>
           {renderGasPicker}
           <div className={styles.buttons}>
@@ -160,7 +160,7 @@ function ApproveStep ({
       {allowDeposit && (
         <>
           <p>
-            {`You are approved to deposit ${value} ${tokenName}. Click below to make the deposit.`}
+            {`Your approval request for ${value} ${tokenName} was confirmed. Click below to make the deposit.`}
           </p>
           {renderGasPicker}
           <div className={styles.buttons}>
