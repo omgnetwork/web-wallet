@@ -13,37 +13,27 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
-import { selectLoading } from 'selectors/loadingSelector';
-import { deposit } from 'actions/networkAction';
-import { closeModal, openAlert } from 'actions/uiAction';
+import { closeModal } from 'actions/uiAction';
 import { getToken } from 'actions/tokenAction';
-import { powAmount } from 'util/amountConvert';
-
-import GasPicker from 'components/gaspicker/GasPicker';
-import Button from 'components/button/Button';
-import Modal from 'components/modal/Modal';
-import Input from 'components/input/Input';
-import Tabs from 'components/tabs/Tabs';
-
 import networkService from 'services/networkService';
 
-import * as styles from './DepositModal.module.scss';
+import Modal from 'components/modal/Modal';
+
+import InputStep from './steps/InputStep';
+import ApproveStep from './steps/ApproveStep';
 
 const ETH = networkService.OmgUtil.transaction.ETH_CURRENCY;
 
 function DepositModal ({ open }) {
   const dispatch = useDispatch();
-  const loading = useSelector(selectLoading([ 'DEPOSIT/CREATE' ]));
 
-  const [ gasPrice, setGasPrice ] = useState();
-  const [ selectedSpeed, setSelectedSpeed ] = useState('normal');
-  const [ activeTab, setActiveTab ] = useState('ETH');
-  const [ value, setValue ] = useState('');
+  const [ step, setStep ] = useState('INPUT_STEP');
   const [ currency, setCurrency ] = useState(ETH);
   const [ tokenInfo, setTokenInfo ] = useState({});
+  const [ value, setValue ] = useState('');
 
   useEffect(() => {
     async function getTokenInfo () {
@@ -57,91 +47,35 @@ function DepositModal ({ open }) {
     getTokenInfo();
   }, [ currency ]);
 
-  async function submit () {
-    if (value > 0 && currency && tokenInfo) {
-      const amount = powAmount(value, tokenInfo.decimals);
-      const res = await dispatch(deposit(amount, currency, gasPrice));
-      if (res) {
-        dispatch(openAlert('Deposit submitted. Check the Deposits tab to see the status of your deposit.'));
-        handleClose();
-      }
-    }
-  }
-
-  function handleClose () {
-    setActiveTab('ETH');
-    setSelectedSpeed('normal');
-    setValue('');
+  const handleClose = useCallback(() => {
     setCurrency(ETH);
+    setValue('');
+    setStep('INPUT_STEP');    
     dispatch(closeModal('depositModal'));
-  }
+  }, [dispatch]);
 
   return (
     <Modal open={open} onClose={handleClose}>
-      <h2>Deposit</h2>
-
-      <Tabs
-        className={styles.tabs}
-        onClick={i => {
-          i === 'ETH' ? setCurrency(ETH) : setCurrency('');
-          setActiveTab(i);
-        }}
-        activeTab={activeTab}
-        tabs={[ 'ETH', 'ERC20' ]}
-      />
-
-      {activeTab === 'ERC20' && (
-        <Input
-          label='ERC20 Address'
-          placeholder='0x'
-          paste
-          value={currency}
-          onChange={i => setCurrency(i.target.value)}
+      {step === 'INPUT_STEP' && (
+        <InputStep
+          onClose={handleClose}
+          onNext={() => setStep('APPROVE_STEP')}
+          currency={currency}
+          tokenInfo={tokenInfo}
+          value={value}
+          setCurrency={setCurrency}
+          setTokenInfo={setTokenInfo}
+          setValue={setValue}
         />
       )}
-
-      <Input
-        label='Amount to deposit into the OMG Network'
-        type='number'
-        unit={tokenInfo ? tokenInfo.name : ''}
-        placeholder={0}
-        value={value}
-        onChange={i => setValue(i.target.value)}
-      />
-
-      <GasPicker
-        selectedSpeed={selectedSpeed}
-        setSelectedSpeed={setSelectedSpeed}
-        setGasPrice={setGasPrice}
-      />
-
-      {activeTab === 'ERC20' && (
-        <div className={styles.disclaimer}>*You will be prompted with 2 confirmations. The first to approve the deposit amount and the second being the actual deposit transaction.</div>
+      {step === 'APPROVE_STEP' && (
+        <ApproveStep
+          onClose={handleClose}
+          currency={currency}
+          value={value}
+          tokenInfo={tokenInfo}
+        />
       )}
-
-      <div className={styles.buttons}>
-        <Button
-          onClick={handleClose}
-          type='outline'
-          style={{ flex: 0 }}
-        >
-          CANCEL
-        </Button>
-        <Button
-          onClick={submit}
-          type='primary'
-          style={{ flex: 0 }}
-          loading={loading}
-          tooltip='Your deposit transaction is still pending. Please wait for confirmation.'
-          disabled={
-            value <= 0 ||
-            !currency ||
-            !networkService.web3.utils.isAddress(currency)
-          }
-        >
-          DEPOSIT
-        </Button>
-      </div>
     </Modal>
   );
 }

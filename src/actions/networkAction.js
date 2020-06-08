@@ -94,10 +94,31 @@ export function exitUtxo (utxo, gasPrice) {
   );
 }
 
-export function deposit (value, currency, gasPrice) {
+export function depositEth (value, gasPrice) {
   return createAction(
     'DEPOSIT/CREATE',
-    () => networkService.deposit(value, currency, gasPrice)
+    () => networkService.depositEth(value, gasPrice)
+  );
+}
+
+export function approveErc20 (value, currency, gasPrice) {
+  return createAction(
+    'APPROVE/CREATE',
+    () => networkService.approveErc20(value, currency, gasPrice)
+  );  
+}
+
+export function resetApprove (value, currency, gasPrice) {
+  return createAction(
+    'APPROVE/RESET',
+    () => networkService.resetApprove(value, currency, gasPrice)
+  );  
+}
+
+export function depositErc20 (value, currency, gasPrice) {
+  return createAction(
+    'DEPOSIT/CREATE',
+    () => networkService.depositErc20(value, currency, gasPrice)
   );
 }
 
