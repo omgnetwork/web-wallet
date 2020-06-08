@@ -60,7 +60,7 @@ export function checkForExitQueue (_token) {
       const hasToken = await networkService.checkForExitQueue(token);
       if (hasToken) {
         const queue = await networkService.getExitQueue(token);
-        dispatch({ type: `QUEUE/GET/SUCCESS`, payload: queue });
+        dispatch({ type: 'QUEUE/GET/SUCCESS', payload: queue });
         dispatch({ type: `QUEUE/GET_${token}/SUCCESS` });
         return true;
       }
@@ -70,7 +70,7 @@ export function checkForExitQueue (_token) {
       dispatch({ type: 'UI/ERROR/UPDATE', payload: `Unable to check exit queue for ${token}` });
       return false;
     }
-  }
+  };
 }
 
 export function getExitQueue (currency) {
@@ -170,5 +170,5 @@ export function fetchFees () {
       console.warn('Couldnt fetch fees, retrying...');
       return;
     }
-  }
+  };
 }

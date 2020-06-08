@@ -25,4 +25,4 @@ export default {
   network: env('NETWORK'),
   sentry: env('SENTRY_DSN'),
   gtmId: env('GTM_ID')
-}
+};

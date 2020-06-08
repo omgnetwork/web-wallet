@@ -27,7 +27,8 @@ export function createAction (key, asyncAction, customErrorMessage) {
     } catch (error) {
 
       // toggle to report every ui error to sentry, useful for debugging remote dapp browsers
-      if (false) {
+      const remoteDebug = false;
+      if (remoteDebug) {
         console.log(`key: ${key}, action: ${asyncAction} errorObject: ${JSON.stringify(error)}`);
         Sentry.captureException(error);
       }
@@ -46,6 +47,6 @@ export function createAction (key, asyncAction, customErrorMessage) {
       dispatch({ type: 'UI/ERROR/UPDATE', payload: customErrorMessage || sanitizedError });
       // resolve the result to the view
       return false;
-    };
-  }
+    }
+  };
 }

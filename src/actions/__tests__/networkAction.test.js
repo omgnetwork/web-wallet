@@ -172,7 +172,7 @@ describe('networkActions', () => {
   it('should dispatch correct actions on fetchFees', async () => {
     const expectedActions = [
       { type: 'FEE/GET/REQUEST' },
-      { type: 'FEE/GET/SUCCESS', payload: [1,2,3] }
+      { type: 'FEE/GET/SUCCESS', payload: [ 1,2,3 ] }
     ];
     await store.dispatch(actions.fetchFees());
     expect(networkService.fetchFees).toHaveBeenCalled();

@@ -25,13 +25,13 @@ function loadingReducer (state = initialLoadingState, action) {
     requestState !== 'SUCCESS' &&
     requestState !== 'ERROR'
   ) {
-    return state
+    return state;
   }
 
   return {
     ...state,
     [requestName]: requestState === 'REQUEST'
-  }
+  };
 }
 
 export default loadingReducer;

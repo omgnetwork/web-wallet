@@ -24,8 +24,8 @@ describe('exitReducer', () => {
   it('should handle exit fetch success', () => {
     const action = {
       type: 'EXIT/GETALL/SUCCESS',
-      payload: { pending: ['toto'], exited: ['toto'] }
-    }
+      payload: { pending: [ 'toto' ], exited: [ 'toto' ] }
+    };
     const newState = exitReducer(undefined, action);
     expect(newState).toEqual(action.payload);
   });

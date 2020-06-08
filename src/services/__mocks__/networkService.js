@@ -46,7 +46,7 @@ const networkService = {
   transfer: jest.fn(() => Promise.resolve('toto')),
   mergeUtxos: jest.fn(() => Promise.resolve('toto')),
   getGasPrice: jest.fn(() => Promise.resolve('toto')),
-  fetchFees: jest.fn(() => Promise.resolve([1, 2, 3]))
+  fetchFees: jest.fn(() => Promise.resolve([ 1, 2, 3 ]))
 };
 
 export default networkService;

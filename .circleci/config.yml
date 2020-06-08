@@ -29,6 +29,7 @@ jobs:
           apk add --no-cache git openssh make gcc g++ python
       - run: yarn install --frozen-lockfile
       - run: yarn audit-check
+      - run: yarn lint
       - run: yarn test
       - run: yarn build
 

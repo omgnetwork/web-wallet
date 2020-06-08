@@ -71,11 +71,11 @@ function Home () {
   }, [ transactions ]);
 
   useEffect(() => {
-    const body = document.getElementsByTagName('body')[0]
+    const body = document.getElementsByTagName('body')[0];
     mobileMenuOpen
       ? body.style.overflow = 'hidden'
-      : body.style.overflow = 'auto'
-  }, [ mobileMenuOpen ])
+      : body.style.overflow = 'auto';
+  }, [ mobileMenuOpen ]);
 
   useInterval(() => {
     batch(() => {

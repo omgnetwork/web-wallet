@@ -16,35 +16,35 @@ limitations under the License. */
 export function openModal (modal) {
   return function (dispatch) {
     return dispatch({ type: 'UI/MODAL/OPEN', payload: modal });
-  }
-};
+  };
+}
 
 export function closeModal (modal) {
   return function (dispatch) {
     return dispatch({ type: 'UI/MODAL/CLOSE', payload: modal });
-  }
-};
+  };
+}
 
 export function openAlert (message) {
   return function (dispatch) {
     return dispatch({ type: 'UI/ALERT/UPDATE', payload: message });
-  }
-};
+  };
+}
 
 export function closeAlert () {
   return function (dispatch) {
     return dispatch({ type: 'UI/ALERT/UPDATE', payload: null });
-  }
-};
+  };
+}
 
 export function openError (message) {
   return function (dispatch) {
     return dispatch({ type: 'UI/ERROR/UPDATE', payload: message });
-  }
-};
+  };
+}
 
 export function closeError () {
   return function (dispatch) {
     return dispatch({ type: 'UI/ERROR/UPDATE', payload: null });
-  }
-};
+  };
+}

@@ -19,7 +19,7 @@ import * as styles from './Tabs.module.scss';
 
 function Tabs ({ tabs, activeTab, onClick, className }) {
   return (
-    <div className={[styles.Tabs, className].join(' ')}>
+    <div className={[ styles.Tabs, className ].join(' ')}>
       {tabs.map((i, index) => {
         return (
           <div
@@ -32,7 +32,7 @@ function Tabs ({ tabs, activeTab, onClick, className }) {
           >
             {i}
           </div>
-        )
+        );
       })}
     </div>
   );

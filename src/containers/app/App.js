@@ -37,7 +37,7 @@ function App () {
   const [ loading, setLoading ] = useState(true);
 
   useEffect(() => {
-    async function checkNetwork() {
+    async function checkNetwork () {
       const networkEnabled = await networkService.enableNetwork();
       if (networkEnabled) {
         setLoading(false);
@@ -51,7 +51,7 @@ function App () {
 
   function getNetworkName () {
     if (config.network === 'main') {
-      return 'Main Ethereum'
+      return 'Main Ethereum';
     }
     return `${capitalize(config.network)} Test`;
   }

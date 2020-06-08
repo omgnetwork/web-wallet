@@ -41,7 +41,7 @@ function Input ({
   }
 
   return (
-    <div className={[styles.Input, className].join(' ')}>
+    <div className={[ styles.Input, className ].join(' ')}>
       {label && <div className={styles.label}>{label}</div>}
       <div className={styles.field}>
         {icon && <Search className={styles.icon} />}

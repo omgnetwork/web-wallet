@@ -28,7 +28,7 @@ function InputSelect ({
   onSelect,
   selectValue
 }) {
-  const selected = selectOptions.find(i => i.value === selectValue)
+  const selected = selectOptions.find(i => i.value === selectValue);
 
   const renderUnit = (
     <div className={styles.selectContainer}>

@@ -45,14 +45,14 @@ function DepositModal ({ open }) {
       }
     }
     getTokenInfo();
-  }, [currency]);
+  }, [ currency ]);
 
   const handleClose = useCallback(() => {
     setCurrency(ETH);
     setValue('');
     setStep('INPUT_STEP');    
     dispatch(closeModal('depositModal'));
-  }, [dispatch]);
+  }, [ dispatch ]);
 
   return (
     <Modal open={open} onClose={handleClose}>

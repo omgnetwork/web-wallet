@@ -79,7 +79,7 @@ function SelectStep ({
   const _utxos = useMemo(() => {
     return utxos.filter(i => {
       return i.currency.toLowerCase().includes(searchUTXO.toLowerCase()) ||
-        i.tokenInfo.name.toLowerCase().includes(searchUTXO.toLowerCase())
+        i.tokenInfo.name.toLowerCase().includes(searchUTXO.toLowerCase());
       })
       .filter(i => !!i);
   }, [ utxos, searchUTXO ]);

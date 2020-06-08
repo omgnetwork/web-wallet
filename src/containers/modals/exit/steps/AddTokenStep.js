@@ -31,7 +31,7 @@ function AddTokenStep ({
 }) {
   const dispatch = useDispatch();
 
-  const addExitQueueLoading = useSelector(selectLoading(['QUEUE/CREATE']));
+  const addExitQueueLoading = useSelector(selectLoading([ 'QUEUE/CREATE' ]));
 
   async function doAddExitQueue () {
     const res = await dispatch(addExitQueue(selectedUTXO.currency, gasPrice));

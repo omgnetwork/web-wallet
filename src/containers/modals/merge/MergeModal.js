@@ -36,7 +36,7 @@ function MergeModal ({ open }) {
   const [ searchUTXO, setSearchUTXO ] = useState('');
   const [ utxos, setUtxos ] = useState([]);
 
-  const loading = useSelector(selectLoading(['TRANSFER/CREATE']));
+  const loading = useSelector(selectLoading([ 'TRANSFER/CREATE' ]));
 
   useEffect(() => {
     async function fetchUTXOS () {
@@ -47,7 +47,7 @@ function MergeModal ({ open }) {
     if (open) {
       fetchUTXOS();
     }
-  }, [open]);
+  }, [ open ]);
 
   useEffect(() => {
     if (selectedUTXOs.length) {
@@ -56,7 +56,7 @@ function MergeModal ({ open }) {
     if (!selectedUTXOs.length) {
       setSearchUTXO('');
     }
-  }, [selectedUTXOs]);
+  }, [ selectedUTXOs ]);
 
   async function submit () {
     if (selectedUTXOs.length > 1 && selectedUTXOs.length < 5) {
@@ -90,7 +90,7 @@ function MergeModal ({ open }) {
 
   return (
     <Modal open={open} onClose={handleClose}>
-      <h2>Merge UTXO's</h2>
+      <h2>Merge UTXOs</h2>
       <div className={styles.disclaimer}>Select the UTXOs you want to merge</div>
 
       <div className={styles.list}>
@@ -98,7 +98,7 @@ function MergeModal ({ open }) {
           <div className={styles.disclaimer}>You do not have any UTXOs on the OMG Network.</div>
         )}
         {_utxos.map((i, index) => {
-          const selected = selectedUTXOs.some(selected => selected.utxo_pos === i.utxo_pos)
+          const selected = selectedUTXOs.some(selected => selected.utxo_pos === i.utxo_pos);
           return (
             <div
               key={index}
