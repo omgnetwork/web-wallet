@@ -24,9 +24,9 @@ describe('queueReducer', () => {
   it('should handle queue fetch success', () => {
     const action = {
       type: 'QUEUE/GET/SUCCESS',
-      payload: { currency: 'ETH', queue: [1,2,3] }
-    }
+      payload: { currency: 'ETH', queue: [ 1,2,3 ] }
+    };
     const newState = queueReducer(undefined, action);
-    expect(newState).toEqual({ ETH: [1,2,3] });
+    expect(newState).toEqual({ ETH: [ 1,2,3 ] });
   });
 });

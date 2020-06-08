@@ -28,7 +28,7 @@ describe('feeReducer', () => {
         { currency: 'ETH', amount: 1 },
         { currency: 'OMG', amount: 10 }
       ]
-    }
+    };
     const newState = feeReducer(undefined, action);
     expect(newState).toEqual({
       ETH: { currency: 'ETH', amount: 1 },

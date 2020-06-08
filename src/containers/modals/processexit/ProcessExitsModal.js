@@ -32,7 +32,7 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
   const dispatch = useDispatch();
 
   const byzantineChain = useSelector(selectByzantine);
-  const loading = useSelector(selectLoading(['QUEUE/PROCESS']));
+  const loading = useSelector(selectLoading([ 'QUEUE/PROCESS' ]));
   
   const [ maxExits, setMaxExits ] = useState('');
   const [ gasPrice, setGasPrice ] = useState();
@@ -42,7 +42,7 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
     if (exitData) {
       setMaxExits(exitData.queuePosition);
     }
-  }, [exitData, open]);
+  }, [ exitData, open ]);
 
   async function submit () {
     if (maxExits > 0) {
@@ -77,7 +77,7 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
         onChange={i => {
           i.target.value <= exitData.queueLength
             ? setMaxExits(i.target.value)
-            : setMaxExits(exitData.queueLength)
+            : setMaxExits(exitData.queueLength);
         }}
       />
 

@@ -50,7 +50,7 @@ function Status ({ className }) {
         </span>
       </div>
     </Tooltip>
-  )
+  );
 
   const renderChainHealth = (
     <Tooltip
@@ -86,7 +86,7 @@ function Status ({ className }) {
       title={
         isSynced
           ? 'There is a strong connection with the Watcher.'
-          : `A syncing status indicates that the Watcher is still syncing with Ethereum. Transaction status will be delayed so users should wait until the Watcher is fully synced.`
+          : 'A syncing status indicates that the Watcher is still syncing with Ethereum. Transaction status will be delayed so users should wait until the Watcher is fully synced.'
       }
       arrow
     >

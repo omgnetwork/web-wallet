@@ -66,7 +66,7 @@ describe('createAction', () => {
     const expectedActions = [
       { type: 'TEST/GET/REQUEST' },
       { type: 'TEST/GET/ERROR' },
-      { type: 'UI/ERROR/UPDATE', payload: 'toto-failed' },
+      { type: 'UI/ERROR/UPDATE', payload: 'toto-failed' }
     ];
     await store.dispatch(
       createAction('TEST/GET', () => fakeAsyncRequestFailure())
@@ -89,7 +89,7 @@ describe('createAction', () => {
     const expectedActions = [
       { type: 'TEST/GET/REQUEST' },
       { type: 'TEST/GET/ERROR' },
-      { type: 'UI/ERROR/UPDATE', payload: 'custom-error-message' },
+      { type: 'UI/ERROR/UPDATE', payload: 'custom-error-message' }
     ];
     await store.dispatch(
       createAction(

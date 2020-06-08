@@ -37,7 +37,7 @@ function App () {
   const [ loading, setLoading ] = useState(true);
 
   useEffect(() => {
-    async function checkNetwork() {
+    async function checkNetwork () {
       const networkEnabled = await networkService.enableNetwork();
       if (networkEnabled) {
         setLoading(false);

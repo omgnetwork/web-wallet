@@ -25,7 +25,7 @@ describe('statusReducer', () => {
     const action = {
       type: 'STATUS/GET/SUCCESS',
       payload: { connection: true, byzantine: false }
-    }
+    };
     const newState = statusReducer(undefined, action);
     expect(newState).toEqual(action.payload);
   });

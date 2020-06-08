@@ -46,11 +46,11 @@ function Transactions () {
 
   function renderStatus (utxo) {
     if (utxo.status === 'Pending') {
-      return 'Pending'
+      return 'Pending';
     }
     const total = utxo.outputs.reduce((prev, curr) => {
       if (curr.owner !== networkService.account) {
-        return prev.add(new BN(curr.amount))
+        return prev.add(new BN(curr.amount));
       }
       return prev;
     }, new BN(0));

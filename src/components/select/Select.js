@@ -27,7 +27,7 @@ function Select ({
   const selected = options.find(i => i.value === value);
 
   const renderLoading = (
-    <div className={[styles.selected, styles.loading].join(' ')}>
+    <div className={[ styles.selected, styles.loading ].join(' ')}>
       Loading...
     </div>
   );

@@ -24,8 +24,8 @@ describe('transactionReducer', () => {
   it('should handle transaction fetch success', () => {
     const action = {
       type: 'TRANSACTION/GETALL/SUCCESS',
-      payload: [{ txhash: '0x1', metadata: 'toto' }]
-    }
+      payload: [ { txhash: '0x1', metadata: 'toto' } ]
+    };
     const newState = transactionReducer(undefined, action);
     expect(newState).toEqual({
       '0x1': { txhash: '0x1', metadata: 'toto' }
@@ -36,7 +36,7 @@ describe('transactionReducer', () => {
     const action = {
       type: 'TRANSFER/CREATE/SUCCESS',
       payload: { txhash: '0x1', metadata: 'toto' }
-    }
+    };
     const newState = transactionReducer(undefined, action);
     expect(newState).toEqual({
       '0x1': { txhash: '0x1', metadata: 'toto' }

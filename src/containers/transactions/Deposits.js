@@ -40,7 +40,7 @@ function Deposits ({ searchHistory }) {
   }, [ searchHistory ]);
 
   const deposits = orderBy(
-    [...ethDeposits, ...erc20Deposits],
+    [ ...ethDeposits, ...erc20Deposits ],
     i => i.blockNumber, 'desc'
   );
   const _deposits = deposits.filter(i => {

@@ -36,7 +36,7 @@ const ETH = networkService.OmgUtil.transaction.ETH_CURRENCY;
 
 function DepositModal ({ open }) {
   const dispatch = useDispatch();
-  const loading = useSelector(selectLoading(['DEPOSIT/CREATE']));
+  const loading = useSelector(selectLoading([ 'DEPOSIT/CREATE' ]));
 
   const [ gasPrice, setGasPrice ] = useState();
   const [ selectedSpeed, setSelectedSpeed ] = useState('normal');
@@ -55,7 +55,7 @@ function DepositModal ({ open }) {
       }
     }
     getTokenInfo();
-  }, [currency]);
+  }, [ currency ]);
 
   async function submit () {
     if (value > 0 && currency && tokenInfo) {

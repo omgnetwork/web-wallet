@@ -42,7 +42,7 @@ function Account () {
   const rootBalance = useSelector(selectRootchainBalance, isEqual);
   const pendingExits = useSelector(selectPendingExits, isEqual);
   const transactions = useSelector(selectChildchainTransactions, isEqual);
-  const criticalTransactionLoading = useSelector(selectLoading(['EXIT/CREATE']));
+  const criticalTransactionLoading = useSelector(selectLoading([ 'EXIT/CREATE' ]));
 
   const exitPending = useMemo(() => pendingExits.some(i => i.status === 'Pending'), [ pendingExits ]);
   const transferPending = useMemo(() => transactions.some(i => i.status === 'Pending'), [ transactions ]);
@@ -50,7 +50,7 @@ function Account () {
 
   const handleModalClick = useCallback(
     (name) => dispatch(openModal(name)),
-    [dispatch]
+    [ dispatch ]
   );
 
   return (
@@ -99,7 +99,7 @@ function Account () {
                 </div>
                 <span>{logAmount(i.amount, i.decimals)}</span>
               </div>
-            )
+            );
           })}
           <div className={styles.buttons}>
             <Button
@@ -135,7 +135,7 @@ function Account () {
                 </div>
                 <span>{logAmount(i.amount, i.decimals)}</span>
               </div>
-            )
+            );
           })}
         </div>
       </div>

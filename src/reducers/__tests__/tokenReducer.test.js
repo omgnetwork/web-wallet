@@ -31,7 +31,7 @@ describe('tokenReducer', () => {
     const action = {
       type: 'TOKEN/GET/SUCCESS',
       payload: { currency: '0xomg', decimals: 18, name: 'OMG' }
-    }
+    };
     const newState = tokenReducer(undefined, action);
     expect(newState).toEqual({
       '0x0000000000000000000000000000000000000000': { currency: '0x0000000000000000000000000000000000000000', decimals: 18, name: 'ETH' },

@@ -1,0 +1,39 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended"
+  ],
+  "plugins": [
+    "react"
+  ],
+  "env": {
+    "browser": true,
+    "node": true,
+    "jest": true,
+    "es6": true
+  },
+  "rules": {
+    "eol-last": ["error", "always"],
+    "array-bracket-spacing": ["error", "always"],
+    "space-before-function-paren": ["error", "always"],
+    "comma-dangle": ["error", "never"],
+    "semi": ["error", "always"],
+    "quotes": ["error", "single"],
+    "no-case-declarations": "off",
+    "react/prop-types": "off",
+    "no-unused-vars": "off"
+  },
+  "parserOptions": {
+		"ecmaFeatures": {
+			"jsx": true
+		},
+		"ecmaVersion": 11,
+		"sourceType": "module"
+	},
+  "settings": {
+    "react": {
+      "pragma": "React",
+      "version": "detect"
+    }
+  }
+}

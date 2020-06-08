@@ -22,23 +22,23 @@ describe('loadingReducer', () => {
   });
 
   it('should handle request correctly', () => {
-    const action = { type: 'TEST/GET/REQUEST' }
+    const action = { type: 'TEST/GET/REQUEST' };
     const newState = loadingReducer(undefined, action);
     expect(newState).toEqual({ 'TEST/GET': true });
   });
 
   it('should cancel loading state on non request correctly', () => {
-    const action = { type: 'TEST/GET/SUCCESS' }
+    const action = { type: 'TEST/GET/SUCCESS' };
     const newState = loadingReducer(undefined, action);
     expect(newState).toEqual({ 'TEST/GET': false });
 
-    const action2 = { type: 'TEST/GET/ERROR' }
+    const action2 = { type: 'TEST/GET/ERROR' };
     const newState2 = loadingReducer(undefined, action2);
     expect(newState2).toEqual({ 'TEST/GET': false });
   });
 
   it('should pass through other action types', () => {
-    const action = { type: 'TEST/MODAL/OPEN' }
+    const action = { type: 'TEST/MODAL/OPEN' };
     const newState = loadingReducer(undefined, action);
     expect(newState).toEqual({});
   });

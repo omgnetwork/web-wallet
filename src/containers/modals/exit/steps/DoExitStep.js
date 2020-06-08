@@ -31,7 +31,7 @@ function DoExitStep ({
 }) {
   const dispatch = useDispatch();
 
-  const submitLoading = useSelector(selectLoading(['EXIT/CREATE']));
+  const submitLoading = useSelector(selectLoading([ 'EXIT/CREATE' ]));
 
   async function doExit () {
     const res = await dispatch(exitUtxo(selectedUTXO, gasPrice));
@@ -45,7 +45,7 @@ function DoExitStep ({
     <>
       <h2>Start Standard Exit</h2>
 
-      <div>{`The exit queue has been added. You can now start your exit.`}</div>
+      <div>{'The exit queue has been added. You can now start your exit.'}</div>
 
       <div className={styles.buttons}>
         <Button

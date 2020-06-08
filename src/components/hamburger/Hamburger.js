@@ -27,7 +27,7 @@ function Hamburger ({ hamburgerClick, isOpen, className }) {
         ].join(' ')}
       />
     </div>
-  )
+  );
 }
 
 export default Hamburger;

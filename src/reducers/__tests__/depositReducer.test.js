@@ -24,8 +24,8 @@ describe('depositReducer', () => {
   it('should handle deposit fetch success', () => {
     const action = {
       type: 'DEPOSIT/GETALL/SUCCESS',
-      payload: { eth: ['toto'], erc20: ['toto'] }
-    }
+      payload: { eth: [ 'toto' ], erc20: [ 'toto' ] }
+    };
     const newState = depositReducer(undefined, action);
     expect(newState).toEqual(action.payload);
   });

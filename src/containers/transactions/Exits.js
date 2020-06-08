@@ -50,8 +50,8 @@ function Exits ({ searchHistory }) {
       let queueLength;
       if (queuedExit) {
         const tokenQueue = rawQueues[queuedExit.currency];
-        queuePosition = tokenQueue.findIndex(x => x.exitId === exitId)
-        queueLength = tokenQueue.length
+        queuePosition = tokenQueue.findIndex(x => x.exitId === exitId);
+        queueLength = tokenQueue.length;
       }
       return {
         ...i,
@@ -63,7 +63,7 @@ function Exits ({ searchHistory }) {
             queueLength
           }
           : {}
-      }
+      };
     });
   }
 
