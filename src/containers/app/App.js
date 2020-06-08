@@ -13,19 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { capitalize } from 'lodash';
 
 import { closeAlert, closeError } from 'actions/uiAction';
 import { selectAlert, selectError } from 'selectors/uiSelector';
 import networkService from 'services/networkService';
 
 import Home from 'containers/home/Home';
+import WalletPicker from 'components/walletpicker/WalletPicker';
 import Alert from 'components/alert/Alert';
-import config from 'util/config';
-
-import logo from 'images/omg_logo.svg';
 
 import * as styles from './App.module.scss';
 
@@ -34,43 +31,30 @@ function App () {
 
   const errorMessage = useSelector(selectError);
   const alertMessage = useSelector(selectAlert);
-  const [ loading, setLoading ] = useState(true);
-
-  useEffect(() => {
-    async function checkNetwork () {
-      const networkEnabled = await networkService.enableNetwork();
-      if (networkEnabled) {
-        setLoading(false);
-      }
-    }
-    checkNetwork();
-  }, []);
+  const [ enabled, setEnabled ] = useState(false);
 
   const handleErrorClose = () => dispatch(closeError());
   const handleAlertClose = () => dispatch(closeAlert());
 
-  function getNetworkName () {
-    if (config.network === 'main') {
-      return 'Main Ethereum';
+  if (window.ethereum) {
+    try {
+      window.ethereum.on('accountsChanged', function (accounts) {
+        const providerRegisteredAccount = accounts ? accounts[0] : null;
+        const appRegisteredAcount = networkService.account;
+        if (!providerRegisteredAccount || !appRegisteredAcount) {
+          return;
+        }
+        if (appRegisteredAcount.toLowerCase() !== providerRegisteredAccount.toLowerCase()) {
+          window.location.reload(false);
+        }
+      });
+    } catch (err) {
+      console.warn('Web3 event handling not available on this browser');
     }
-    return `${capitalize(config.network)} Test`;
   }
-
-  const renderLoading = (
-    <div className={styles.loading}>
-      <img src={logo} alt='logo' />
-      <span>Waiting for wallet...</span>
-      <span>{`Please make sure your wallet is set to the ${getNetworkName()} Network.`}</span>
-    </div>
-  );
 
   return (
     <div className={styles.App}>
-      {loading
-        ? renderLoading
-        : <Home />
-      }
-
       <Alert
         type='error'
         duration={5000}
@@ -88,6 +72,9 @@ function App () {
       >
         {alertMessage}
       </Alert>
+
+      {!enabled && <WalletPicker onEnable={setEnabled} />}
+      {enabled && <Home />}
     </div>
   );
 }

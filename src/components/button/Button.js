@@ -25,7 +25,8 @@ function Button ({
   type,
   disabled,
   loading,
-  tooltip = ''
+  tooltip = '',
+  className
 }) {
   return (
     <div
@@ -36,7 +37,8 @@ function Button ({
         type === 'secondary' ? styles.secondary : '',
         type === 'outline' ? styles.outline : '',
         loading ? styles.disabled : '',
-        disabled ? styles.disabled : ''
+        disabled ? styles.disabled : '',
+        className
       ].join(' ')}
       onClick={loading || disabled ? null : onClick}
     >

@@ -1,0 +1,77 @@
+@import 'index.scss';
+
+.WalletPicker {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin-left: auto;
+  margin-right: auto;
+  flex: 1;
+  padding: 20px;
+  @include mobile {
+    font-size: 0.9em;
+  }
+
+  .loader {
+    display: flex;
+    flex-direction: column;
+    .button {
+      margin-top: 20px;
+    }
+  }
+
+  img {
+    margin-bottom: 20px;
+    height: 80px;
+    @include mobile {
+      height: 50px;
+    }
+  }
+
+  .wallets {
+    display: flex;
+    flex-direction: row;
+    width: 600px;
+    justify-content: space-between;
+    margin-top: 20px;
+    @include mobile {
+      flex-direction: column;
+      width: 100%;
+    }
+    .wallet {
+      width: 30%;
+      border: 2px solid $gray4;
+      border-radius: 4px;
+      transition: all 200ms ease-in-out;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-sizing: border-box;
+      padding: 15px;
+      &.disabled {
+        pointer-events: none;
+        opacity: 0.4;
+      }
+      @include mobile {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+      h3 {
+        margin-top: 10px;
+      }
+      & > div {
+        font-size: 0.8em;
+        @include mobile {
+          font-size: 1em;
+        }
+      }
+      &:hover {
+        cursor: pointer;
+        background-color: $gray3;
+        border: 2px solid $gray6;
+        color: $gray6;
+      }
+    }
+  }
+}

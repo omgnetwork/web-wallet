@@ -28,36 +28,53 @@ import config from 'util/config';
 
 class NetworkService {
   constructor () {
+    this.web3 = null;
+    this.rootChain = null;
     this.childChain = new ChildChain({ watcherUrl: config.watcherUrl, plasmaContractAddress: config.plasmaAddress });
     this.OmgUtil = OmgUtil;
     this.plasmaContractAddress = config.plasmaAddress;
     this.isWalletConnect = false;
   }
 
-  async enableNetwork () {
-    // find a provider
-    let provider;
-    if (window.ethereum) {
-      provider = window.ethereum;
-      await window.ethereum.enable();
-    } else if (window.web3) {
-      provider = window.web3.currentProvider;
-    } else {
-      provider = new WalletConnectProvider({ infuraId: config.infuraId });
-      await provider.enable();
-      this.isWalletConnect = true;
-    }
-    // insantiate eth object
-    this.web3 = new Web3(provider, null, { transactionConfirmationBlocks: 1 });
-    this.rootChain = new RootChain({ web3: this.web3, plasmaContractAddress: this.plasmaContractAddress });
-
-    // check account and network
+  async enableWalletConnect () {
     try {
+      const provider = new WalletConnectProvider({ infuraId: config.infuraId });
+      await provider.enable();
+      this.web3 = new Web3(provider, null, { transactionConfirmationBlocks: 1 });
+      this.isWalletConnect = true;
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async enableBrowserWallet () {
+    try {
+      let provider;
+      if (window.ethereum) {
+        provider = window.ethereum;
+        await window.ethereum.enable();
+      } else if (window.web3) {
+        provider = window.web3.currentProvider;
+      } else {
+        return false;
+      }
+      this.web3 = new Web3(provider, null, { transactionConfirmationBlocks: 1 });
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async initializeAccounts () {
+    try {
+      this.rootChain = new RootChain({ web3: this.web3, plasmaContractAddress: this.plasmaContractAddress });
       const accounts = await this.web3.eth.getAccounts();
       this.account = accounts[0];
       const network = await this.web3.eth.net.getNetworkType();
       return network === config.network;
-    } catch {
+    } catch (error) {
+      console.log('error: ', error);
       return false;
     }
   }

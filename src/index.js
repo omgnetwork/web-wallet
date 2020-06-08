@@ -19,7 +19,6 @@ import { Provider } from 'react-redux';
 import * as Sentry from '@sentry/browser';
 import TagManager from 'react-gtm-module';
 
-import networkService from 'services/networkService';
 import config from 'util/config';
 import store from 'store';
 
@@ -32,21 +31,6 @@ if (config.sentry) {
 }
 if (config.gtmId) {
   TagManager.initialize({ gtmId: config.gtmId });
-}
-
-try {
-  window.ethereum.on('accountsChanged', function (accounts) {
-    const providerRegisteredAccount = accounts ? accounts[0] : null;
-    const appRegisteredAcount = networkService.account;
-    if (!providerRegisteredAccount || !appRegisteredAcount) {
-      return;
-    }
-    if (appRegisteredAcount.toLowerCase() !== providerRegisteredAccount.toLowerCase()) {
-      window.location.reload(false);
-    }
-  });
-} catch (err) {
-  console.warn('Web3 event handling not available on this browser');
 }
 
 ReactDOM.render(

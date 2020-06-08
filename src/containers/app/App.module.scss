@@ -6,27 +6,3 @@
   min-height: 100vh;
 }
 
-.loading {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  margin-left: auto;
-  margin-right: auto;
-  flex: 1;
-  padding: 20px;
-  @include mobile {
-    font-size: 0.9em;
-  }
-  span:last-child {
-    margin-top: 20px;
-  }
-
-  img {
-    margin-bottom: 20px;
-    height: 80px;
-    @include mobile {
-      height: 50px;
-    }
-  }
-}
