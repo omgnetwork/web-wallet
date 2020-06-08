@@ -52,7 +52,7 @@ function DepositModal ({ open }) {
     setValue('');
     setStep('INPUT_STEP');    
     dispatch(closeModal('depositModal'));
-  }, [dispatch]);
+  }, [ dispatch ]);
 
   return (
     <Modal open={open} onClose={handleClose}>

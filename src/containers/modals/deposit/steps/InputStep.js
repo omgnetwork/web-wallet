@@ -28,7 +28,7 @@ function InputStep ({
 }) {
   const dispatch = useDispatch();
   const [ activeTab, setActiveTab ] = useState('ETH');
-  const depositLoading = useSelector(selectLoading(['DEPOSIT/CREATE']));
+  const depositLoading = useSelector(selectLoading([ 'DEPOSIT/CREATE' ]));
   const [ selectedSpeed, setSelectedSpeed ] = useState('normal');
   const [ gasPrice, setGasPrice ] = useState();
 

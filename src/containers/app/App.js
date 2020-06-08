@@ -51,7 +51,7 @@ function App () {
 
   function getNetworkName () {
     if (config.network === 'main') {
-      return 'Main Ethereum'
+      return 'Main Ethereum';
     }
     return `${capitalize(config.network)} Test`;
   }

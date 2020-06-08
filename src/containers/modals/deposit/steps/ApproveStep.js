@@ -25,9 +25,9 @@ function ApproveStep ({
   const [ selectedSpeed, setSelectedSpeed ] = useState('normal');
   const [ gasPrice, setGasPrice ] = useState();
 
-  const resetLoading = useSelector(selectLoading(['APPROVE/RESET']));
-  const approveLoading = useSelector(selectLoading(['APPROVE/CREATE']));
-  const depositLoading = useSelector(selectLoading(['DEPOSIT/CREATE']));
+  const resetLoading = useSelector(selectLoading([ 'APPROVE/RESET' ]));
+  const approveLoading = useSelector(selectLoading([ 'APPROVE/CREATE' ]));
+  const depositLoading = useSelector(selectLoading([ 'DEPOSIT/CREATE' ]));
   const weiAmount = powAmount(value, tokenInfo.decimals);
 
   const checkAllowance = useCallback(async () => {
@@ -43,11 +43,11 @@ function ApproveStep ({
       dispatch(openAlert('Something went wrong checking approval allowance.'));
       onClose();
     }
-  }, [dispatch, onClose, currency, weiAmount]);
+  }, [ dispatch, onClose, currency, weiAmount ]);
 
   useEffect(() => {
     checkAllowance();
-  }, [checkAllowance]);
+  }, [ checkAllowance ]);
 
   function handleClose () {
     setAllowance('');
