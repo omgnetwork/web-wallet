@@ -20,6 +20,7 @@ import BN from 'bn.js';
 import axios from 'axios';
 import JSONBigNumber from 'omg-json-bigint';
 import { bufferToHex } from 'ethereumjs-util';
+import erc20abi from 'human-standard-token-abi';
 import config from 'util/config';
 
 import { getToken } from 'actions/tokenAction';
@@ -126,24 +127,67 @@ class NetworkService {
     }
   }
 
-  async deposit (value, currency, gasPrice) {
-    if (currency !== OmgUtil.transaction.ETH_CURRENCY) {
-      try {
-        await this.rootChain.approveToken({
-          erc20Address: currency,
-          amount: value,
-          txOptions: {
-            from: this.account,
-            gasPrice: gasPrice.toString()
-          }
-        });
-      } catch (error) {
-        throw new Error(`Approval to deposit ${value} ${currency} failed.`);
-      }
-    }
+  async depositEth (value, gasPrice) {
+    const valueBN = new BN(value.toString());
     return this.rootChain.deposit({
-      amount: new BN(value),
-      ...currency !== OmgUtil.transaction.ETH_CURRENCY ? { currency } : {},
+      amount: valueBN,
+      txOptions: {
+        from: this.account,
+        gasPrice: gasPrice.toString()
+      }
+    });
+  }
+
+  async checkAllowance (currency) {
+    try {
+      const tokenContract = new this.web3.eth.Contract(erc20abi, currency);
+      const { address: erc20VaultAddress } = await this.rootChain.getErc20Vault();
+      const allowance = await tokenContract.methods.allowance(this.account, erc20VaultAddress).call();
+      return allowance.toString();
+    } catch (error) {
+      throw new Error('Error checking deposit allowance for ERC20');
+    }
+  }
+
+  async approveErc20 (value, currency, gasPrice) {
+    const valueBN = new BN(value.toString());
+    return this.rootChain.approveToken({
+      erc20Address: currency,
+      amount: valueBN,
+      txOptions: {
+        from: this.account,
+        gasPrice: gasPrice.toString()
+      }
+    });
+  }
+
+  async resetApprove (value, currency, gasPrice) {
+    const valueBN = new BN(value.toString());
+    // the reset approval
+    await this.rootChain.approveToken({
+      erc20Address: currency,
+      amount: 0,
+      txOptions: {
+        from: this.account,
+        gasPrice: gasPrice.toString()
+      }
+    });
+    // approval for new amount
+    return this.rootChain.approveToken({
+      erc20Address: currency,
+      amount: valueBN,
+      txOptions: {
+        from: this.account,
+        gasPrice: gasPrice.toString()
+      }
+    });
+  }
+
+  async depositErc20 (value, currency, gasPrice) {
+    const valueBN = new BN(value.toString());
+    return this.rootChain.deposit({
+      amount: valueBN,
+      currency,
       txOptions: {
         from: this.account,
         gasPrice: gasPrice.toString()

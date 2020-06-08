@@ -124,8 +124,8 @@ describe('networkActions', () => {
       { type: 'DEPOSIT/CREATE/REQUEST' },
       { type: 'DEPOSIT/CREATE/SUCCESS', payload: 'toto' }
     ];
-    await store.dispatch(actions.deposit(1, '0x', 1));
-    expect(networkService.deposit).toHaveBeenCalledWith(1, '0x', 1);
+    await store.dispatch(actions.depositEth(1, 1));
+    expect(networkService.depositEth).toHaveBeenCalledWith(1, 1);
     expect(store.getActions()).toEqual(expectedActions);
   });
 

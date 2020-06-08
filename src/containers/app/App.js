@@ -49,11 +49,18 @@ function App () {
   const handleErrorClose = () => dispatch(closeError());
   const handleAlertClose = () => dispatch(closeAlert());
 
+  function getNetworkName () {
+    if (config.network === 'main') {
+      return 'Main Ethereum'
+    }
+    return `${capitalize(config.network)} Test`;
+  }
+
   const renderLoading = (
     <div className={styles.loading}>
       <img src={logo} alt='logo' />
-      <span>Waiting for Web3...</span>
-      <span>{`Please make sure you are on the ${capitalize(config.network)} network.`}</span>
+      <span>Waiting for wallet access...</span>
+      <span>{`Please make sure your wallet is set to the ${getNetworkName()} Network.`}</span>
     </div>
   );
 
