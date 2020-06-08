@@ -18,15 +18,28 @@ import depositReducer from '../depositReducer';
 describe('depositReducer', () => {
   it('should return the initial state', () => {
     const newState = depositReducer(undefined, { type: '@@INIT' });
-    expect(newState).toEqual({ eth: [], erc20: [] });
+    expect(newState).toEqual({ eth: {}, erc20: {} });
   });
 
   it('should handle deposit fetch success', () => {
     const action = {
       type: 'DEPOSIT/GETALL/SUCCESS',
-      payload: { eth: [ 'toto' ], erc20: [ 'toto' ] }
+      payload: {
+        eth: [ {
+          transactionHash: 'toto'
+        } ],
+        erc20: [ {
+          transactionHash: 'toto'
+        } ]
+      }
     };
+
+    const expected = {
+      eth: { 'toto': { transactionHash: 'toto' } },
+      erc20: { 'toto': { transactionHash: 'toto' } }
+    };
+
     const newState = depositReducer(undefined, action);
-    expect(newState).toEqual(action.payload);
+    expect(newState).toEqual(expected);
   });
 });
