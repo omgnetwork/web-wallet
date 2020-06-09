@@ -468,6 +468,7 @@ class NetworkService {
       });
     } catch (error) {
       console.log('Getting past ExitStarted events timed out: ', error.message);
+      return null;
     }
 
     const exitedExits = [];
@@ -480,6 +481,7 @@ class NetworkService {
         });
       } catch (error) {
         console.log('Getting past ExitFinalized events timed out: ', error.message);
+        return null;
       }
       if (isFinalized.length) {
         exitedExits.push(exit);

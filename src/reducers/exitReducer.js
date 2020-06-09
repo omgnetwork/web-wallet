@@ -21,6 +21,10 @@ const initialState = {
 function exitReducer (state = initialState, action) {
   switch (action.type) {
     case 'EXIT/GETALL/SUCCESS':
+      // action.payload will be null on an event timeout, so return old state
+      if (!action.payload) {
+        return state;
+      }
       return { ...state, ...action.payload };
     default:
       return state;
