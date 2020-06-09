@@ -25,5 +25,5 @@ export default {
   network: env('NETWORK'),
   sentry: env('SENTRY_DSN'),
   gtmId: env('GTM_ID'),
-  infuraId: env('INFURAID')
+  rpcProxy: env('RPC_PROXY')
 };

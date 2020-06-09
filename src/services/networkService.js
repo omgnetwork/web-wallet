@@ -40,10 +40,17 @@ class NetworkService {
 
   async enableWalletConnect () {
     try {
-      this.provider = new WalletConnectProvider({ infuraId: config.infuraId });
+      this.provider = new WalletConnectProvider({
+        rpc: {
+          1: config.rpcProxy,
+          3: config.rpcProxy,
+          4: config.rpcProxy
+        }
+      });
       await this.provider.enable();
       this.web3 = new Web3(this.provider, null, { transactionConfirmationBlocks: 1 });
       this.isWalletConnect = true;
+      this.bindProviderListeners();
       return true;
     } catch (error) {
       return false;
@@ -56,34 +63,53 @@ class NetworkService {
       if (window.ethereum) {
         this.provider = window.ethereum;
         await window.ethereum.enable();
-        this.bindProviderListeners();
       } else if (window.web3) {
         this.provider = window.web3.currentProvider;
       } else {
         return false;
       }
       this.web3 = new Web3(this.provider, null, { transactionConfirmationBlocks: 1 });
+      this.bindProviderListeners();
       return true;
     } catch (error) {
       return false;
     }
   }
 
+  handleAccountsChanged (accounts) {
+    const providerRegisteredAccount = accounts ? accounts[0] : null;
+    const appRegisteredAcount = networkService.account;
+    if (!providerRegisteredAccount || !appRegisteredAcount) {
+      return;
+    }
+    if (appRegisteredAcount.toLowerCase() !== providerRegisteredAccount.toLowerCase()) {
+      window.location.reload(false);
+    }
+  }
+
   bindProviderListeners () {
-    if (window.ethereum) {
+    if (!this.isWalletConnect && window.ethereum) {
       try {
         window.ethereum.on('accountsChanged', function (accounts) {
-          const providerRegisteredAccount = accounts ? accounts[0] : null;
-          const appRegisteredAcount = networkService.account;
-          if (!providerRegisteredAccount || !appRegisteredAcount) {
-            return;
-          }
-          if (appRegisteredAcount.toLowerCase() !== providerRegisteredAccount.toLowerCase()) {
-            window.location.reload(false);
-          }
+          this.handleAccountsChanged();
         });
       } catch (err) {
-        console.warn('Web3 event handling not available on this browser');
+        console.warn('Web3 event handling not available');
+      }
+    }
+
+    if (this.isWalletConnect) {
+      try {
+        this.provider.on('accountsChanged', function (accounts) {
+          this.handleAccountsChanged();
+        });
+        this.provider.on('close', function () {
+          console.log('provider connection closed');
+          // walletConnect connection closed
+          window.location.reload(false);
+        });
+      } catch (err) {
+        console.warn('WalletConnect event handling not available');
       }
     }
   }

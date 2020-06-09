@@ -88,6 +88,8 @@ function WalletPicker ({ onEnable }) {
   }
 
   const browserEnabled = !!window.web3 || !!window.ethereum;
+  const walletConnectEnabled = !!config.rpcProxy;
+
   return (
     <div className={styles.WalletPicker}>
       <img src={logo} alt='logo' />
@@ -113,7 +115,8 @@ function WalletPicker ({ onEnable }) {
             </div>
             <div
               className={[
-                styles.wallet
+                styles.wallet,
+                !walletConnectEnabled ? styles.disabled : ''
               ].join(' ')}
               onClick={() => setWalletMethod('walletconnect')}
             >

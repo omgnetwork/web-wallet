@@ -25,6 +25,7 @@ REACT_APP_POLL_INTERVAL=      number of seconds to poll account data
 REACT_APP_NETWORK=            the network your environment is on (ropsten, rinkeby, private, main, etc.)
 REACT_APP_SENTRY_DSN=         *optional* sentry dsn handler
 REACT_APP_GTM_ID=             *optional* google tag manager id (GTM-XXXXXXX)
+REACT_APP_RPC_PROXY=          *optional, required for WalletConnect support* rpc url for connection to a remote ethereum node
 ```
 
 3. Start the app by running `yarn start` from the root directory.
