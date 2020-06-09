@@ -18,7 +18,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { closeAlert, closeError } from 'actions/uiAction';
 import { selectAlert, selectError } from 'selectors/uiSelector';
-import networkService from 'services/networkService';
 
 import Home from 'containers/home/Home';
 import WalletPicker from 'components/walletpicker/WalletPicker';
@@ -35,23 +34,6 @@ function App () {
 
   const handleErrorClose = () => dispatch(closeError());
   const handleAlertClose = () => dispatch(closeAlert());
-
-  if (window.ethereum) {
-    try {
-      window.ethereum.on('accountsChanged', function (accounts) {
-        const providerRegisteredAccount = accounts ? accounts[0] : null;
-        const appRegisteredAcount = networkService.account;
-        if (!providerRegisteredAccount || !appRegisteredAcount) {
-          return;
-        }
-        if (appRegisteredAcount.toLowerCase() !== providerRegisteredAccount.toLowerCase()) {
-          window.location.reload(false);
-        }
-      });
-    } catch (err) {
-      console.warn('Web3 event handling not available on this browser');
-    }
-  }
 
   return (
     <div className={styles.App}>

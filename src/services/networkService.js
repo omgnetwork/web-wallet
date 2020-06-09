@@ -56,6 +56,7 @@ class NetworkService {
       if (window.ethereum) {
         this.provider = window.ethereum;
         await window.ethereum.enable();
+        this.bindProviderListeners();
       } else if (window.web3) {
         this.provider = window.web3.currentProvider;
       } else {
@@ -65,6 +66,25 @@ class NetworkService {
       return true;
     } catch (error) {
       return false;
+    }
+  }
+
+  bindProviderListeners () {
+    if (window.ethereum) {
+      try {
+        window.ethereum.on('accountsChanged', function (accounts) {
+          const providerRegisteredAccount = accounts ? accounts[0] : null;
+          const appRegisteredAcount = networkService.account;
+          if (!providerRegisteredAccount || !appRegisteredAcount) {
+            return;
+          }
+          if (appRegisteredAcount.toLowerCase() !== providerRegisteredAccount.toLowerCase()) {
+            window.location.reload(false);
+          }
+        });
+      } catch (err) {
+        console.warn('Web3 event handling not available on this browser');
+      }
     }
   }
 
