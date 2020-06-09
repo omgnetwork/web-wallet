@@ -103,7 +103,7 @@ class NetworkService {
         this.provider.on('accountsChanged', function (accounts) {
           this.handleAccountsChanged();
         });
-        this.provider.on('close', function () {
+        this.provider.on('stop', function () {
           window.location.reload(false);
         });
       } catch (err) {

@@ -139,7 +139,7 @@ function WalletPicker ({ onEnable }) {
 
       {walletMethod === 'browser' && !walletEnabled && (
         <div className={styles.loader}>
-          <span>Waiting for wallet access...</span>
+          <span>Waiting for wallet authorization...</span>
         </div>
       )}
 
