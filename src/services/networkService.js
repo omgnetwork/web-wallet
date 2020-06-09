@@ -269,12 +269,6 @@ class NetworkService {
   // another unimplemented way to do the check is to detect the provider
   // https://ethereum.stackexchange.com/questions/24266/elegant-way-to-detect-current-provider-int-web3-js
   async signTypedData (typedData) {
-    if (this.isWalletConnect) {
-      // TODO DOESNT WORK
-      const signature = await this.web3.eth.signTypedData(typedData);
-      return signature;
-    }
-
     function isExpectedError (message) {
       if (
         message.includes('The method eth_signTypedData_v3 does not exist')

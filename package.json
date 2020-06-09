@@ -11,7 +11,7 @@
     "@material-ui/lab": "^4.0.0-alpha.39",
     "@omisego/omg-js": "^4.0.0-0.4.7",
     "@sentry/browser": "^5.12.4",
-    "@walletconnect/web3-provider": "^1.0.0-beta.47",
+    "@walletconnect/web3-provider": "^1.0.0-rc.2",
     "axios": "^0.19.2",
     "bignumber.js": "^9.0.0",
     "bn.js": "^5.1.1",
