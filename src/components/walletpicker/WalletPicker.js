@@ -41,6 +41,12 @@ function WalletPicker ({ onEnable }) {
         ? setWalletEnabled(true)
         : setWalletMethod(null);
     }
+    async function enableWalletLink () {
+      const walletEnabled = await networkService.enableWalletLink();
+      return walletEnabled
+        ? setWalletEnabled(true)
+        : setWalletMethod(null);
+    }
 
     localStorage.removeItem('walletconnect');
 
@@ -51,8 +57,7 @@ function WalletPicker ({ onEnable }) {
       enableWalletConnect();
     }
     if (walletMethod === 'walletlink') {
-      // not supported yet
-      setWalletMethod(null);
+      enableWalletLink();
     }
   }, [ walletMethod ]);
 
@@ -89,6 +94,7 @@ function WalletPicker ({ onEnable }) {
 
   const browserEnabled = !!window.web3 || !!window.ethereum;
   const walletConnectEnabled = !!config.rpcProxy;
+  const walletLinkEnabled = !!config.rpcProxy;
 
   return (
     <div className={styles.WalletPicker}>
@@ -105,7 +111,7 @@ function WalletPicker ({ onEnable }) {
               ].join(' ')}
               onClick={() => setWalletMethod('browser')}
             >
-              <h3>Browser Enabled</h3>
+              <h3>Browser</h3>
               {browserEnabled && (
                 <div>For use with extensions like Metamask or a built in browser wallet.</div>
               )}
@@ -126,12 +132,12 @@ function WalletPicker ({ onEnable }) {
             <div
               className={[
                 styles.wallet,
-                styles.disabled
+                !walletLinkEnabled ? styles.disabled : ''
               ].join(' ')}
               onClick={() => setWalletMethod('walletlink')}
             >
               <h3>WalletLink</h3>
-              <div>WalletLink support coming soon...</div>
+              <div>Use a Coinbase wallet.</div>
             </div>
           </div>
         </>

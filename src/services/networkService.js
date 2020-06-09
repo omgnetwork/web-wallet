@@ -13,15 +13,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import Web3 from 'web3';
-import WalletConnectProvider from '@walletconnect/web3-provider';
-import { orderBy, flatten, uniq, get } from 'lodash';
 import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
+import { orderBy, flatten, uniq, get } from 'lodash';
 import BN from 'bn.js';
 import axios from 'axios';
 import JSONBigNumber from 'omg-json-bigint';
 import { bufferToHex } from 'ethereumjs-util';
 import erc20abi from 'human-standard-token-abi';
+
+import Web3 from 'web3';
+import WalletConnectProvider from '@walletconnect/web3-provider';
+import WalletLink from 'walletlink';
 
 import store from 'store';
 import { getToken } from 'actions/tokenAction';
@@ -35,7 +37,45 @@ class NetworkService {
     this.childChain = new ChildChain({ watcherUrl: config.watcherUrl, plasmaContractAddress: config.plasmaAddress });
     this.OmgUtil = OmgUtil;
     this.plasmaContractAddress = config.plasmaAddress;
-    this.isWalletConnect = false;
+    this.walletProvider = null;
+  }
+
+  makeWeb3 (provider) {
+    return new Web3(provider, null, { transactionConfirmationBlocks: 1 });
+  }
+
+  getChainId () {
+    switch (config.network) {
+      case 'main':
+        return 1;
+      case 'ropsten':
+        return 3;
+      case 'rinkeby':
+        return 4;
+      default:
+        return 1;
+    }
+  }
+
+  async enableWalletLink () {
+    try {
+      const walletLink = new WalletLink({
+        appName: 'OMG Network | Web Wallet',
+        appLogoUrl: '/favicon.png',
+        darkMode: true
+      });
+      this.provider = walletLink.makeWeb3Provider(
+        config.rpcProxy,
+        this.getChainId()
+      );
+      await this.provider.enable();
+      this.web3 = this.makeWeb3(this.provider);
+      this.walletProvider = 'walletlink';
+      this.bindProviderListeners();
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   async enableWalletConnect () {
@@ -47,9 +87,11 @@ class NetworkService {
           4: config.rpcProxy
         }
       });
+      // TODO: annoying bug, enable never resolves when modal is closed...
+      // https://github.com/WalletConnect/walletconnect-monorepo/issues/287
       await this.provider.enable();
-      this.web3 = new Web3(this.provider, null, { transactionConfirmationBlocks: 1 });
-      this.isWalletConnect = true;
+      this.web3 = this.makeWeb3(this.provider);
+      this.walletProvider = 'walletconnect';
       this.bindProviderListeners();
       return true;
     } catch (error) {
@@ -58,7 +100,6 @@ class NetworkService {
   }
 
   async enableBrowserWallet () {
-    this.isWalletConnect = false;
     try {
       if (window.ethereum) {
         this.provider = window.ethereum;
@@ -68,7 +109,8 @@ class NetworkService {
       } else {
         return false;
       }
-      this.web3 = new Web3(this.provider, null, { transactionConfirmationBlocks: 1 });
+      this.web3 = this.makeWeb3(this.provider);
+      this.walletProvider = 'browserwallet';
       this.bindProviderListeners();
       return true;
     } catch (error) {
@@ -88,7 +130,7 @@ class NetworkService {
   }
 
   bindProviderListeners () {
-    if (!this.isWalletConnect && window.ethereum) {
+    if (this.walletProvider === 'browserwallet' && window.ethereum) {
       try {
         window.ethereum.on('accountsChanged', function (accounts) {
           this.handleAccountsChanged();
@@ -98,7 +140,7 @@ class NetworkService {
       }
     }
 
-    if (this.isWalletConnect) {
+    if (this.walletProvider === 'walletconnect') {
       try {
         this.provider.on('accountsChanged', function (accounts) {
           this.handleAccountsChanged();
@@ -110,6 +152,14 @@ class NetworkService {
         console.warn('WalletConnect event handling not available');
       }
     }
+
+    if (this.walletProvider === 'walletlink') {
+      try {
+        // add any walletlink listeners
+      } catch (err) {
+        console.warn('WalletLink event handling not available');
+      }
+    }
   }
 
   async initializeAccounts () {
@@ -118,6 +168,7 @@ class NetworkService {
       const accounts = await this.web3.eth.getAccounts();
       this.account = accounts[0];
       const network = await this.web3.eth.net.getNetworkType();
+      // TODO: walletlink bug: network type does not match what is actually set in the wallet
       return network === config.network;
     } catch (error) {
       console.log('error: ', error);

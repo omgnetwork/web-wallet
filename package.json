@@ -35,6 +35,7 @@
     "redux-thunk": "^2.3.0",
     "serve": "^11.3.0",
     "truncate-middle": "^1.0.6",
+    "walletlink": "^2.0.2",
     "web3": "1.0.0-beta.55"
   },
   "scripts": {
