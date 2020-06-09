@@ -24,6 +24,13 @@ export function checkWatcherStatus () {
   );
 }
 
+export function fetchEthStats () {
+  return createAction(
+    'ETHSTATS/GET',
+    () => networkService.getEthStats()
+  );
+}
+
 export function fetchBalances () {
   return createAction(
     'BALANCE/GET',

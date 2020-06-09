@@ -22,6 +22,11 @@ function statusReducer (state = initialState, action) {
   switch (action.type) {
     case 'STATUS/GET/SUCCESS':
       return { ...state, ...action.payload };
+    case 'ETHSTATS/GET/SUCCESS':
+      if (action.payload) {
+        return { ...state, ...action.payload };
+      }
+      return state;
     default:
       return state;
   }

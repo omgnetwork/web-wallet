@@ -15,7 +15,7 @@ limitations under the License. */
 
 import Web3 from 'web3';
 import WalletConnectProvider from '@walletconnect/web3-provider';
-import { orderBy, flatten, uniq } from 'lodash';
+import { orderBy, flatten, uniq, get } from 'lodash';
 import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
 import BN from 'bn.js';
 import axios from 'axios';
@@ -23,6 +23,7 @@ import JSONBigNumber from 'omg-json-bigint';
 import { bufferToHex } from 'ethereumjs-util';
 import erc20abi from 'human-standard-token-abi';
 
+import store from 'store';
 import { getToken } from 'actions/tokenAction';
 import config from 'util/config';
 
@@ -161,6 +162,18 @@ class NetworkService {
     });
   }
 
+  async depositErc20 (value, currency, gasPrice) {
+    const valueBN = new BN(value.toString());
+    return this.rootChain.deposit({
+      amount: valueBN,
+      currency,
+      txOptions: {
+        from: this.account,
+        gasPrice: gasPrice.toString()
+      }
+    });
+  }
+
   async checkAllowance (currency) {
     try {
       const tokenContract = new this.web3.eth.Contract(erc20abi, currency);
@@ -206,28 +219,13 @@ class NetworkService {
     });
   }
 
-  async depositErc20 (value, currency, gasPrice) {
-    const valueBN = new BN(value.toString());
-    return this.rootChain.deposit({
-      amount: valueBN,
-      currency,
-      txOptions: {
-        from: this.account,
-        gasPrice: gasPrice.toString()
-      }
-    });
-  }
-
   // normalize signing methods across wallet providers
   // another unimplemented way to do the check is to detect the provider
   // https://ethereum.stackexchange.com/questions/24266/elegant-way-to-detect-current-provider-int-web3-js
   async signTypedData (typedData) {
     if (this.isWalletConnect) {
       // TODO DOESNT WORK
-      const signature = await this.provider.signTypedData([
-        this.web3.utils.toChecksumAddress(this.account),
-        JSONBigNumber.stringify(typedData)
-      ]);
+      const signature = await this.web3.eth.signTypedData(typedData);
       return signature;
     }
 
@@ -363,11 +361,23 @@ class NetworkService {
     return utxos;
   }
 
+  async getEthStats () {
+    try {
+      const currentETHBlockNumber = await this.web3.eth.getBlockNumber();
+      return {
+        currentETHBlockNumber
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
   async getDeposits () {
     const depositFinality = 10;
     const { contract: ethVault } = await this.rootChain.getEthVault();
     const { contract: erc20Vault } = await this.rootChain.getErc20Vault();
-    const ethBlockNumber = await this.web3.eth.getBlockNumber();
+    const state = store.getState();
+    const ethBlockNumber = get(state, 'status.currentETHBlockNumber');
 
     let _ethDeposits = [];
     try {
@@ -408,8 +418,9 @@ class NetworkService {
 
   async getExits () {
     const finality = 12;
-    const ethBlockNumber = await this.web3.eth.getBlockNumber();
     const { contract } = await this.rootChain.getPaymentExitGame();
+    const state = store.getState();
+    const ethBlockNumber = get(state, 'status.currentETHBlockNumber');
 
     let allExits = [];
     try {

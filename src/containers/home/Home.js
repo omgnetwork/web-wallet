@@ -29,7 +29,8 @@ import {
   fetchDeposits,
   getExitQueue,
   fetchFees,
-  fetchGas
+  fetchGas,
+  fetchEthStats
 } from 'actions/networkAction';
 
 import DepositModal from 'containers/modals/deposit/DepositModal';
@@ -79,6 +80,7 @@ function Home () {
 
   useInterval(() => {
     batch(() => {
+      dispatch(fetchEthStats());
       dispatch(checkWatcherStatus());
       dispatch(fetchBalances());
       dispatch(fetchDeposits());
