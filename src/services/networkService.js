@@ -104,8 +104,6 @@ class NetworkService {
           this.handleAccountsChanged();
         });
         this.provider.on('close', function () {
-          console.log('provider connection closed');
-          // walletConnect connection closed
           window.location.reload(false);
         });
       } catch (err) {
