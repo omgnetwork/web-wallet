@@ -52,7 +52,13 @@ function WalletPicker ({ onEnable }) {
         : setWalletMethod(null);
     }
 
-    localStorage.removeItem('walletconnect');
+    // clean storage of any references
+    for (const _key in localStorage) {
+      const key = _key.toLowerCase();
+      if (key.includes('walletlink') || key.includes('walletconnect')) {
+        localStorage.removeItem(_key);
+      }
+    }
 
     if (walletMethod === 'browser') {
       enableBrowserWallet();
@@ -115,7 +121,7 @@ function WalletPicker ({ onEnable }) {
               ].join(' ')}
               onClick={() => setWalletMethod('browser')}
             >
-              <img src={ethwallet} />
+              <img src={ethwallet} alt='ethwallet' />
               <h3>Browser</h3>
               {browserEnabled && (
                 <div>For use with extensions like Metamask or a built in browser wallet.</div>
@@ -131,7 +137,7 @@ function WalletPicker ({ onEnable }) {
               ].join(' ')}
               onClick={() => setWalletMethod('walletconnect')}
             >
-              <img src={walletconnect} />
+              <img src={walletconnect} alt='walletconnect' />
               <h3>WalletConnect</h3>
               <div>Connect with a WalletConnect-compatible wallet.</div>
             </div>
@@ -142,7 +148,7 @@ function WalletPicker ({ onEnable }) {
               ].join(' ')}
               onClick={() => setWalletMethod('walletlink')}
             >
-              <img src={coinbase} />
+              <img src={coinbase} alt='coinbase' />
               <h3>WalletLink</h3>
               <div>Use the Coinbase wallet.</div>
             </div>

@@ -85,11 +85,7 @@ class NetworkService {
   async enableWalletConnect () {
     try {
       this.provider = new WalletConnectProvider({
-        rpc: {
-          1: config.rpcProxy,
-          3: config.rpcProxy,
-          4: config.rpcProxy
-        },
+        rpc: { [this.getChainId()]: config.rpcProxy },
         pollingInterval: 30000
       });
       await this.provider.enable();
