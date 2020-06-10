@@ -18,6 +18,7 @@
     flex-direction: column;
     .button {
       margin-top: 20px;
+      align-self: center;
     }
   }
 
@@ -59,6 +60,9 @@
       }
       h3 {
         margin-top: 10px;
+      }
+      img {
+        height: 50px;
       }
       & > div {
         font-size: 0.8em;

@@ -80,21 +80,24 @@ function Home () {
 
   useInterval(() => {
     batch(() => {
+      // eth calls
       dispatch(fetchEthStats());
-      dispatch(checkWatcherStatus());
-      dispatch(fetchBalances());
       dispatch(fetchDeposits());
       dispatch(fetchExits());
-      dispatch(fetchTransactions());
-      dispatch(fetchFees());
-  
+      dispatch(fetchBalances());
       for (const token of transactedTokens) {
         dispatch(getExitQueue(token));
       }
+
+      // watcher calls
+      dispatch(checkWatcherStatus());
+      dispatch(fetchTransactions());
+      dispatch(fetchFees());
     });
   }, POLL_INTERVAL);
 
   useInterval(() => {
+    // calls ethgasstation first before eth
     dispatch(fetchGas());
   }, POLL_INTERVAL * 10);
 

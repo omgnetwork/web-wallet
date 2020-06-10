@@ -41,7 +41,11 @@ class NetworkService {
   }
 
   makeWeb3 (provider) {
-    return new Web3(provider, null, { transactionConfirmationBlocks: 1 });
+    return new Web3(
+      provider,
+      null,
+      { transactionConfirmationBlocks: 1 }
+    );
   }
 
   getChainId () {
@@ -85,10 +89,9 @@ class NetworkService {
           1: config.rpcProxy,
           3: config.rpcProxy,
           4: config.rpcProxy
-        }
+        },
+        pollingInterval: 30000
       });
-      // TODO: annoying bug, enable never resolves when modal is closed...
-      // https://github.com/WalletConnect/walletconnect-monorepo/issues/287
       await this.provider.enable();
       this.web3 = this.makeWeb3(this.provider);
       this.walletProvider = 'walletconnect';
@@ -461,6 +464,12 @@ class NetworkService {
     }
   }
 
+  /* TODO: deposit efficiency
+    - only call getPastEvents for deposits once on boot
+    - add to deposit array when new DEPOSIT/CREATE succeeds, instead of relying on this poll
+    - poll for progress only when there is a 'Pending' deposit status
+  */
+
   async getDeposits () {
     const depositFinality = 10;
     const { contract: ethVault } = await this.rootChain.getEthVault();
@@ -504,6 +513,12 @@ class NetworkService {
 
     return { eth: ethDeposits, erc20: erc20Deposits };
   }
+
+  /* TODO: exit efficiency
+    - only call getPastEvents for exits once on boot
+    - add to exit started array when new EXIT/CREATE succeeds, instead of relying on this poll
+    - poll for progress only when there is a 'Pending' exit status
+  */
 
   async getExits () {
     const finality = 12;

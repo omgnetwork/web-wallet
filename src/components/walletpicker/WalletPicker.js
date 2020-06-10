@@ -18,8 +18,12 @@ import { capitalize } from 'lodash';
 
 import Button from 'components/button/Button';
 import networkService from 'services/networkService';
-import logo from 'images/omg_logo.svg';
 import config from 'util/config';
+
+import logo from 'images/omg_logo.svg';
+import ethwallet from 'images/ethwallet.png';
+import coinbase from 'images/coinbase.png';
+import walletconnect from 'images/walletconnect.png';
 
 import * as styles from './WalletPicker.module.scss';
 
@@ -111,6 +115,7 @@ function WalletPicker ({ onEnable }) {
               ].join(' ')}
               onClick={() => setWalletMethod('browser')}
             >
+              <img src={ethwallet} />
               <h3>Browser</h3>
               {browserEnabled && (
                 <div>For use with extensions like Metamask or a built in browser wallet.</div>
@@ -126,6 +131,7 @@ function WalletPicker ({ onEnable }) {
               ].join(' ')}
               onClick={() => setWalletMethod('walletconnect')}
             >
+              <img src={walletconnect} />
               <h3>WalletConnect</h3>
               <div>Connect with a WalletConnect-compatible wallet.</div>
             </div>
@@ -136,8 +142,9 @@ function WalletPicker ({ onEnable }) {
               ].join(' ')}
               onClick={() => setWalletMethod('walletlink')}
             >
+              <img src={coinbase} />
               <h3>WalletLink</h3>
-              <div>Use a Coinbase wallet.</div>
+              <div>Use the Coinbase wallet.</div>
             </div>
           </div>
         </>
