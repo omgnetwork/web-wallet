@@ -42,7 +42,7 @@ function ApproveStep ({
     } catch (error) {
       onClose();
     }
-  }, [ dispatch, onClose, currency, weiAmount ]);
+  }, [ onClose, currency, weiAmount ]);
 
   useEffect(() => {
     checkAllowance();
