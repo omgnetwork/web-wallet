@@ -31,7 +31,8 @@ import {
   fetchFees,
   fetchGas,
   fetchEthStats,
-  checkPendingDepositStatus
+  checkPendingDepositStatus,
+  checkPendingExitStatus
 } from 'actions/networkAction';
 
 import DepositModal from 'containers/modals/deposit/DepositModal';
@@ -87,8 +88,7 @@ function Home () {
     batch(() => {
       dispatch(fetchEthStats());
       dispatch(checkPendingDepositStatus());
-
-      // TODO: checkPendingExitStatus
+      dispatch(checkPendingExitStatus());
 
       dispatch(fetchBalances());
       for (const token of transactedTokens) {

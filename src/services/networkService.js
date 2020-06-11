@@ -539,10 +539,13 @@ class NetworkService {
   }
 
   /* TODO: exit efficiency
-    - only call getPastEvents for exits once on boot
     - add to exit started array when new EXIT/CREATE succeeds, instead of relying on this poll
     - poll for progress only when there is a 'Pending' exit status
   */
+
+  async checkPendingExitStatus () {
+    console.log('TODO: check pending exit status...');
+  }
 
   async getExits () {
     const finality = 12;
