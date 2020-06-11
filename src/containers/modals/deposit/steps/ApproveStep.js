@@ -40,7 +40,6 @@ function ApproveStep ({
         ? setAllowDeposit(true)
         : setAllowDeposit(false);
     } catch (error) {
-      dispatch(openAlert('Something went wrong checking approval allowance.'));
       onClose();
     }
   }, [ dispatch, onClose, currency, weiAmount ]);

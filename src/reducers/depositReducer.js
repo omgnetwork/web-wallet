@@ -22,6 +22,25 @@ const initialState = {
 
 function depositReducer (state = initialState, action) {
   switch (action.type) {
+    case 'DEPOSIT/CREATE/SUCCESS':
+      const isEth = action.payload.isEth;
+      if (isEth) {
+        return {
+          ...state,
+          eth: {
+            ...state.eth,
+            [action.payload.transactionHash]: action.payload
+          }
+        };
+      }
+      return {
+        ...state,
+        erc20: {
+          ...state.erc20,
+          [action.payload.transactionHash]: action.payload
+        }
+      };
+    case 'DEPOSIT/CHECKALL/SUCCESS':
     case 'DEPOSIT/GETALL/SUCCESS':
       const { eth, erc20 } = action.payload;
       return {

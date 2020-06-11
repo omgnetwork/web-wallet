@@ -52,6 +52,13 @@ export function fetchDeposits () {
   );
 }
 
+export function checkPendingDepositStatus () {
+  return createAction(
+    'DEPOSIT/CHECKALL',
+    () => networkService.checkPendingDepositStatus()
+  );
+}
+
 export function fetchExits () {
   return createAction(
     'EXIT/GETALL',

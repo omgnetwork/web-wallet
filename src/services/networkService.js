@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
-import { orderBy, flatten, uniq, get } from 'lodash';
+import { orderBy, flatten, uniq, get, pickBy } from 'lodash';
 import BN from 'bn.js';
 import axios from 'axios';
 import JSONBigNumber from 'omg-json-bigint';
@@ -249,29 +249,6 @@ class NetworkService {
     };
   }
 
-  async depositEth (value, gasPrice) {
-    const valueBN = new BN(value.toString());
-    return this.rootChain.deposit({
-      amount: valueBN,
-      txOptions: {
-        from: this.account,
-        gasPrice: gasPrice.toString()
-      }
-    });
-  }
-
-  async depositErc20 (value, currency, gasPrice) {
-    const valueBN = new BN(value.toString());
-    return this.rootChain.deposit({
-      amount: valueBN,
-      currency,
-      txOptions: {
-        from: this.account,
-        gasPrice: gasPrice.toString()
-      }
-    });
-  }
-
   async checkAllowance (currency) {
     try {
       const tokenContract = new this.web3.eth.Contract(erc20abi, currency);
@@ -318,8 +295,6 @@ class NetworkService {
   }
 
   // normalize signing methods across wallet providers
-  // another unimplemented way to do the check is to detect the provider
-  // https://ethereum.stackexchange.com/questions/24266/elegant-way-to-detect-current-provider-int-web3-js
   async signTypedData (typedData) {
     function isExpectedError (message) {
       if (
@@ -464,18 +439,10 @@ class NetworkService {
     }
   }
 
-  /* TODO: deposit efficiency
-    - only call getPastEvents for deposits once on boot
-    - add to deposit array when new DEPOSIT/CREATE succeeds, instead of relying on this poll
-    - poll for progress only when there is a 'Pending' deposit status
-  */
-
+  // run on boot to get past deposits
   async getDeposits () {
-    const depositFinality = 10;
     const { contract: ethVault } = await this.rootChain.getEthVault();
     const { contract: erc20Vault } = await this.rootChain.getErc20Vault();
-    const state = store.getState();
-    const ethBlockNumber = get(state, 'status.currentETHBlockNumber');
 
     let _ethDeposits = [];
     try {
@@ -487,13 +454,6 @@ class NetworkService {
       console.log('Getting past ETH DepositCreated events timed out: ', error.message);
     }
 
-    const ethDeposits = await Promise.all(_ethDeposits.map(async i => {
-      const tokenInfo = await getToken(i.returnValues.token);
-      const status = ethBlockNumber - i.blockNumber >= depositFinality ? 'Confirmed' : 'Pending';
-      const pendingPercentage = (ethBlockNumber - i.blockNumber) / depositFinality;
-      return { ...i, status, pendingPercentage: (pendingPercentage * 100).toFixed(), tokenInfo };
-    }));
-
     let _erc20Deposits = [];
     try {
       _erc20Deposits = await erc20Vault.getPastEvents('DepositCreated', {
@@ -504,14 +464,78 @@ class NetworkService {
       console.log('Getting past ERC20 DepositCreated events timed out: ', error.message);
     }
 
-    const erc20Deposits = await Promise.all(_erc20Deposits.map(async i => {
-      const tokenInfo = await getToken(i.returnValues.token);
-      const status = ethBlockNumber - i.blockNumber >= depositFinality ? 'Confirmed' : 'Pending';
-      const pendingPercentage = (ethBlockNumber - i.blockNumber) / depositFinality;
-      return { ...i, status, pendingPercentage: (pendingPercentage * 100).toFixed(), tokenInfo };
-    }));
-
+    const ethDeposits = await Promise.all(_ethDeposits.map(i => this.getDepositStatus(i)));
+    const erc20Deposits = await Promise.all(_erc20Deposits.map(i => this.getDepositStatus(i)));
     return { eth: ethDeposits, erc20: erc20Deposits };
+  }
+
+  // run on poll to check status of any 'pending' deposits
+  async checkPendingDepositStatus () {
+    const state = store.getState();
+    const { eth: ethDeposits, erc20: erc20Deposits } = state.deposit;
+
+    const pendingEthDeposits = pickBy(ethDeposits, (deposit, transactionHash) => {
+      return deposit.status === 'Pending';
+    });
+    const pendingErc20Deposits = pickBy(erc20Deposits, (deposit, transactionHash) => {
+      return deposit.status === 'Pending';
+    });
+
+    const updatedEthDeposits = await Promise.all(Object.values(pendingEthDeposits).map(this.getDepositStatus));
+    const updatedErc20Deposits = await Promise.all(Object.values(pendingErc20Deposits).map(this.getDepositStatus));
+    return { eth: updatedEthDeposits, erc20: updatedErc20Deposits };
+  }
+
+  async getDepositStatus (deposit) {
+    const depositFinality = 10;
+    const state = store.getState();
+    const ethBlockNumber = get(state, 'status.currentETHBlockNumber');
+    const tokenInfo = await getToken(deposit.returnValues.token);
+    const status = ethBlockNumber - deposit.blockNumber >= depositFinality ? 'Confirmed' : 'Pending';
+    const pendingPercentage = (ethBlockNumber - deposit.blockNumber) / depositFinality;
+    return { ...deposit, status, pendingPercentage: (pendingPercentage * 100).toFixed(), tokenInfo };
+  }
+
+  async depositEth (value, gasPrice) {
+    const valueBN = new BN(value.toString());
+    const result = await this.rootChain.deposit({
+      amount: valueBN,
+      txOptions: {
+        from: this.account,
+        gasPrice: gasPrice.toString()
+      }
+    });
+    // normalize against deposits from pastevents
+    const deposit = {
+      ...result,
+      isEth: true,
+      returnValues: {
+        token: OmgUtil.transaction.ETH_CURRENCY,
+        amount: value.toString()
+      }
+    };
+    return await this.getDepositStatus(deposit);
+  }
+
+  async depositErc20 (value, currency, gasPrice) {
+    const valueBN = new BN(value.toString());
+    const result = await this.rootChain.deposit({
+      amount: valueBN,
+      currency,
+      txOptions: {
+        from: this.account,
+        gasPrice: gasPrice.toString()
+      }
+    });
+    // normalize against deposits from pastevents
+    const deposit = {
+      ...result,
+      returnValues: {
+        token: currency,
+        amount: value.toString()
+      }
+    };
+    return await this.getDepositStatus(deposit);
   }
 
   /* TODO: exit efficiency

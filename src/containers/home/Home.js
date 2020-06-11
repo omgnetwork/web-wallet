@@ -30,7 +30,8 @@ import {
   getExitQueue,
   fetchFees,
   fetchGas,
-  fetchEthStats
+  fetchEthStats,
+  checkPendingDepositStatus
 } from 'actions/networkAction';
 
 import DepositModal from 'containers/modals/deposit/DepositModal';
@@ -52,9 +53,6 @@ const POLL_INTERVAL = config.pollInterval * 1000;
 
 function Home () {
   const dispatch = useDispatch();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   const [ mobileMenuOpen, setMobileMenuOpen ] = useState(false);
   const depositModalState = useSelector(selectModalState('depositModal'));
@@ -78,12 +76,20 @@ function Home () {
       : body.style.overflow = 'auto';
   }, [ mobileMenuOpen ]);
 
+  // calls only on boot
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    dispatch(fetchDeposits());
+    dispatch(fetchExits());
+  }, [ dispatch ]);
+
   useInterval(() => {
     batch(() => {
-      // eth calls
       dispatch(fetchEthStats());
-      dispatch(fetchDeposits());
-      dispatch(fetchExits());
+      dispatch(checkPendingDepositStatus());
+
+      // TODO: checkPendingExitStatus
+
       dispatch(fetchBalances());
       for (const token of transactedTokens) {
         dispatch(getExitQueue(token));
