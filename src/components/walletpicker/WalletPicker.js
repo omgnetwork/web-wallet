@@ -165,7 +165,7 @@ function WalletPicker ({ onEnable }) {
       {walletEnabled && !accountsEnabled && (
         <div className={styles.loader}>
           <span>Your wallet is set to the wrong network.</span>
-          <span>{`Please make sure your wallet is set to the ${getNetworkName()} Network.`}</span>
+          <span>{`Please make sure your wallet is pointing to the ${getNetworkName()} Network.`}</span>
 
           <Button
             className={styles.button}

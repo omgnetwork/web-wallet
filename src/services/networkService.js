@@ -102,6 +102,7 @@ class NetworkService {
     try {
       if (window.ethereum) {
         this.provider = window.ethereum;
+        window.ethereum.autoRefreshOnNetworkChange = false;
         await window.ethereum.enable();
       } else if (window.web3) {
         this.provider = window.web3.currentProvider;
@@ -131,8 +132,11 @@ class NetworkService {
   bindProviderListeners () {
     if (this.walletProvider === 'browserwallet' && window.ethereum) {
       try {
-        window.ethereum.on('accountsChanged', function (accounts) {
-          this.handleAccountsChanged();
+        window.ethereum.on('accountsChanged', (accounts) => {
+          this.handleAccountsChanged(accounts);
+        });
+        window.ethereum.on('networkChanged', function () {
+          window.location.reload(false);
         });
       } catch (err) {
         console.warn('Web3 event handling not available');
@@ -141,8 +145,8 @@ class NetworkService {
 
     if (this.walletProvider === 'walletconnect') {
       try {
-        this.provider.on('accountsChanged', function (accounts) {
-          this.handleAccountsChanged();
+        this.provider.on('accountsChanged', (accounts) => {
+          this.handleAccountsChanged(accounts);
         });
         this.provider.on('stop', function () {
           window.location.reload(false);
