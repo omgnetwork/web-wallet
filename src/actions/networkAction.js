@@ -173,6 +173,7 @@ export function fetchGas () {
 
 export function fetchFees () {
   return async function (dispatch) {
+    // only makes the call if fee fetch not successful before
     const state = store.getState();
     if (Object.keys(state.fees).length) {
       return;

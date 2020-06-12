@@ -28,6 +28,7 @@
 .midTitle {
   margin-top: 10px;
   color: $gray6;
+  font-size: 0.8em;
 }
 
 .statusContainer {
@@ -35,6 +36,7 @@
   flex-direction: column;
   text-align: right;
   align-items: flex-end;
+  font-size: 0.9em;
   @include mobile {
     text-align: left;
     align-items: flex-start;

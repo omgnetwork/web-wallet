@@ -90,13 +90,14 @@ function Home () {
       dispatch(checkPendingDepositStatus());
       dispatch(checkPendingExitStatus());
 
-      dispatch(fetchBalances());
+      // TODO: see if optimization available
       for (const token of transactedTokens) {
         dispatch(getExitQueue(token));
       }
 
       // watcher calls
       dispatch(checkWatcherStatus());
+      dispatch(fetchBalances());
       dispatch(fetchTransactions());
       dispatch(fetchFees());
     });

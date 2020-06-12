@@ -44,26 +44,29 @@ function Exits ({ searchHistory }) {
   // add extra data to pending exits using data from the queue
   function enhanceExits (exits) {
     return exits.map(i => {
-      const exitId = networkService.web3.utils.hexToNumberString(i.returnValues.exitId._hex);
-      const queuedExit = queues.find(i => i.exitId === exitId);
-      let queuePosition;
-      let queueLength;
-      if (queuedExit) {
-        const tokenQueue = rawQueues[queuedExit.currency];
-        queuePosition = tokenQueue.findIndex(x => x.exitId === exitId);
-        queueLength = tokenQueue.length;
+      if (i.returnValues) {
+        const exitId = networkService.web3.utils.hexToNumberString(i.returnValues.exitId._hex);
+        const queuedExit = queues.find(i => i.exitId === exitId);
+        let queuePosition;
+        let queueLength;
+        if (queuedExit) {
+          const tokenQueue = rawQueues[queuedExit.currency];
+          queuePosition = tokenQueue.findIndex(x => x.exitId === exitId);
+          queueLength = tokenQueue.length;
+        }
+        return {
+          ...i,
+          ...queuedExit
+            ? {
+              exitableAt: queuedExit.exitableAt,
+              currency: queuedExit.currency,
+              queuePosition: queuePosition + 1,
+              queueLength
+            }
+            : {}
+        };
       }
-      return {
-        ...i,
-        ...queuedExit
-          ? {
-            exitableAt: queuedExit.exitableAt,
-            currency: queuedExit.currency,
-            queuePosition: queuePosition + 1,
-            queueLength
-          }
-          : {}
-      };
+      return i;
     });
   }
 
@@ -92,7 +95,7 @@ function Exits ({ searchHistory }) {
         link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
         status={
           i.status === 'Confirmed' && i.pendingPercentage >= 100
-            ? 'Challenge Period'
+            ? 'In Challenge Period'
             : i.status
         }
         subStatus={`Block ${i.blockNumber}`}

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
-import { orderBy, flatten, uniq, get, pickBy } from 'lodash';
+import { orderBy, flatten, uniq, get, pickBy, keyBy } from 'lodash';
 import BN from 'bn.js';
 import axios from 'axios';
 import JSONBigNumber from 'omg-json-bigint';
@@ -469,23 +469,6 @@ class NetworkService {
     return { eth: ethDeposits, erc20: erc20Deposits };
   }
 
-  // run on poll to check status of any 'pending' deposits
-  async checkPendingDepositStatus () {
-    const state = store.getState();
-    const { eth: ethDeposits, erc20: erc20Deposits } = state.deposit;
-
-    const pendingEthDeposits = pickBy(ethDeposits, (deposit, transactionHash) => {
-      return deposit.status === 'Pending';
-    });
-    const pendingErc20Deposits = pickBy(erc20Deposits, (deposit, transactionHash) => {
-      return deposit.status === 'Pending';
-    });
-
-    const updatedEthDeposits = await Promise.all(Object.values(pendingEthDeposits).map(this.getDepositStatus));
-    const updatedErc20Deposits = await Promise.all(Object.values(pendingErc20Deposits).map(this.getDepositStatus));
-    return { eth: updatedEthDeposits, erc20: updatedErc20Deposits };
-  }
-
   async getDepositStatus (deposit) {
     const depositFinality = 10;
     const state = store.getState();
@@ -538,20 +521,47 @@ class NetworkService {
     return await this.getDepositStatus(deposit);
   }
 
-  /* TODO: exit efficiency
-    - add to exit started array when new EXIT/CREATE succeeds, instead of relying on this poll
-    - poll for progress only when there is a 'Pending' exit status
-  */
 
+  // run on poll to check status of any 'pending' deposits
+  async checkPendingDepositStatus () {
+    const state = store.getState();
+    const { eth: ethDeposits, erc20: erc20Deposits } = state.deposit;
+
+    const pendingEthDeposits = pickBy(ethDeposits, (deposit, transactionHash) => {
+      return deposit.status === 'Pending';
+    });
+    const pendingErc20Deposits = pickBy(erc20Deposits, (deposit, transactionHash) => {
+      return deposit.status === 'Pending';
+    });
+
+    const updatedEthDeposits = await Promise.all(Object.values(pendingEthDeposits).map(this.getDepositStatus));
+    const updatedErc20Deposits = await Promise.all(Object.values(pendingErc20Deposits).map(this.getDepositStatus));
+    return { eth: updatedEthDeposits, erc20: updatedErc20Deposits };
+  }
+
+  // run on poll to check status of any 'pending' exits
   async checkPendingExitStatus () {
-    console.log('TODO: check pending exit status...');
+    const state = store.getState();
+    const pendingExits = Object.values(state.exit.pending);
+    const updatedExits = pendingExits.map(this.getExitStatus);
+    return updatedExits;
+  }
+
+  getExitStatus (exit) {
+    const exitFinality = 12;
+    const state = store.getState();
+    const ethBlockNumber = get(state, 'status.currentETHBlockNumber');
+    const status = ethBlockNumber - exit.blockNumber >= exitFinality ? 'Confirmed' : 'Pending';
+    const pendingPercentage = (ethBlockNumber - exit.blockNumber) / exitFinality;
+    return {
+      ...exit,
+      status,
+      pendingPercentage: (pendingPercentage * 100).toFixed()
+    };
   }
 
   async getExits () {
-    const finality = 12;
     const { contract } = await this.rootChain.getPaymentExitGame();
-    const state = store.getState();
-    const ethBlockNumber = get(state, 'status.currentETHBlockNumber');
 
     let allExits = [];
     try {
@@ -586,19 +596,11 @@ class NetworkService {
         const foundMatch = exitedExits.find(x => x.blockNumber === i.blockNumber);
         return !foundMatch;
       })
-      .map(i => {
-        const status = ethBlockNumber - i.blockNumber >= finality ? 'Confirmed' : 'Pending';
-        const pendingPercentage = (ethBlockNumber - i.blockNumber) / finality;
-        return {
-          ...i,
-          status,
-          pendingPercentage: (pendingPercentage * 100).toFixed()
-        };
-      });
+      .map(this.getExitStatus);
 
     return {
-      pending: pendingExits,
-      exited: exitedExits
+      pending: { ...keyBy(pendingExits, 'transactionHash') },
+      exited: { ...keyBy(exitedExits, 'transactionHash') }
     };
   }
 
@@ -646,6 +648,7 @@ class NetworkService {
           gasPrice: gasPrice.toString()
         }
       });
+      // TODO: can we include the exitId with the response?
       return res;
     } catch (error) {
       // some providers will fail on gas estimation
