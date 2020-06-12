@@ -300,6 +300,7 @@ class NetworkService {
       if (
         message.includes('The method eth_signTypedData_v3 does not exist')
         || message.includes('Invalid JSON RPC response')
+        || message.includes('Cannot read property') // walletlink
       ) {
         return true;
       }
