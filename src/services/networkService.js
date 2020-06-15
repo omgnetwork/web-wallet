@@ -645,8 +645,18 @@ class NetworkService {
           gasPrice: gasPrice.toString()
         }
       });
-      // TODO: can we include the exitId with the response?
-      return res;
+      // add the exitId from the transaction log
+      const exitStartedEvent = res.logs[1];
+      return {
+        ...res,
+        status: 'Pending',
+        pendingPercentage: 0,
+        returnValues: {
+          exitId: {
+            _hex: exitStartedEvent.topics[1]
+          }
+        }
+      };
     } catch (error) {
       // some providers will fail on gas estimation
       // so try again but set the gas explicitly to avoid the estimiate
