@@ -90,7 +90,7 @@ function Home () {
       dispatch(checkPendingDepositStatus());
       dispatch(checkPendingExitStatus());
 
-      // TODO: see if optimization available
+      // TODO: see if optimization available, only when process exit modal open? or do we need this data for enhancing exit info?
       for (const token of transactedTokens) {
         dispatch(getExitQueue(token));
       }

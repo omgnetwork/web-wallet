@@ -37,7 +37,6 @@ class NetworkService {
     this.childChain = new ChildChain({ watcherUrl: config.watcherUrl, plasmaContractAddress: config.plasmaAddress });
     this.OmgUtil = OmgUtil;
     this.plasmaContractAddress = config.plasmaAddress;
-    this.walletProvider = null;
   }
 
   makeWeb3 (provider) {
@@ -74,8 +73,7 @@ class NetworkService {
       );
       await this.provider.enable();
       this.web3 = this.makeWeb3(this.provider);
-      this.walletProvider = 'walletlink';
-      this.bindProviderListeners();
+      this.bindProviderListeners('walletlink');
       return true;
     } catch (error) {
       return false;
@@ -90,8 +88,7 @@ class NetworkService {
       });
       await this.provider.enable();
       this.web3 = this.makeWeb3(this.provider);
-      this.walletProvider = 'walletconnect';
-      this.bindProviderListeners();
+      this.bindProviderListeners('walletconnect');
       return true;
     } catch (error) {
       return false;
@@ -110,8 +107,7 @@ class NetworkService {
         return false;
       }
       this.web3 = this.makeWeb3(this.provider);
-      this.walletProvider = 'browserwallet';
-      this.bindProviderListeners();
+      this.bindProviderListeners('browserwallet');
       return true;
     } catch (error) {
       return false;
@@ -129,8 +125,8 @@ class NetworkService {
     }
   }
 
-  bindProviderListeners () {
-    if (this.walletProvider === 'browserwallet' && window.ethereum) {
+  bindProviderListeners (walletProvider) {
+    if (walletProvider === 'browserwallet' && window.ethereum) {
       try {
         window.ethereum.on('accountsChanged', (accounts) => {
           this.handleAccountsChanged(accounts);
@@ -143,7 +139,7 @@ class NetworkService {
       }
     }
 
-    if (this.walletProvider === 'walletconnect') {
+    if (walletProvider === 'walletconnect') {
       try {
         this.provider.on('accountsChanged', (accounts) => {
           this.handleAccountsChanged(accounts);
@@ -156,7 +152,7 @@ class NetworkService {
       }
     }
 
-    if (this.walletProvider === 'walletlink') {
+    if (walletProvider === 'walletlink') {
       try {
         // add any walletlink listeners
       } catch (err) {
@@ -171,7 +167,6 @@ class NetworkService {
       const accounts = await this.web3.eth.getAccounts();
       this.account = accounts[0];
       const network = await this.web3.eth.net.getNetworkType();
-      // TODO: walletlink bug: network type does not match what is actually set in the wallet
       return network === config.network;
     } catch (error) {
       console.log('error: ', error);
@@ -616,6 +611,7 @@ class NetworkService {
       queue = await this.rootChain.getExitQueue(currency);
     } catch (error) {
       console.log('Getting the exitQueue timed out: ', error.message);
+      return null;
     }
 
     return {

@@ -18,8 +18,11 @@ const initialState = {};
 function queueReducer (state = initialState, action) {
   switch (action.type) {
     case 'QUEUE/GET/SUCCESS':
-      const { currency, queue } = action.payload;
-      return { ...state, [currency]: queue };
+      if (action.payload) {
+        const { currency, queue } = action.payload;
+        return { ...state, [currency]: queue };
+      }
+      return state;
     default:
       return state;
   }
