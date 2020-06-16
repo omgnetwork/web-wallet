@@ -9,8 +9,47 @@
   margin-right: auto;
   flex: 1;
   padding: 20px;
+  font-family: 'Messina';
   @include mobile {
     font-size: 0.9em;
+  }
+
+  .title {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    img {
+      margin-bottom: 20px;
+      height: 60px;
+      @include mobile {
+        height: 50px;
+      }
+    }
+    .menu {
+      display: flex;
+      flex-direction: row;
+      cursor: pointer;
+      .network {
+        margin-left: 20px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        .indicator {
+          margin-right: 5px;
+          width: 5px;
+          height: 10px;
+          background-color: $green;
+          border-radius: 4px;
+        }
+      }
+    }  
+  }
+
+  .directive {
+    margin: 20px 0;
+    font-size: 1.2em;
   }
 
   .loader {
@@ -19,14 +58,6 @@
     .button {
       margin-top: 20px;
       align-self: center;
-    }
-  }
-
-  img {
-    margin-bottom: 20px;
-    height: 80px;
-    @include mobile {
-      height: 50px;
     }
   }
 
@@ -42,14 +73,17 @@
     }
     .wallet {
       width: 30%;
-      border: 2px solid $gray4;
+      border: 2px solid transparent;
       border-radius: 4px;
       transition: all 200ms ease-in-out;
       display: flex;
       flex-direction: column;
+      color: $gray1;
+      background-color: $gray6;
       align-items: center;
       box-sizing: border-box;
-      padding: 15px;
+      padding: 20px;
+      text-align: center;
       &.disabled {
         pointer-events: none;
         opacity: 0.4;
@@ -59,6 +93,7 @@
         margin-bottom: 10px;
       }
       h3 {
+        font-size: 1em;
         margin-top: 10px;
       }
       img {
@@ -72,9 +107,7 @@
       }
       &:hover {
         cursor: pointer;
-        background-color: $gray3;
-        border: 2px solid $gray6;
-        color: $gray6;
+        border: 2px solid $blue;
       }
     }
   }

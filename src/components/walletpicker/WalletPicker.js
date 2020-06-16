@@ -80,6 +80,7 @@ function WalletPicker ({ onEnable }) {
     }
     if (walletEnabled) {
       initializeAccounts();
+      setWalletMethod(null);
     }
   }, [ walletEnabled ]);
 
@@ -108,59 +109,66 @@ function WalletPicker ({ onEnable }) {
 
   return (
     <div className={styles.WalletPicker}>
-      <img src={logo} alt='logo' />
-
-      {!walletMethod && (
-        <>
-          <span>Please select a wallet to connect with the OMG Network.</span>
-          <div className={styles.wallets}>
-            <div
-              className={[
-                styles.wallet,
-                !browserEnabled ? styles.disabled : ''
-              ].join(' ')}
-              onClick={() => setWalletMethod('browser')}
-            >
-              <img src={ethwallet} alt='ethwallet' />
-              <h3>Browser</h3>
-              {browserEnabled && (
-                <div>For use with extensions like Metamask or a built in browser wallet.</div>
-              )}
-              {!browserEnabled && (
-                <div>Your browser does not have a web3 provider.</div>
-              )}
-            </div>
-            <div
-              className={[
-                styles.wallet,
-                !walletConnectEnabled ? styles.disabled : ''
-              ].join(' ')}
-              onClick={() => setWalletMethod('walletconnect')}
-            >
-              <img src={walletconnect} alt='walletconnect' />
-              <h3>WalletConnect</h3>
-              <div>Connect with a WalletConnect-compatible wallet.</div>
-            </div>
-            <div
-              className={[
-                styles.wallet,
-                !walletLinkEnabled ? styles.disabled : ''
-              ].join(' ')}
-              onClick={() => setWalletMethod('walletlink')}
-            >
-              <img src={coinbase} alt='coinbase' />
-              <h3>WalletLink</h3>
-              <div>Use the Coinbase wallet.</div>
-            </div>
+      <div className={styles.title}>
+        <img src={logo} alt='logo' />
+        <div className={styles.menu}>
+          <div>About</div>
+          <div className={styles.network}>
+            <div className={styles.indicator} />
+            OMG Network:&nbsp;
+            {config.network === 'main'
+              ? 'Mainnet'
+              : capitalize(config.network)
+            }
           </div>
-        </>
-      )}
-
-      {walletMethod === 'browser' && !walletEnabled && (
-        <div className={styles.loader}>
-          <span>Waiting for wallet authorization...</span>
         </div>
-      )}
+      </div>
+
+      <span className={styles.directive}>
+        Select how you want to connect with the OMG Network.
+      </span>
+      <div className={styles.wallets}>
+        <div
+          className={[
+            styles.wallet,
+            !browserEnabled ? styles.disabled : ''
+          ].join(' ')}
+          onClick={() => setWalletMethod('browser')}
+        >
+          <img src={ethwallet} alt='ethwallet' />
+          <h3>Browser Wallet</h3>
+          {browserEnabled && (
+            <div>
+              Use a browser wallet extension such as Metamask or any built in browser wallet to connect with the OMG Network.
+            </div>
+          )}
+          {!browserEnabled && (
+            <div>Your browser does not have a web3 provider.</div>
+          )}
+        </div>
+        <div
+          className={[
+            styles.wallet,
+            !walletConnectEnabled ? styles.disabled : ''
+          ].join(' ')}
+          onClick={() => setWalletMethod('walletconnect')}
+        >
+          <img src={walletconnect} alt='walletconnect' />
+          <h3>WalletConnect</h3>
+          <div>Connect to the OMG Network with a WalletConnect-compatible wallet.</div>
+        </div>
+        <div
+          className={[
+            styles.wallet,
+            !walletLinkEnabled ? styles.disabled : ''
+          ].join(' ')}
+          onClick={() => setWalletMethod('walletlink')}
+        >
+          <img src={coinbase} alt='coinbase' />
+          <h3>WalletLink</h3>
+          <div>Use the Coinbase wallet to connect with the OMG Network.</div>
+        </div>
+      </div>
 
       {walletEnabled && !accountsEnabled && (
         <div className={styles.loader}>
