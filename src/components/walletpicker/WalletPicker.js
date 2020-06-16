@@ -14,10 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { capitalize } from 'lodash';
 
+import WrongNetworkModal from 'containers/modals/wrongnetwork/WrongNetworkModal';
 import Button from 'components/button/Button';
 import networkService from 'services/networkService';
+import { selectModalState } from 'selectors/uiSelector';
 import config from 'util/config';
 
 import logo from 'images/omg_logo.svg';
@@ -31,6 +34,8 @@ function WalletPicker ({ onEnable }) {
   const [ walletMethod, setWalletMethod ] = useState(null);
   const [ walletEnabled, setWalletEnabled ] = useState(false);
   const [ accountsEnabled, setAccountsEnabled ] = useState(false);
+
+  const wrongNetworkModalState = useSelector(selectModalState('wrongNetworkModal'));
 
   useEffect(() => {
     async function enableBrowserWallet () {
@@ -108,83 +113,87 @@ function WalletPicker ({ onEnable }) {
   const walletLinkEnabled = !!config.rpcProxy;
 
   return (
-    <div className={styles.WalletPicker}>
-      <div className={styles.title}>
-        <img src={logo} alt='logo' />
-        <div className={styles.menu}>
-          <div>About</div>
-          <div className={styles.network}>
-            <div className={styles.indicator} />
-            OMG Network:&nbsp;
-            {config.network === 'main'
-              ? 'Mainnet'
-              : capitalize(config.network)
-            }
+    <>
+      <WrongNetworkModal open={wrongNetworkModalState || true} />
+
+      <div className={styles.WalletPicker}>
+        <div className={styles.title}>
+          <img src={logo} alt='logo' />
+          <div className={styles.menu}>
+            <div>About</div>
+            <div className={styles.network}>
+              <div className={styles.indicator} />
+              OMG Network:&nbsp;
+              {config.network === 'main'
+                ? 'Mainnet'
+                : capitalize(config.network)
+              }
+            </div>
           </div>
         </div>
-      </div>
 
-      <span className={styles.directive}>
-        Select how you want to connect with the OMG Network.
-      </span>
-      <div className={styles.wallets}>
-        <div
-          className={[
-            styles.wallet,
-            !browserEnabled ? styles.disabled : ''
-          ].join(' ')}
-          onClick={() => setWalletMethod('browser')}
-        >
-          <img src={ethwallet} alt='ethwallet' />
-          <h3>Browser Wallet</h3>
-          {browserEnabled && (
-            <div>
-              Use a browser wallet extension such as Metamask or any built in browser wallet to connect with the OMG Network.
-            </div>
-          )}
-          {!browserEnabled && (
-            <div>Your browser does not have a web3 provider.</div>
-          )}
-        </div>
-        <div
-          className={[
-            styles.wallet,
-            !walletConnectEnabled ? styles.disabled : ''
-          ].join(' ')}
-          onClick={() => setWalletMethod('walletconnect')}
-        >
-          <img src={walletconnect} alt='walletconnect' />
-          <h3>WalletConnect</h3>
-          <div>Connect to the OMG Network with a WalletConnect-compatible wallet.</div>
-        </div>
-        <div
-          className={[
-            styles.wallet,
-            !walletLinkEnabled ? styles.disabled : ''
-          ].join(' ')}
-          onClick={() => setWalletMethod('walletlink')}
-        >
-          <img src={coinbase} alt='coinbase' />
-          <h3>WalletLink</h3>
-          <div>Use the Coinbase wallet to connect with the OMG Network.</div>
-        </div>
-      </div>
-
-      {walletEnabled && !accountsEnabled && (
-        <div className={styles.loader}>
-          <span>Your wallet is set to the wrong network.</span>
-          <span>{`Please make sure your wallet is pointing to the ${getNetworkName()} Network.`}</span>
-
-          <Button
-            className={styles.button}
-            onClick={resetSelection}
-            type='secondary'
+        <span className={styles.directive}>
+          Select how you want to connect with the OMG Network.
+        </span>
+        <div className={styles.wallets}>
+          <div
+            className={[
+              styles.wallet,
+              !browserEnabled ? styles.disabled : ''
+            ].join(' ')}
+            onClick={() => setWalletMethod('browser')}
           >
-            SELECT ANOTHER WALLET
-          </Button>
+            <img src={ethwallet} alt='ethwallet' />
+            <h3>Browser Wallet</h3>
+            {browserEnabled && (
+              <div>
+                Use a browser wallet extension such as Metamask or any built in browser wallet to connect with the OMG Network.
+              </div>
+            )}
+            {!browserEnabled && (
+              <div>Your browser does not have a web3 provider.</div>
+            )}
+          </div>
+          <div
+            className={[
+              styles.wallet,
+              !walletConnectEnabled ? styles.disabled : ''
+            ].join(' ')}
+            onClick={() => setWalletMethod('walletconnect')}
+          >
+            <img src={walletconnect} alt='walletconnect' />
+            <h3>WalletConnect</h3>
+            <div>Connect to the OMG Network with a WalletConnect-compatible wallet.</div>
+          </div>
+          <div
+            className={[
+              styles.wallet,
+              !walletLinkEnabled ? styles.disabled : ''
+            ].join(' ')}
+            onClick={() => setWalletMethod('walletlink')}
+          >
+            <img src={coinbase} alt='coinbase' />
+            <h3>WalletLink</h3>
+            <div>Use the Coinbase wallet to connect with the OMG Network.</div>
+          </div>
         </div>
-      )}
-    </div>
+
+        {walletEnabled && !accountsEnabled && (
+          <div className={styles.loader}>
+            <span>Your wallet is set to the wrong network.</span>
+            <span>{`Please make sure your wallet is pointing to the ${getNetworkName()} Network.`}</span>
+
+            <Button
+              className={styles.button}
+              onClick={resetSelection}
+              type='secondary'
+            >
+              SELECT ANOTHER WALLET
+            </Button>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
