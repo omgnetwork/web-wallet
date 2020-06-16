@@ -29,12 +29,26 @@ function WrongNetworkModal ({ open }) {
     dispatch(closeModal('wrongNetworkModal'));
   }
 
-  const network = 'todo';
+  const network = 'Main Ethereum Network';
 
   return (
-    <Modal open={open} onClose={handleClose}>
-      <h2>Wrong Network</h2>
-      <div>Please switch your wallet to the {network} in order to continue.</div>
+    <Modal
+      open={open}
+      onClose={handleClose}
+      light
+    >
+      <div className={styles.WrongNetworkModal}>
+        <h2>Wrong Network</h2>
+        <div>Please switch your wallet to the {network} in order to continue.</div>
+
+        <div
+          className={[
+            styles.network
+          ].join(' ')}
+        >
+          Main
+        </div>
+      </div>
     </Modal>
   );
 }

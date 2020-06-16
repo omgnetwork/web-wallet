@@ -1,1 +1,12 @@
 @import 'index.scss';
+
+.WrongNetworkModal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Messina';
+  h2 {
+    color: $gray1;
+  }
+}
