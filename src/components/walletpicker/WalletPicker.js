@@ -18,16 +18,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { capitalize } from 'lodash';
 
 import WrongNetworkModal from 'containers/modals/wrongnetwork/WrongNetworkModal';
-import Button from 'components/button/Button';
 import networkService from 'services/networkService';
 import { selectModalState } from 'selectors/uiSelector';
-import { getNetworkName } from 'util/networkName';
 import { openModal } from 'actions/uiAction';
 import config from 'util/config';
 
 import logo from 'images/omg_logo.svg';
-import ethwallet from 'images/ethwallet.png';
-import coinbase from 'images/coinbase.png';
+import browserwallet from 'images/browserwallet.png';
+import coinbase from 'images/coinbase.jpg';
 import walletconnect from 'images/walletconnect.png';
 
 import * as styles from './WalletPicker.module.scss';
@@ -103,7 +101,7 @@ function WalletPicker ({ onEnable }) {
     if (walletEnabled && !accountsEnabled) {
       dispatch(openModal('wrongNetworkModal'));
     }
-  }, [ walletEnabled, accountsEnabled ]);
+  }, [ dispatch, walletEnabled, accountsEnabled ]);
 
   function resetSelection () {
     setWalletMethod(null);
@@ -155,7 +153,7 @@ function WalletPicker ({ onEnable }) {
             ].join(' ')}
             onClick={() => setWalletMethod('browser')}
           >
-            <img src={ethwallet} alt='ethwallet' />
+            <img src={browserwallet} alt='browserwallet' />
             <h3>Browser Wallet</h3>
             {browserEnabled && (
               <div>
@@ -173,9 +171,11 @@ function WalletPicker ({ onEnable }) {
             ].join(' ')}
             onClick={() => setWalletMethod('walletconnect')}
           >
-            <img src={walletconnect} alt='walletconnect' />
+            <div className={styles.walletconnect}>
+              <img src={walletconnect} alt='walletconnect' />
+            </div>
             <h3>WalletConnect</h3>
-            <div>Use WalletConnect-compatible wallet.</div>
+            <div>Use a WalletConnect-compatible wallet.</div>
           </div>
           <div
             className={[
@@ -186,7 +186,7 @@ function WalletPicker ({ onEnable }) {
           >
             <img src={coinbase} alt='coinbase' />
             <h3>WalletLink</h3>
-            <div>Use Coinbase wallet.</div>
+            <div>Use a Coinbase wallet.</div>
           </div>
         </div>
       </div>

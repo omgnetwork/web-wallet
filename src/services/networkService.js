@@ -65,7 +65,7 @@ class NetworkService {
       const walletLink = new WalletLink({
         appName: 'OMG Network | Web Wallet',
         appLogoUrl: '/favicon.png',
-        darkMode: true
+        darkMode: false
       });
       this.provider = walletLink.makeWeb3Provider(
         config.rpcProxy,

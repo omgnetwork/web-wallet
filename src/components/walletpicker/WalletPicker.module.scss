@@ -20,6 +20,9 @@
     justify-content: space-between;
     align-items: flex-start;
     width: 100%;
+    @include mobile {
+      flex-direction: column;
+    }
     img {
       margin-bottom: 20px;
       height: 60px;
@@ -98,6 +101,22 @@
       }
       img {
         height: 50px;
+        width: 50px;
+        border-radius: 8px;
+      }
+      .walletconnect {
+        border: 1px solid #389BFC;
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 50px;
+        height: 50px;
+        img {
+          height: 23px;
+          width: auto;
+          margin-left: 2px;
+        }
       }
       & > div {
         font-size: 0.8em;
