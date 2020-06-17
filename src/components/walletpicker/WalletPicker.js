@@ -120,7 +120,13 @@ function WalletPicker ({ onEnable }) {
         <div className={styles.title}>
           <img src={logo} alt='logo' />
           <div className={styles.menu}>
-            <div>About</div>
+            <a
+              href='https://docs.omg.network/quick-start-webwallet'
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              About
+            </a>
             <div className={styles.network}>
               <div className={styles.indicator} />
               OMG Network:&nbsp;
@@ -147,7 +153,7 @@ function WalletPicker ({ onEnable }) {
             <h3>Browser Wallet</h3>
             {browserEnabled && (
               <div>
-                Use a browser wallet extension such as Metamask or any built in browser wallet to connect with the OMG Network.
+                Use a browser wallet extension (e.g. Metamask) or a built-in browser wallet.
               </div>
             )}
             {!browserEnabled && (
@@ -163,7 +169,7 @@ function WalletPicker ({ onEnable }) {
           >
             <img src={walletconnect} alt='walletconnect' />
             <h3>WalletConnect</h3>
-            <div>Connect to the OMG Network with a WalletConnect-compatible wallet.</div>
+            <div>Use WalletConnect-compatible wallet.</div>
           </div>
           <div
             className={[
@@ -174,7 +180,7 @@ function WalletPicker ({ onEnable }) {
           >
             <img src={coinbase} alt='coinbase' />
             <h3>WalletLink</h3>
-            <div>Use the Coinbase wallet to connect with the OMG Network.</div>
+            <div>Use Coinbase wallet.</div>
           </div>
         </div>
 

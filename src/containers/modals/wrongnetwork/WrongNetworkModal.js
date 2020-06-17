@@ -18,6 +18,9 @@ import { useDispatch } from 'react-redux';
 
 import { closeModal } from 'actions/uiAction';
 
+import close from 'images/close.png';
+import arrow from 'images/arrow.png';
+
 import Modal from 'components/modal/Modal';
 
 import * as styles from './WrongNetworkModal.module.scss';
@@ -29,7 +32,7 @@ function WrongNetworkModal ({ open }) {
     dispatch(closeModal('wrongNetworkModal'));
   }
 
-  const network = 'Main Ethereum Network';
+  const currentNetwork = 'Main Ethereum Network';
 
   return (
     <Modal
@@ -38,15 +41,45 @@ function WrongNetworkModal ({ open }) {
       light
     >
       <div className={styles.WrongNetworkModal}>
+        <img
+          className={styles.close}
+          onClick={handleClose}
+          src={close}
+          alt='close'
+        />
         <h2>Wrong Network</h2>
-        <div>Please switch your wallet to the {network} in order to continue.</div>
 
-        <div
-          className={[
-            styles.network
-          ].join(' ')}
-        >
-          Main
+        <div className={styles.content}>
+          <div className={styles.description}>
+            Please switch your wallet to the {currentNetwork} in order to continue.
+          </div>
+
+          <div className={styles.currentNetwork}>
+            <div
+              className={[
+                styles.indicator,
+                styles.active
+              ].join(' ')}
+            />
+            <span>{currentNetwork}</span>
+          </div>
+
+          <img
+            className={styles.arrow}
+            src={arrow}
+            alt='arrow'
+          />
+
+          <div className={styles.otherNetworks}>
+            <div className={styles.network}>
+              <div className={styles.indicator} />
+              <span>Rinkeby Test Network</span>
+            </div>
+            <div className={styles.network}>
+              <div className={styles.indicator} />
+              <span>Ropsten Test Network</span>
+            </div>
+          </div>
         </div>
       </div>
     </Modal>
