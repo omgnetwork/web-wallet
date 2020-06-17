@@ -103,7 +103,9 @@ function WalletPicker ({ onEnable }) {
 
   useEffect(() => {
     if (walletEnabled && !accountsEnabled) {
-      dispatch(openModal('wrongNetworkModal'));
+      setTimeout(() => {
+        dispatch(openModal('wrongNetworkModal'));
+      }, 300);
     }
   }, [ dispatch, walletEnabled, accountsEnabled ]);
 
@@ -151,7 +153,6 @@ function WalletPicker ({ onEnable }) {
             <div
               onClick={() => setShowAlternateNetworks(prev => !prev)}
               className={styles.network}
-              ref={dropdownNode}
             >
               <div className={styles.indicator} />
               <div>
@@ -168,15 +169,13 @@ function WalletPicker ({ onEnable }) {
               />
             </div>
 
-            {!!alternateNetworks.length && showAlternateNetworks && (
-              <div className={styles.dropdown}>
-                {alternateNetworks.map((network, index) => (
-                  <a key={index} href={network.url}>
-                    {network.name}
-                  </a>
-                ))}
+            <div ref={dropdownNode} className={styles.dropdown}>
+              {!!alternateNetworks.length && showAlternateNetworks && alternateNetworks.map((network, index) => (
+                <a key={index} href={network.url}>
+                  {network.name}
+                </a>
+              ))}
               </div>
-            )}
           </div>
         </div>
 

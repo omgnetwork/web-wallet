@@ -33,7 +33,13 @@
     .menu {
       display: flex;
       flex-direction: row;
+      align-items: center;
+      z-index: 1;
       position: relative;
+      @include mobile {
+        width: 100%;
+        justify-content: space-between;
+      }
       a {
         cursor: pointer;
       }
