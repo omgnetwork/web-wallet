@@ -23,6 +23,7 @@ REACT_APP_ETHERSCAN_URL=      the etherscan url (https://etherscan.io, etc.)
 REACT_APP_SYNC_INTERVAL=      max seconds watcher has to sync to ethereum before blocking further transactions
 REACT_APP_POLL_INTERVAL=      number of seconds to poll account data
 REACT_APP_NETWORK=            the network your environment is on (ropsten, rinkeby, private, main, etc.)
+REACT_APP_ALTERNATE_WALLETS=  *optional* other web wallets hosted on different envs, follow this format -> name,url|name,url|name,url
 REACT_APP_SENTRY_DSN=         *optional* sentry dsn handler
 REACT_APP_GTM_ID=             *optional* google tag manager id (GTM-XXXXXXX)
 REACT_APP_RPC_PROXY=          *optional, required for WalletConnect support* rpc url for connection to a remote ethereum node

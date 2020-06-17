@@ -23,11 +23,41 @@ const networkMap = {
   'kovan': 'Kovan Test Network'
 };
 
+const shortNetworkMap = {
+  'ropsten': 'Ropsten',
+  'main': 'Mainnet',
+  'rinkeby': 'Rinkeby',
+  'kovan': 'Kovan'
+};
+
 export function getNetworkName () {
   return networkMap[config.network];
+}
+
+export function getShortNetworkName () {
+  return shortNetworkMap[config.network];
 }
 
 export function getOtherNetworks () {
   const otherNetworks = omit(networkMap, [ config.network ]);
   return Object.values(otherNetworks);
+}
+
+export function getAlternateNetworks () {
+  const rawAlternates = config.alternateWallets;
+  if (!rawAlternates) {
+    return null;
+  }
+  const options = rawAlternates.split('|');
+
+  const networks = [];
+  options.forEach(option => {
+    const [ networkName, networkUrl ] = option.split(',');
+    networks.push({
+      name: networkName.trim(),
+      url: networkUrl.trim()
+    });
+  });
+
+  return networks;
 }

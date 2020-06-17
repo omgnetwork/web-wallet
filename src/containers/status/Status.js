@@ -24,6 +24,7 @@ import { selectConnection, selectByzantine, selectIsSynced } from 'selectors/sta
 import Info from 'components/info/Info';
 import Copy from 'components/copy/Copy';
 import config from 'util/config';
+import { getShortNetworkName } from 'util/networkName';
 import networkService from 'services/networkService';
 
 import * as styles from './Status.module.scss';
@@ -128,6 +129,10 @@ function Status ({ className }) {
             {
               title: 'Network Status',
               value: watcherConnection ? renderChainHealth : ''
+            },
+            {
+              title: 'Environment',
+              value: getShortNetworkName()
             },
             {
               header: 'Plasma Framework Address',

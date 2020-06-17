@@ -13,17 +13,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { capitalize } from 'lodash';
 
 import WrongNetworkModal from 'containers/modals/wrongnetwork/WrongNetworkModal';
 import networkService from 'services/networkService';
 import { selectModalState } from 'selectors/uiSelector';
 import { openModal } from 'actions/uiAction';
 import config from 'util/config';
+import { getShortNetworkName, getAlternateNetworks } from 'util/networkName';
 
 import logo from 'images/omg_logo.svg';
+import chevron from 'images/chevron.svg';
 import browserwallet from 'images/browserwallet.png';
 import coinbase from 'images/coinbase.jpg';
 import walletconnect from 'images/walletconnect.png';
@@ -36,6 +37,9 @@ function WalletPicker ({ onEnable }) {
   const [ walletMethod, setWalletMethod ] = useState(null);
   const [ walletEnabled, setWalletEnabled ] = useState(false);
   const [ accountsEnabled, setAccountsEnabled ] = useState(false);
+
+  const dropdownNode = useRef(null);
+  const [ showAlternateNetworks, setShowAlternateNetworks ] = useState(false);
 
   const wrongNetworkModalState = useSelector(selectModalState('wrongNetworkModal'));
 
@@ -103,6 +107,16 @@ function WalletPicker ({ onEnable }) {
     }
   }, [ dispatch, walletEnabled, accountsEnabled ]);
 
+  useEffect(() => {
+    function handleClick (e) {
+      if (!dropdownNode.current.contains(e.target)) {
+        setShowAlternateNetworks(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
   function resetSelection () {
     setWalletMethod(null);
     setWalletEnabled(false);
@@ -112,6 +126,8 @@ function WalletPicker ({ onEnable }) {
   const browserEnabled = !!window.web3 || !!window.ethereum;
   const walletConnectEnabled = !!config.rpcProxy;
   const walletLinkEnabled = !!config.rpcProxy;
+  
+  const alternateNetworks = getAlternateNetworks();
 
   return (
     <>
@@ -131,14 +147,36 @@ function WalletPicker ({ onEnable }) {
             >
               About
             </a>
-            <div className={styles.network}>
+
+            <div
+              onClick={() => setShowAlternateNetworks(prev => !prev)}
+              className={styles.network}
+              ref={dropdownNode}
+            >
               <div className={styles.indicator} />
-              OMG Network:&nbsp;
-              {config.network === 'main'
-                ? 'Mainnet'
-                : capitalize(config.network)
-              }
+              <div>
+                OMG Network:&nbsp;
+                {getShortNetworkName()}
+              </div>
+              <img
+                src={chevron}
+                alt='chevron'
+                className={[
+                  styles.chevron,
+                  showAlternateNetworks ? styles.open : ''
+                ].join(' ')}
+              />
             </div>
+
+            {!!alternateNetworks.length && showAlternateNetworks && (
+              <div className={styles.dropdown}>
+                {alternateNetworks.map((network, index) => (
+                  <a key={index} href={network.url}>
+                    {network.name}
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

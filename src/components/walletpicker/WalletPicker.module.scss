@@ -33,12 +33,41 @@
     .menu {
       display: flex;
       flex-direction: row;
-      cursor: pointer;
+      position: relative;
+      a {
+        cursor: pointer;
+      }
+      .chevron {
+        transform: rotate(90deg);
+        transition: all 200ms ease-in-out;
+        height: 20px;
+        margin-bottom: 0;
+        &.open {
+          transform: rotate(-90deg);
+        }
+      }
+      .dropdown {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        right: 0;
+        top: 27px;
+        a {
+          background-color: $gray3;
+          transition: all 200ms ease-in-out;
+          padding: 10px 15px;
+          cursor: pointer;
+          &:hover {
+            background-color: $gray2;
+          }
+        }
+      }
       .network {
         margin-left: 20px;
         display: flex;
         flex-direction: row;
         align-items: center;
+        cursor: pointer;
         .indicator {
           margin-right: 5px;
           width: 5px;
