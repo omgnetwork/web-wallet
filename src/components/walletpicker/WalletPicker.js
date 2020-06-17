@@ -14,13 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { capitalize } from 'lodash';
 
 import WrongNetworkModal from 'containers/modals/wrongnetwork/WrongNetworkModal';
 import Button from 'components/button/Button';
 import networkService from 'services/networkService';
 import { selectModalState } from 'selectors/uiSelector';
+import { getNetworkName } from 'util/networkName';
+import { openModal } from 'actions/uiAction';
 import config from 'util/config';
 
 import logo from 'images/omg_logo.svg';
@@ -31,6 +33,8 @@ import walletconnect from 'images/walletconnect.png';
 import * as styles from './WalletPicker.module.scss';
 
 function WalletPicker ({ onEnable }) {
+  const dispatch = useDispatch();
+
   const [ walletMethod, setWalletMethod ] = useState(null);
   const [ walletEnabled, setWalletEnabled ] = useState(false);
   const [ accountsEnabled, setAccountsEnabled ] = useState(false);
@@ -95,12 +99,11 @@ function WalletPicker ({ onEnable }) {
     }
   }, [ onEnable, accountsEnabled ]);
 
-  function getNetworkName () {
-    if (config.network === 'main') {
-      return 'Main Ethereum';
+  useEffect(() => {
+    if (walletEnabled && !accountsEnabled) {
+      dispatch(openModal('wrongNetworkModal'));
     }
-    return `${capitalize(config.network)} Test`;
-  }
+  }, [ walletEnabled, accountsEnabled ]);
 
   function resetSelection () {
     setWalletMethod(null);
@@ -114,7 +117,10 @@ function WalletPicker ({ onEnable }) {
 
   return (
     <>
-      <WrongNetworkModal open={wrongNetworkModalState || true} />
+      <WrongNetworkModal
+        open={wrongNetworkModalState}
+        onClose={resetSelection}
+      />
 
       <div className={styles.WalletPicker}>
         <div className={styles.title}>
@@ -183,21 +189,6 @@ function WalletPicker ({ onEnable }) {
             <div>Use Coinbase wallet.</div>
           </div>
         </div>
-
-        {walletEnabled && !accountsEnabled && (
-          <div className={styles.loader}>
-            <span>Your wallet is set to the wrong network.</span>
-            <span>{`Please make sure your wallet is pointing to the ${getNetworkName()} Network.`}</span>
-
-            <Button
-              className={styles.button}
-              onClick={resetSelection}
-              type='secondary'
-            >
-              SELECT ANOTHER WALLET
-            </Button>
-          </div>
-        )}
       </div>
     </>
   );

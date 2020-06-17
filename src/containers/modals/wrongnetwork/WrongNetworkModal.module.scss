@@ -9,6 +9,9 @@
   text-align: center;
   position: relative;
   padding: 40px;
+  @include mobile {
+    padding: 20px;
+  }
   .close {
     position: absolute;
     right: 0;
@@ -24,6 +27,7 @@
     max-width: 220px;
     .description {
       margin: 20px 0;
+      font-size: 0.9em;
     }
     .currentNetwork {
       background-color: $gray4;
@@ -37,7 +41,6 @@
     }
     .network {
       background-color: $gray6;
-      border-radius: 6px;
       padding: 10px;
       display: flex;
       flex-direction: row;
@@ -45,12 +48,12 @@
       color: $gray4;
       margin-bottom: 1px;
       &:first-child {
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
       }
       &:last-child {
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
       }
     }
     .indicator {
@@ -58,7 +61,7 @@
       width: 7px;
       height: 7px;
       border-radius: 100%;
-      margin-right: 7px;
+      margin-right: 10px;
       &.active {
         background-color: $green;
       }

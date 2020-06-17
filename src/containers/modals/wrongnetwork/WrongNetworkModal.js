@@ -16,23 +16,21 @@ limitations under the License. */
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
+import Modal from 'components/modal/Modal';
 import { closeModal } from 'actions/uiAction';
-
+import { getNetworkName, getOtherNetworks } from 'util/networkName';
 import close from 'images/close.png';
 import arrow from 'images/arrow.png';
 
-import Modal from 'components/modal/Modal';
-
 import * as styles from './WrongNetworkModal.module.scss';
 
-function WrongNetworkModal ({ open }) {
+function WrongNetworkModal ({ open, onClose }) {
   const dispatch = useDispatch();
 
   function handleClose () {
+    onClose();
     dispatch(closeModal('wrongNetworkModal'));
   }
-
-  const currentNetwork = 'Main Ethereum Network';
 
   return (
     <Modal
@@ -51,7 +49,7 @@ function WrongNetworkModal ({ open }) {
 
         <div className={styles.content}>
           <div className={styles.description}>
-            Please switch your wallet to the {currentNetwork} in order to continue.
+            Please switch your wallet to the {getNetworkName()} in order to continue.
           </div>
 
           <div className={styles.currentNetwork}>
@@ -61,7 +59,7 @@ function WrongNetworkModal ({ open }) {
                 styles.active
               ].join(' ')}
             />
-            <span>{currentNetwork}</span>
+            <span>{getNetworkName()}</span>
           </div>
 
           <img
@@ -71,14 +69,14 @@ function WrongNetworkModal ({ open }) {
           />
 
           <div className={styles.otherNetworks}>
-            <div className={styles.network}>
-              <div className={styles.indicator} />
-              <span>Rinkeby Test Network</span>
-            </div>
-            <div className={styles.network}>
-              <div className={styles.indicator} />
-              <span>Ropsten Test Network</span>
-            </div>
+            {getOtherNetworks().map((network, index) => {
+              return (
+                <div key={index} className={styles.network}>
+                  <div className={styles.indicator} />
+                  <span>{network}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
