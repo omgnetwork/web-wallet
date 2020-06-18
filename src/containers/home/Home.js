@@ -77,6 +77,12 @@ function Home () {
       : body.style.overflow = 'auto';
   }, [ mobileMenuOpen ]);
 
+  useEffect(() => {
+    for (const token of transactedTokens) {
+      dispatch(getExitQueue(token));
+    }
+  }, [ dispatch, transactedTokens ]);
+
   // calls only on boot
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -86,25 +92,20 @@ function Home () {
 
   useInterval(() => {
     batch(() => {
+      // infura call
       dispatch(fetchEthStats());
       dispatch(checkPendingDepositStatus());
       dispatch(checkPendingExitStatus());
 
-      // TODO: see if optimization available, only when process exit modal open? or do we need this data for enhancing exit info?
-      for (const token of transactedTokens) {
-        dispatch(getExitQueue(token));
-      }
-
-      // watcher calls
+      // watcher only calls
       dispatch(checkWatcherStatus());
       dispatch(fetchBalances());
       dispatch(fetchTransactions());
-      dispatch(fetchFees());
     });
   }, POLL_INTERVAL);
 
   useInterval(() => {
-    // calls ethgasstation first before eth
+    dispatch(fetchFees());
     dispatch(fetchGas());
   }, POLL_INTERVAL * 10);
 

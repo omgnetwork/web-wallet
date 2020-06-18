@@ -558,11 +558,36 @@ class NetworkService {
     const ethBlockNumber = get(state, 'status.currentETHBlockNumber');
     const status = ethBlockNumber - exit.blockNumber >= exitFinality ? 'Confirmed' : 'Pending';
     const pendingPercentage = (ethBlockNumber - exit.blockNumber) / exitFinality;
-    return {
+
+    let enhancedExit = {
       ...exit,
       status,
       pendingPercentage: (pendingPercentage * 100).toFixed()
     };
+
+    if (exit.returnValues) {
+      const rawQueues = get(state, 'queue', {});
+      const queues = flatten(Object.values(rawQueues));
+
+      const exitId = networkService.web3.utils.hexToNumberString(exit.returnValues.exitId._hex);
+      const queuedExit = queues.find(i => i.exitId === exitId);
+      let queuePosition;
+      let queueLength;
+      if (queuedExit) {
+        const tokenQueue = rawQueues[queuedExit.currency];
+        queuePosition = tokenQueue.findIndex(x => x.exitId === exitId);
+        queueLength = tokenQueue.length;
+        enhancedExit = {
+          ...enhancedExit,
+          exitableAt: queuedExit.exitableAt,
+          currency: queuedExit.currency,
+          queuePosition: queuePosition + 1,
+          queueLength
+        };
+      }
+    }
+
+    return enhancedExit;
   }
 
   async getExits () {
