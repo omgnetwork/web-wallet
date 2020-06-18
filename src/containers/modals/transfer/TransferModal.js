@@ -98,7 +98,7 @@ function TransferModal ({ open }) {
       value > 0 &&
       currency &&
       feeToken &&
-      networkService.web3.utils.isAddress(recipient)
+      recipient
     ) {
       try {
         const valueTokenInfo = await getToken(currency);
@@ -138,7 +138,7 @@ function TransferModal ({ open }) {
 
       <Input
         label='To Address'
-        placeholder='0x'
+        placeholder='Hash or ENS name'
         paste
         value={recipient}
         onChange={i => setRecipient(i.target.value)}
@@ -188,8 +188,7 @@ function TransferModal ({ open }) {
             value <= 0 ||
             !currency ||
             !feeToken ||
-            !recipient ||
-            !networkService.web3.utils.isAddress(recipient)
+            !recipient
           }
         >
           TRANSFER

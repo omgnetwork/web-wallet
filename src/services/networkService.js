@@ -383,6 +383,15 @@ class NetworkService {
     const feeInfo = allFees.find(i => i.currency === feeToken);
     if (!feeInfo) throw new Error(`${feeToken} is not a supported fee token.`);
 
+    const isAddress = this.web3.utils.isAddress(recipient);
+    if (!isAddress) {
+      recipient = await this.web3.eth.ens.getAddress(recipient);
+    }
+
+    if (!recipient) {
+      throw Error('Not a valid ENS name');
+    }
+
     const payments = [ {
       owner: recipient,
       currency,
