@@ -20,14 +20,16 @@ const networkMap = {
   'ropsten': 'Ropsten Test Network',
   'main': 'Main Ethereum Network',
   'rinkeby': 'Rinkeby Test Network',
-  'kovan': 'Kovan Test Network'
+  'kovan': 'Kovan Test Network',
+  'private': 'Private Network'
 };
 
 const shortNetworkMap = {
   'ropsten': 'Ropsten',
   'main': 'Mainnet',
   'rinkeby': 'Rinkeby',
-  'kovan': 'Kovan'
+  'kovan': 'Kovan',
+  'private': 'Private'
 };
 
 export function getNetworkName () {
@@ -39,7 +41,7 @@ export function getShortNetworkName () {
 }
 
 export function getOtherNetworks () {
-  const otherNetworks = omit(networkMap, [ config.network ]);
+  const otherNetworks = omit(networkMap, [ 'private', config.network ]);
   return Object.values(otherNetworks);
 }
 

@@ -117,8 +117,8 @@ function Transactions () {
                         ? undefined
                         : `${config.blockExplorerUrl}/transaction/${i.txhash}`
                     }
-                    title={`${truncate(i.txhash, 10, 4, '...')}`}
-                    midTitle={i.metadata ? i.metadata : undefined}
+                    title={`${truncate(i.txhash, 6, 4, '...')}`}
+                    midTitle={i.metadata ? i.metadata : '-'}
                     subTitle={moment.unix(i.block.timestamp).format('lll')}
                     status={renderStatus(i)}
                     subStatus={`Block ${i.block.blknum}`}

@@ -74,7 +74,8 @@ function Deposits ({ searchHistory }) {
             <Transaction
               key={index}
               link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
-              title={truncate(i.transactionHash, 10, 4, '...')}
+              title={truncate(i.transactionHash, 6, 4, '...')}
+              midTitle='Deposit'
               subTitle={`Token: ${i.tokenInfo.name}`}
               status={i.status === 'Pending' ? 'Pending' : logAmount(i.returnValues.amount, i.tokenInfo.decimals)}
               statusPercentage={i.pendingPercentage <= 100 ? i.pendingPercentage : ''}

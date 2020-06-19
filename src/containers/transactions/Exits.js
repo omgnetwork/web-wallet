@@ -52,9 +52,6 @@ function Exits ({ searchHistory }) {
     const isExitable = moment().isAfter(exitableMoment);
 
     function getStatus () {
-      if (!i.exitableAt) {
-        return 'Loading Status';
-      }
       if (i.status === 'Confirmed' && i.pendingPercentage >= 100) {
         return 'In Challenge Period';
       }
@@ -76,9 +73,9 @@ function Exits ({ searchHistory }) {
         status={getStatus()}
         subStatus={`Block ${i.blockNumber}`}
         statusPercentage={i.pendingPercentage <= 100 ? i.pendingPercentage : ''}
-        title={truncate(i.transactionHash, 10, 4, '...')}
+        title={truncate(i.transactionHash, 6, 4, '...')}
         midTitle={i.exitableAt ? `Exitable ${exitableMoment.format('lll')}` : ''}
-        subTitle={i.currency ? truncate(i.currency, 10, 4, '...'): ''}
+        subTitle={i.currency ? truncate(i.currency, 6, 4, '...'): ''}
       />
     );
   });
@@ -90,7 +87,7 @@ function Exits ({ searchHistory }) {
         link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
         status='Exited'
         subStatus={`Block ${i.blockNumber}`}
-        title={truncate(i.transactionHash, 10, 4, '...')}
+        title={truncate(i.transactionHash, 6, 4, '...')}
       />
     );
   });

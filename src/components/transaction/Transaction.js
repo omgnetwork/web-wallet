@@ -56,9 +56,11 @@ function Transaction ({
             ].join(' ')}
           />
             <span>{status}</span>
-            {status === 'Pending' && statusPercentage && (
+            {status === 'Pending' && !!statusPercentage && (
               <Tooltip title={tooltip}>
-                <span className={styles.percentage}>{`(${Math.max(statusPercentage, 0)}%)`}</span>
+                <span className={styles.percentage}>
+                  {`(${Math.max(statusPercentage, 0)}%)`}
+                </span>
               </Tooltip>
             )}
         </div>

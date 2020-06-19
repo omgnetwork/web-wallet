@@ -562,7 +562,7 @@ class NetworkService {
     const exitFinality = 12;
     const state = store.getState();
     const ethBlockNumber = get(state, 'status.currentETHBlockNumber');
-    const status = ethBlockNumber - exit.blockNumber >= exitFinality ? 'Confirmed' : 'Pending';
+    const status = (ethBlockNumber - exit.blockNumber) >= exitFinality ? 'Confirmed' : 'Pending';
     const pendingPercentage = (ethBlockNumber - exit.blockNumber) / exitFinality;
 
     let enhancedExit = {

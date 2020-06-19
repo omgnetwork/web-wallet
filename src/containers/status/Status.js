@@ -129,7 +129,7 @@ function Status ({ className }) {
             },
             {
               header: 'Plasma Framework Address',
-              title: truncate(networkService.plasmaContractAddress, 10, 4, '...'),
+              title: truncate(networkService.plasmaContractAddress, 6, 4, '...'),
               value: <Copy value={networkService.plasmaContractAddress} />
             },
             {
