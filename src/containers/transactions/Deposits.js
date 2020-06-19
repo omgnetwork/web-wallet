@@ -19,6 +19,7 @@ import { useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
 
 import { selectEthDeposits, selectErc20Deposits } from 'selectors/transactionSelector';
+import { selectLoading } from 'selectors/loadingSelector';
 
 import Transaction from 'components/transaction/Transaction';
 import Pager from 'components/pager/Pager';
@@ -32,8 +33,10 @@ const PER_PAGE = 10;
 
 function Deposits ({ searchHistory }) {
   const [ page, setPage ] = useState(1);
+
   const ethDeposits = useSelector(selectEthDeposits, isEqual);
   const erc20Deposits = useSelector(selectErc20Deposits, isEqual);
+  const loading = useSelector(selectLoading([ 'DEPOSIT/GETALL' ]));
 
   useEffect(() => {
     setPage(1);
@@ -60,9 +63,11 @@ function Deposits ({ searchHistory }) {
           onClickNext={() => setPage(page + 1)}
           onClickBack={() => setPage(page - 1)}
         />
-
-        {!paginatedDeposits.length && (
+        {!paginatedDeposits.length && !loading && (
           <div className={styles.disclaimer}>No deposit history.</div>
+        )}
+        {!paginatedDeposits.length && loading && (
+          <div className={styles.disclaimer}>Loading...</div>
         )}
         {paginatedDeposits.map((i, index) => {
           return (

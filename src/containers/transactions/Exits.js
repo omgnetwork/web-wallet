@@ -21,6 +21,7 @@ import truncate from 'truncate-middle';
 
 import config from 'util/config';
 import { selectPendingExits, selectExitedExits } from 'selectors/exitSelector';
+import { selectLoading } from 'selectors/loadingSelector';
 
 import ProcessExitsModal from 'containers/modals/processexit/ProcessExitsModal';
 import Transaction from 'components/transaction/Transaction';
@@ -36,6 +37,7 @@ function Exits ({ searchHistory }) {
 
   const pendingExits = orderBy(useSelector(selectPendingExits, isEqual), i => i.blockNumber, 'desc');
   const exitedExits = orderBy(useSelector(selectExitedExits, isEqual), i => i.blockNumber, 'desc');
+  const loading = useSelector(selectLoading([ 'EXIT/GETALL' ]));
 
   const _pendingExits = pendingExits.filter(i => {
     return i.transactionHash.includes(searchHistory);
@@ -116,8 +118,11 @@ function Exits ({ searchHistory }) {
               onClickNext={() => setPage(page + 1)}
               onClickBack={() => setPage(page - 1)}
             />
-            {!allExits.length && (
+            {!allExits.length && !loading && (
               <div className={styles.disclaimer}>No exit history.</div>
+            )}
+            {!allExits.length && loading && (
+              <div className={styles.disclaimer}>Loading...</div>
             )}
             {React.Children.toArray(paginatedExits)}
           </div>
