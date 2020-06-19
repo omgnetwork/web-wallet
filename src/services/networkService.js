@@ -178,8 +178,14 @@ class NetworkService {
     const { byzantine_events, last_seen_eth_block_timestamp } = await this.childChain.status();
     const currentUnix = Math.round((new Date()).getTime() / 1000);
 
-    // filter out piggyback_available event from byzantine_events array, since its not a byzantine event!
-    const filteredByzantineEvents = byzantine_events.filter(i =>  i.event !== 'piggyback_available');
+    const filteredByzantineEvents = byzantine_events
+      .filter(i =>  i.event !== 'piggyback_available')
+      .filter(i => {
+        if (i.scheduled_finalization_time) {
+          return currentUnix >= i.scheduled_finalization_time;
+        }
+        return true;
+      });
 
     return {
       connection: !!byzantine_events,
