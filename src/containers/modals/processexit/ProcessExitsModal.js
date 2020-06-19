@@ -18,7 +18,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import numbro from 'numbro';
 
 import { selectByzantine } from 'selectors/statusSelector';
-import { selectLoading } from 'selectors/loadingSelector';
 import { processExits, fetchExits } from 'actions/networkAction';
 
 import GasPicker from 'components/gaspicker/GasPicker';
@@ -32,7 +31,7 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
   const dispatch = useDispatch();
 
   const byzantineChain = useSelector(selectByzantine);
-  const loading = useSelector(selectLoading([ 'QUEUE/PROCESS' ]));
+  const [ loading, setLoading ] = useState(false);
   
   const [ maxExits, setMaxExits ] = useState('');
   const [ gasPrice, setGasPrice ] = useState();
@@ -46,11 +45,14 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
 
   async function submit () {
     if (maxExits > 0) {
+      setLoading(true);
       const res = await dispatch(processExits(maxExits, exitData.currency, gasPrice));
       if (res) {
         await dispatch(fetchExits());
-        handleClose();
+        setLoading(false);
+        return handleClose();
       }
+      return setLoading(false);
     }
   }
 
