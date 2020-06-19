@@ -8,6 +8,10 @@
   margin-bottom: 5px;
   min-height: 101px;
   box-sizing: border-box;
+  transition: all 200ms ease-in-out;
+  &:hover {
+    background-color: $gray2;
+  }
   @include mobile {
     flex-direction: column;
     padding: 15px 10px;

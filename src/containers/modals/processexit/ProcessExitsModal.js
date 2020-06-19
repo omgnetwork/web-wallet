@@ -19,7 +19,7 @@ import numbro from 'numbro';
 
 import { selectByzantine } from 'selectors/statusSelector';
 import { selectLoading } from 'selectors/loadingSelector';
-import { processExits } from 'actions/networkAction';
+import { processExits, fetchExits } from 'actions/networkAction';
 
 import GasPicker from 'components/gaspicker/GasPicker';
 import Button from 'components/button/Button';
@@ -48,6 +48,7 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
     if (maxExits > 0) {
       const res = await dispatch(processExits(maxExits, exitData.currency, gasPrice));
       if (res) {
+        await dispatch(fetchExits());
         handleClose();
       }
     }

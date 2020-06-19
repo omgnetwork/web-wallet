@@ -685,17 +685,10 @@ class NetworkService {
           gasPrice: gasPrice.toString()
         }
       });
-      // add the exitId from the transaction log
-      const exitStartedEvent = res.logs[1];
       return {
         ...res,
         status: 'Pending',
-        pendingPercentage: 0,
-        returnValues: {
-          exitId: {
-            _hex: exitStartedEvent.topics[1]
-          }
-        }
+        pendingPercentage: 0
       };
     } catch (error) {
       // if error from user cancellation dont retry
