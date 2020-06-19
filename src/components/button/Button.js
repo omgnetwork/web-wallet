@@ -14,7 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import React from 'react';
-import { CircularProgress, Tooltip } from '@material-ui/core';
+import { CircularProgress } from '@material-ui/core';
+
+import Tooltip from 'components/tooltip/Tooltip';
 
 import * as styles from './Button.module.scss';
 
@@ -44,10 +46,7 @@ function Button ({
     >
       {children}
       {loading && (
-        <Tooltip
-          title={tooltip}
-          arrow
-        >
+        <Tooltip title={tooltip}>
           <div className={styles.loading}>
             <CircularProgress size={14} color='inherit' />
           </div>
