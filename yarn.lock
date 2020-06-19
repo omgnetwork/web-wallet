@@ -1429,13 +1429,13 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@omisego/omg-js-childchain@4.0.0-0.4.7":
-  version "4.0.0-0.4.7"
-  resolved "https://registry.yarnpkg.com/@omisego/omg-js-childchain/-/omg-js-childchain-4.0.0-0.4.7.tgz#c15dc81081fc4419bc9e9358e13146bb350aa471"
-  integrity sha512-CX8FAP4TxZwN/rtqW+VlzKdBYBTePCV4he17gKL6fpBpmc1QDSA08Ht8gfj/rZZI+EY5fqLDgKkcOfq7f0uOVA==
+"@omisego/omg-js-childchain@4.0.1-1.0.0":
+  version "4.0.1-1.0.0"
+  resolved "https://registry.yarnpkg.com/@omisego/omg-js-childchain/-/omg-js-childchain-4.0.1-1.0.0.tgz#d27e5204cc9891739847be0c921965a4fccfc116"
+  integrity sha512-59/ZBeBAWq0g+P29B0wb9gr4lFKjbaDgnmS936GiGIwH4iVZt9eEc6RXnl3MX0retL3vqB23r0fOaioUuzdFSw==
   dependencies:
     "@hapi/joi" "^16.1.8"
-    "@omisego/omg-js-util" "4.0.0-0.4.7"
+    "@omisego/omg-js-util" "4.0.1-1.0.0"
     axios "^0.19.2"
     bn.js "^5.0.0"
     debug "^4.0.1"
@@ -1444,13 +1444,13 @@
     rlp "^2.1.0"
     web3-utils "^1.2.5"
 
-"@omisego/omg-js-rootchain@4.0.0-0.4.7":
-  version "4.0.0-0.4.7"
-  resolved "https://registry.yarnpkg.com/@omisego/omg-js-rootchain/-/omg-js-rootchain-4.0.0-0.4.7.tgz#f9bb3aec08f72eb77233a806eb985feebcd416dc"
-  integrity sha512-iL14+oVpOzQ8Hsnru2vGWEI4nKqEKHtxvPXTe9Ynz3/uSRtFeWC/sIktqELmmoAQJ9kRdD1BsppDOVsfXEmvBQ==
+"@omisego/omg-js-rootchain@4.0.1-1.0.0":
+  version "4.0.1-1.0.0"
+  resolved "https://registry.yarnpkg.com/@omisego/omg-js-rootchain/-/omg-js-rootchain-4.0.1-1.0.0.tgz#9fd00c4fe93b6116879b5cf5c4e9f6ea75fc7642"
+  integrity sha512-9qLkNzQ4LjKZJckxsLA2Wbu213Y4WbxFYLE+MknggSoAGRu8V9aE5xW1sGkDByrLVOSLosgg6Wj9+a6cFNOqzQ==
   dependencies:
     "@hapi/joi" "^16.1.8"
-    "@omisego/omg-js-util" "4.0.0-0.4.7"
+    "@omisego/omg-js-util" "4.0.1-1.0.0"
     abi-decoder "^2.2.2"
     bn.js "^5.0.0"
     debug "^4.0.1"
@@ -1458,10 +1458,10 @@
     human-standard-token-abi "^2.0.0"
     web3-utils "^1.2.3"
 
-"@omisego/omg-js-util@4.0.0-0.4.7":
-  version "4.0.0-0.4.7"
-  resolved "https://registry.yarnpkg.com/@omisego/omg-js-util/-/omg-js-util-4.0.0-0.4.7.tgz#1cea11d3bf4d54a3b97d6245744828af013c379c"
-  integrity sha512-iDAWKTL4TvlaRzDZQrisOsNxeG+oqvqtEaDF7KyYHeFAdnuBXj4yr7nap5zRxYwYrTCqGbvW6+BMxjFd13HnrA==
+"@omisego/omg-js-util@4.0.1-1.0.0":
+  version "4.0.1-1.0.0"
+  resolved "https://registry.yarnpkg.com/@omisego/omg-js-util/-/omg-js-util-4.0.1-1.0.0.tgz#c24f4ceaf00f3fa88d87f498df19db2904758350"
+  integrity sha512-GW3Gp4fxJKXzxvpOfxEpOyjnf2CWzaxlaAMKwSjQTtNnmq853VXe55bQKha8niYt6ZyrtJvcRdyEhQJleF8p/g==
   dependencies:
     "@hapi/joi" "^17.1.0"
     bn.js "^5.1.1"
@@ -1475,14 +1475,14 @@
     rlp "^2.2.2"
     web3-utils "^1.2.1"
 
-"@omisego/omg-js@^4.0.0-0.4.7":
-  version "4.0.0-0.4.7"
-  resolved "https://registry.yarnpkg.com/@omisego/omg-js/-/omg-js-4.0.0-0.4.7.tgz#6fb41d125e2154fa7360f314488637b448395d2d"
-  integrity sha512-vmgf7ssLHN3AKNz8jA/utekVnW2f1mE+Psiv4kkj1dyLcQDAZS9G3t68/3C9SvTi5CWEVVOgkh/yZJ6NXXP6cw==
+"@omisego/omg-js@^4.0.1-1.0.0":
+  version "4.0.1-1.0.0"
+  resolved "https://registry.yarnpkg.com/@omisego/omg-js/-/omg-js-4.0.1-1.0.0.tgz#8a4663134b451e18c16bcc4a3d697fc9426cc68a"
+  integrity sha512-Mdzbb3fbEfIpiTRyMSWPPVQfltaNtqrKqhK6MtdzSWSqLoHlysHGNbHJLi9XcLSUDCt05y6C7sm0+Vf1DazHYg==
   dependencies:
-    "@omisego/omg-js-childchain" "4.0.0-0.4.7"
-    "@omisego/omg-js-rootchain" "4.0.0-0.4.7"
-    "@omisego/omg-js-util" "4.0.0-0.4.7"
+    "@omisego/omg-js-childchain" "4.0.1-1.0.0"
+    "@omisego/omg-js-rootchain" "4.0.1-1.0.0"
+    "@omisego/omg-js-util" "4.0.1-1.0.0"
 
 "@sentry/browser@^5.12.4":
   version "5.15.4"
