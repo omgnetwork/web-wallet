@@ -14,7 +14,8 @@ Make sure you have access to a Watcher endpoint. The wallet also requires an in-
 
 1. Install dependencies by running `yarn install` from the root
 
-2. Create a `.env` file in the root and add your configuration.
+2. Create a `.env` file in the root and add your configuration. See `.env.template` for an example with fake variables.
+
 ```env
 REACT_APP_WATCHER_URL=        the watcher url
 REACT_APP_PLASMA_ADDRESS=     the plasma framework address
