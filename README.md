@@ -10,8 +10,6 @@ To run this application locally, make sure you have a local instance of elixir-o
 
 ## Initial Setup
 
-Make sure you have access to a Watcher endpoint. The wallet also requires an in-browser web3 wallet like MetaMask to sign transactions.
-
 1. Install dependencies by running `yarn install` from the root
 
 2. Create a `.env` file in the root and add your configuration. See `.env.template` for an example with fake variables.
@@ -30,13 +28,13 @@ REACT_APP_GTM_ID=             *optional* google tag manager id (GTM-XXXXXXX)
 REACT_APP_RPC_PROXY=          *optional, required for WalletConnect support* rpc url for connection to a remote ethereum node
 ```
 
-3. Start the app by running `yarn start` from the root directory.
+3. Make sure you are using the correct version of Node
 
-4. Run the tests by running `yarn test` from the root directory.
+4. Start the app by running `yarn start` from the root directory.
 
-## Running the wallet
+## Running the wallet locally
 
-Open up your browser and navigate to `http://localhost:3000`, Make sure your Metamask is currently unlocked. You should be able to see your account balance on both the Root chain and Child chain.
+Open up your browser and navigate to `http://localhost:3000`. 
 
 From here, you can perform these actions:
 
@@ -46,4 +44,4 @@ From here, you can perform these actions:
 
 3. Exit your funds back to the Rootchain.
 
-4. If the challenge period has passed, your exit will exist in an exit queue of that token. You can call process exits on this queue to receive your funds back.
+4. Process exits to receive your funds back on the Rootchain.
