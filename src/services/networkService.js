@@ -179,10 +179,13 @@ class NetworkService {
     const currentUnix = Math.round((new Date()).getTime() / 1000);
 
     const filteredByzantineEvents = byzantine_events
-      .filter(i =>  i.event !== 'piggyback_available')
       .filter(i => {
-        if (i.scheduled_finalization_time) {
-          return currentUnix >= i.scheduled_finalization_time;
+        if (
+          i.event === 'unchallenged_exit' ||
+          i.event === 'invalid_block' ||
+          i.event === 'block_withholding'
+        ) {
+          return false;
         }
         return true;
       });
