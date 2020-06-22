@@ -48,7 +48,7 @@ export function getOtherNetworks () {
 export function getAlternateNetworks () {
   const rawAlternates = config.alternateWallets;
   if (!rawAlternates) {
-    return null;
+    return [];
   }
   const options = rawAlternates.split('|');
 

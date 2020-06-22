@@ -159,14 +159,16 @@ function WalletPicker ({ onEnable }) {
                 OMG Network:&nbsp;
                 {getShortNetworkName()}
               </div>
-              <img
-                src={chevron}
-                alt='chevron'
-                className={[
-                  styles.chevron,
-                  showAlternateNetworks ? styles.open : ''
-                ].join(' ')}
-              />
+              {!!alternateNetworks.length && (
+                <img
+                  src={chevron}
+                  alt='chevron'
+                  className={[
+                    styles.chevron,
+                    showAlternateNetworks ? styles.open : ''
+                  ].join(' ')}
+                />
+              )}
             </div>
 
             <div ref={dropdownNode} className={styles.dropdown}>

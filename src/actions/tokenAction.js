@@ -30,7 +30,7 @@ export async function getToken (_currency) {
   const [ _name, _decimals ] = await Promise.all([
     tokenContract.methods.symbol().call(),
     tokenContract.methods.decimals().call()
-  ]).catch(e => null);
+  ]).catch(e => [ null, null ]);
 
   const decimals = _decimals ? Number(_decimals.toString()) : 0;
   const name = _name || truncate(currency, 6, 4, '...');
