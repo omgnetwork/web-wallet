@@ -26,9 +26,9 @@ export function createAction (key, asyncAction, customErrorMessage) {
       return true;
     } catch (error) {
 
-      // toggle to report every ui error to sentry, useful for debugging remote dapp browsers
-      const remoteDebug = false;
-      if (remoteDebug) {
+      // toggle to report every ui error to sentry
+      const logAllErrors = true;
+      if (logAllErrors) {
         console.log(`key: ${key}, action: ${asyncAction} errorObject: ${JSON.stringify(error)}`);
         Sentry.captureException(error);
       }
