@@ -185,9 +185,9 @@ class NetworkService {
           i.event === 'invalid_block' ||
           i.event === 'block_withholding'
         ) {
-          return false;
+          return true;
         }
-        return true;
+        return false;
       });
 
     return {
