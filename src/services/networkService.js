@@ -300,11 +300,12 @@ class NetworkService {
 
   // normalize signing methods across wallet providers
   async signTypedData (typedData) {
-    function isExpectedError (message) {
+    function isExpectedSignTypedV3Error (message) {
       if (
         message.includes('The method eth_signTypedData_v3 does not exist')
         || message.includes('Invalid JSON RPC response')
         || message.includes('Cannot read property') // walletlink
+        || message.includes('undefined is not an object') // walletlink safari
       ) {
         return true;
       }
@@ -321,8 +322,9 @@ class NetworkService {
       );
       return signature;
     } catch (error) {
-      if (!isExpectedError(error.message)) {
+      if (!isExpectedSignTypedV3Error(error.message)) {
         // not an expected error
+        console.log('unexpected signing error: ', error.message);
         throw error;
       }
       // method doesnt exist try another
