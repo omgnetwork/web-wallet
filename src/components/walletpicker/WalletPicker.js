@@ -37,6 +37,7 @@ function WalletPicker ({ onEnable }) {
   const [ walletMethod, setWalletMethod ] = useState(null);
   const [ walletEnabled, setWalletEnabled ] = useState(false);
   const [ accountsEnabled, setAccountsEnabled ] = useState(false);
+  const [ wrongNetwork, setWrongNetwork ] = useState(false);
 
   const dropdownNode = useRef(null);
   const [ showAlternateNetworks, setShowAlternateNetworks ] = useState(false);
@@ -85,9 +86,16 @@ function WalletPicker ({ onEnable }) {
   useEffect(() => {
     async function initializeAccounts () {
       const initialized = await networkService.initializeAccounts();
-      return initialized
-        ? setAccountsEnabled(true)
-        : setAccountsEnabled(false);
+      if (!initialized) {
+        return setAccountsEnabled(false);
+      }
+      if (initialized === 'wrongnetwork') {
+        setAccountsEnabled(false);
+        return setWrongNetwork(true);
+      }
+      if (initialized === 'enabled') {
+        return setAccountsEnabled(true);
+      }
     }
     if (walletEnabled) {
       initializeAccounts();
@@ -102,12 +110,12 @@ function WalletPicker ({ onEnable }) {
   }, [ onEnable, accountsEnabled ]);
 
   useEffect(() => {
-    if (walletEnabled && !accountsEnabled) {
+    if (walletEnabled && wrongNetwork) {
       setTimeout(() => {
         dispatch(openModal('wrongNetworkModal'));
       }, 300);
     }
-  }, [ dispatch, walletEnabled, accountsEnabled ]);
+  }, [ dispatch, walletEnabled, wrongNetwork ]);
 
   useEffect(() => {
     function handleClick (e) {

@@ -167,9 +167,9 @@ class NetworkService {
       const accounts = await this.web3.eth.getAccounts();
       this.account = accounts[0];
       const network = await this.web3.eth.net.getNetworkType();
-      return network === config.network;
+      const isCorrectNetwork = network === config.network;
+      return isCorrectNetwork ? 'enabled' : 'wrongnetwork';
     } catch (error) {
-      console.log('error: ', error);
       return false;
     }
   }
