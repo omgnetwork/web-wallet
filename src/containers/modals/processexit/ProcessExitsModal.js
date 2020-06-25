@@ -32,33 +32,22 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
 
   const byzantineChain = useSelector(selectByzantine);
   const [ loading, setLoading ] = useState(false);
-  
-  const [ maxExits, setMaxExits ] = useState('');
   const [ gasPrice, setGasPrice ] = useState();
   const [ selectedSpeed, setSelectedSpeed ] = useState('normal');
 
-  useEffect(() => {
-    if (exitData) {
-      setMaxExits(exitData.queuePosition);
-    }
-  }, [ exitData, open ]);
-
   async function submit () {
-    if (maxExits > 0) {
-      setLoading(true);
-      const res = await dispatch(processExits(maxExits, exitData.currency, gasPrice));
-      if (res) {
-        await dispatch(fetchExits());
-        setLoading(false);
-        return handleClose();
-      }
-      return setLoading(false);
+    setLoading(true);
+    const res = await dispatch(processExits(exitData.queuePosition, exitData.currency, gasPrice));
+    if (res) {
+      await dispatch(fetchExits());
+      setLoading(false);
+      return handleClose();
     }
+    return setLoading(false);
   }
 
   function handleClose () {
     setSelectedSpeed('normal');
-    setMaxExits('');
     toggle();
   }
 
@@ -70,22 +59,6 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
         <span>This exit is currently</span>
         <span className={styles.position}>{exitData ? numbro(exitData.queuePosition).format({ output: 'ordinal' }) : ''}</span>
         <span>{`in the queue for this token. You will need to process ${exitData.queuePosition} ${exitData.queuePosition === 1 ? 'exit' : 'exits'} to release your funds.`}</span>
-      </div>
-
-      <Input
-        label='How many exits would you like to process?'
-        placeholder='20'
-        type='number'
-        value={maxExits}
-        onChange={i => {
-          i.target.value <= exitData.queueLength
-            ? setMaxExits(i.target.value)
-            : setMaxExits(exitData.queueLength);
-        }}
-      />
-
-      <div className={styles.disclaimer}>
-        {`Current exit queue length: ${exitData.queueLength || 0}`}
       </div>
 
       <GasPicker
@@ -109,7 +82,6 @@ function ProcessExitsModal ({ exitData, open, toggle }) {
           loading={loading}
           tooltip='Your process exits transaction is still pending. Please wait for confirmation.'
           disabled={
-            maxExits < 1 ||
             exitData.queueLength < 1 ||
             byzantineChain
           }
