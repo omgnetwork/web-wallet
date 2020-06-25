@@ -23,6 +23,8 @@ export default {
   checkSyncInterval: env('SYNC_INTERVAL'),
   pollInterval: env('POLL_INTERVAL'),
   network: env('NETWORK'),
+  alternateWallets: env('ALTERNATE_WALLETS'),
   sentry: env('SENTRY_DSN'),
-  gtmId: env('GTM_ID')
+  gtmId: env('GTM_ID'),
+  rpcProxy: env('RPC_PROXY')
 };

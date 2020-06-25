@@ -14,7 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import React from 'react';
-import { CircularProgress, Tooltip } from '@material-ui/core';
+import { CircularProgress } from '@material-ui/core';
+
+import Tooltip from 'components/tooltip/Tooltip';
 
 import * as styles from './Button.module.scss';
 
@@ -25,7 +27,8 @@ function Button ({
   type,
   disabled,
   loading,
-  tooltip = ''
+  tooltip = '',
+  className
 }) {
   return (
     <div
@@ -36,16 +39,14 @@ function Button ({
         type === 'secondary' ? styles.secondary : '',
         type === 'outline' ? styles.outline : '',
         loading ? styles.disabled : '',
-        disabled ? styles.disabled : ''
+        disabled ? styles.disabled : '',
+        className
       ].join(' ')}
       onClick={loading || disabled ? null : onClick}
     >
       {children}
       {loading && (
-        <Tooltip
-          title={tooltip}
-          arrow
-        >
+        <Tooltip title={tooltip}>
           <div className={styles.loading}>
             <CircularProgress size={14} color='inherit' />
           </div>

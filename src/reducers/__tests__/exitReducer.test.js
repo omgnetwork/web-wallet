@@ -18,7 +18,7 @@ import exitReducer from '../exitReducer';
 describe('exitReducer', () => {
   it('should return the initial state', () => {
     const newState = exitReducer(undefined, { type: '@@INIT' });
-    expect(newState).toEqual({ pending: [], exited: [] });
+    expect(newState).toEqual({ pending: {}, exited: {} });
   });
 
   it('should handle exit fetch success', () => {

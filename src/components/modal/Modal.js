@@ -21,7 +21,7 @@ import {
   Fade
 } from '@material-ui/core';
 
-import { gray3 } from 'index.scss';
+import { gray6, gray3, gray1 } from 'index.scss';
 
 const useStyles = makeStyles({
   modal: {
@@ -38,10 +38,20 @@ const useStyles = makeStyles({
     width: '500px',
     boxSizing: 'border-box',
     maxWidth: '100%'
+  },
+  light: {
+    backgroundColor: gray6,
+    color: gray1,
+    borderRadius: '4px'
   }
 });
 
-function _Modal ({ children, open, onClose }) {
+function _Modal ({
+  children,
+  open,
+  onClose,
+  light
+}) {
   const classes = useStyles();
 
   return (
@@ -58,7 +68,12 @@ function _Modal ({ children, open, onClose }) {
       }}
     >
       <Fade in={open}>
-        <div className={classes.paper}>
+        <div
+          className={[
+            classes.paper,
+            light ? classes.light : ''
+          ].join(' ')}
+        >
           {children}
         </div>
       </Fade>

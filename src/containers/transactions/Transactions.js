@@ -21,6 +21,7 @@ import moment from 'moment';
 import truncate from 'truncate-middle';
 
 import { selectChildchainTransactions } from 'selectors/transactionSelector';
+import { selectLoading } from 'selectors/loadingSelector';
 import networkService from 'services/networkService';
 import config from 'util/config';
 
@@ -41,6 +42,7 @@ function Transactions () {
   const [ searchHistory, setSearchHistory ] = useState('');
   const [ activeTab, setActiveTab ] = useState('Transactions');
 
+  const loading = useSelector(selectLoading([ 'TRANSACTION/GETALL' ]));
   const unorderedTransactions = useSelector(selectChildchainTransactions, isEqual);
   const transactions = orderBy(unorderedTransactions, i => i.block.timestamp, 'desc');
 
@@ -100,9 +102,11 @@ function Transactions () {
                 onClickNext={() => setPage(page + 1)}
                 onClickBack={() => setPage(page - 1)}
               />
-
-              {!paginatedTransactions.length && (
+              {!paginatedTransactions.length && !loading && (
                 <div className={styles.disclaimer}>No transaction history.</div>
+              )}
+              {!paginatedTransactions.length && loading && (
+                <div className={styles.disclaimer}>Loading...</div>
               )}
               {paginatedTransactions.map((i, index) => {
                 return (
@@ -113,8 +117,8 @@ function Transactions () {
                         ? undefined
                         : `${config.blockExplorerUrl}/transaction/${i.txhash}`
                     }
-                    title={`${truncate(i.txhash, 10, 4, '...')}`}
-                    midTitle={i.metadata ? i.metadata : undefined}
+                    title={`${truncate(i.txhash, 6, 4, '...')}`}
+                    midTitle={i.metadata ? i.metadata : '-'}
                     subTitle={moment.unix(i.block.timestamp).format('lll')}
                     status={renderStatus(i)}
                     subStatus={`Block ${i.block.blknum}`}

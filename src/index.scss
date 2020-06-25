@@ -9,6 +9,7 @@ $gray3: #35353f;
 $gray4: #585868;
 $gray5: #b3b3bf;
 $gray6: #ffffff;
+$gray7: #F2F3F5;
 
 :export {
   red: $red;
@@ -90,4 +91,9 @@ h2 {
   @include mobile {
     font-size: 1.2em;
   }
+}
+
+// override globals and third party libs
+.walletconnect-modal__base {
+  max-width: 225px !important;
 }

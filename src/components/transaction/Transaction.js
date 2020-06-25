@@ -14,7 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import React from 'react';
-import { Tooltip } from '@material-ui/core';
+
+import Tooltip from 'components/tooltip/Tooltip';
 
 import * as styles from './Transaction.module.scss';
 
@@ -55,12 +56,11 @@ function Transaction ({
             ].join(' ')}
           />
             <span>{status}</span>
-            {status === 'Pending' && statusPercentage && (
-              <Tooltip
-                title={tooltip}
-                arrow
-              >
-                <span className={styles.percentage}>{`(${Math.max(statusPercentage, 0)}%)`}</span>
+            {status === 'Pending' && !!statusPercentage && (
+              <Tooltip title={tooltip}>
+                <span className={styles.percentage}>
+                  {`(${Math.max(statusPercentage, 0)}%)`}
+                </span>
               </Tooltip>
             )}
         </div>

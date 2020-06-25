@@ -29,7 +29,10 @@ import {
   fetchDeposits,
   getExitQueue,
   fetchFees,
-  fetchGas
+  fetchGas,
+  fetchEthStats,
+  checkPendingDepositStatus,
+  checkPendingExitStatus
 } from 'actions/networkAction';
 
 import DepositModal from 'containers/modals/deposit/DepositModal';
@@ -51,9 +54,6 @@ const POLL_INTERVAL = config.pollInterval * 1000;
 
 function Home () {
   const dispatch = useDispatch();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   const [ mobileMenuOpen, setMobileMenuOpen ] = useState(false);
   const depositModalState = useSelector(selectModalState('depositModal'));
@@ -77,22 +77,35 @@ function Home () {
       : body.style.overflow = 'auto';
   }, [ mobileMenuOpen ]);
 
+  useEffect(() => {
+    for (const token of transactedTokens) {
+      dispatch(getExitQueue(token));
+    }
+  }, [ dispatch, transactedTokens ]);
+
+  // calls only on boot
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    dispatch(fetchDeposits());
+    dispatch(fetchExits());
+  }, [ dispatch ]);
+
   useInterval(() => {
     batch(() => {
+      // infura call
+      dispatch(fetchEthStats());
+      dispatch(checkPendingDepositStatus());
+      dispatch(checkPendingExitStatus());
+
+      // watcher only calls
       dispatch(checkWatcherStatus());
       dispatch(fetchBalances());
-      dispatch(fetchDeposits());
-      dispatch(fetchExits());
       dispatch(fetchTransactions());
-      dispatch(fetchFees());
-  
-      for (const token of transactedTokens) {
-        dispatch(getExitQueue(token));
-      }
     });
   }, POLL_INTERVAL);
 
   useInterval(() => {
+    dispatch(fetchFees());
     dispatch(fetchGas());
   }, POLL_INTERVAL * 10);
 

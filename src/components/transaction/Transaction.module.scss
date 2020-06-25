@@ -6,6 +6,12 @@
   padding: 20px;
   background-color: $gray3;
   margin-bottom: 5px;
+  min-height: 101px;
+  box-sizing: border-box;
+  transition: all 200ms ease-in-out;
+  &:hover {
+    background-color: $gray2;
+  }
   @include mobile {
     flex-direction: column;
     padding: 15px 10px;
@@ -28,6 +34,7 @@
 .midTitle {
   margin-top: 10px;
   color: $gray6;
+  font-size: 0.8em;
 }
 
 .statusContainer {
@@ -35,6 +42,7 @@
   flex-direction: column;
   text-align: right;
   align-items: flex-end;
+  font-size: 0.9em;
   @include mobile {
     text-align: left;
     align-items: flex-start;
@@ -79,6 +87,10 @@
 
 .percentage {
   margin-left: 10px;
+  @include mobile {
+    margin-left: 0;
+    margin-right: 10px;
+  }
 }
 
 .button {

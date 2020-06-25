@@ -24,6 +24,13 @@ export function checkWatcherStatus () {
   );
 }
 
+export function fetchEthStats () {
+  return createAction(
+    'ETHSTATS/GET',
+    () => networkService.getEthStats()
+  );
+}
+
 export function fetchBalances () {
   return createAction(
     'BALANCE/GET',
@@ -42,6 +49,20 @@ export function fetchDeposits () {
   return createAction(
     'DEPOSIT/GETALL',
     () => networkService.getDeposits()
+  );
+}
+
+export function checkPendingDepositStatus () {
+  return createAction(
+    'DEPOSIT/CHECKALL',
+    () => networkService.checkPendingDepositStatus()
+  );
+}
+
+export function checkPendingExitStatus () {
+  return createAction(
+    'EXIT/CHECKALL',
+    () => networkService.checkPendingExitStatus()
   );
 }
 
@@ -152,6 +173,7 @@ export function fetchGas () {
 
 export function fetchFees () {
   return async function (dispatch) {
+    // only makes the call if fee fetch not successful before
     const state = store.getState();
     if (Object.keys(state.fees).length) {
       return;

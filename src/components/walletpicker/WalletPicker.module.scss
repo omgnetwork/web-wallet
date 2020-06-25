@@ -1,0 +1,168 @@
+@import 'index.scss';
+
+.WalletPicker {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin-left: auto;
+  margin-right: auto;
+  flex: 1;
+  padding: 20px;
+  font-family: 'Messina';
+  @include mobile {
+    font-size: 0.9em;
+  }
+
+  .title {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    @include mobile {
+      flex-direction: column;
+    }
+    img {
+      margin-bottom: 20px;
+      height: 60px;
+      @include mobile {
+        height: 50px;
+      }
+    }
+    .menu {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      z-index: 1;
+      position: relative;
+      @include mobile {
+        width: 100%;
+        justify-content: space-between;
+      }
+      a {
+        cursor: pointer;
+      }
+      .chevron {
+        transform: rotate(90deg);
+        transition: all 200ms ease-in-out;
+        height: 20px;
+        margin-bottom: 0;
+        &.open {
+          transform: rotate(-90deg);
+        }
+      }
+      .dropdown {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        right: 0;
+        top: 27px;
+        a {
+          background-color: $gray3;
+          transition: all 200ms ease-in-out;
+          padding: 10px 15px;
+          cursor: pointer;
+          &:hover {
+            background-color: $gray2;
+          }
+        }
+      }
+      .network {
+        margin-left: 20px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        cursor: pointer;
+        .indicator {
+          margin-right: 5px;
+          width: 5px;
+          height: 13px;
+          background-color: $green;
+          border-radius: 4px;
+        }
+      }
+    }  
+  }
+
+  .directive {
+    margin: 20px 0;
+    font-size: 1.2em;
+  }
+
+  .loader {
+    display: flex;
+    flex-direction: column;
+    .button {
+      margin-top: 20px;
+      align-self: center;
+    }
+  }
+
+  .wallets {
+    display: flex;
+    flex-direction: row;
+    width: 600px;
+    justify-content: space-between;
+    margin-top: 20px;
+    @include mobile {
+      flex-direction: column;
+      width: 100%;
+    }
+    .wallet {
+      width: 30%;
+      border: 2px solid transparent;
+      border-radius: 4px;
+      transition: all 200ms ease-in-out;
+      display: flex;
+      flex-direction: column;
+      color: $gray1;
+      background-color: $gray6;
+      align-items: center;
+      box-sizing: border-box;
+      padding: 20px;
+      text-align: center;
+      &.disabled {
+        pointer-events: none;
+        opacity: 0.4;
+      }
+      @include mobile {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+      h3 {
+        font-size: 1em;
+        margin-top: 10px;
+      }
+      img {
+        height: 50px;
+        width: 50px;
+        border-radius: 8px;
+      }
+      .walletconnect {
+        border: 1px solid #389BFC;
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 50px;
+        height: 50px;
+        img {
+          height: 23px;
+          width: auto;
+          margin-left: 2px;
+        }
+      }
+      & > div {
+        font-size: 0.8em;
+        @include mobile {
+          font-size: 1em;
+        }
+      }
+      &:hover {
+        cursor: pointer;
+        border: 2px solid $blue;
+      }
+    }
+  }
+}

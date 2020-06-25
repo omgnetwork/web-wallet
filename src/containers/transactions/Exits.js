@@ -20,9 +20,8 @@ import { useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
 
 import config from 'util/config';
-import networkService from 'services/networkService';
-import { selectAllQueues, selectQueues } from 'selectors/queueSelector';
 import { selectPendingExits, selectExitedExits } from 'selectors/exitSelector';
+import { selectLoading } from 'selectors/loadingSelector';
 
 import ProcessExitsModal from 'containers/modals/processexit/ProcessExitsModal';
 import Transaction from 'components/transaction/Transaction';
@@ -36,38 +35,11 @@ function Exits ({ searchHistory }) {
   const [ page, setPage ] = useState(1);
   const [ processExitModal, setProcessExitModal ] = useState(false);
 
-  const queues = useSelector(selectAllQueues, isEqual);
-  const rawQueues = useSelector(selectQueues, isEqual);
   const pendingExits = orderBy(useSelector(selectPendingExits, isEqual), i => i.blockNumber, 'desc');
   const exitedExits = orderBy(useSelector(selectExitedExits, isEqual), i => i.blockNumber, 'desc');
+  const loading = useSelector(selectLoading([ 'EXIT/GETALL' ]));
 
-  // add extra data to pending exits using data from the queue
-  function enhanceExits (exits) {
-    return exits.map(i => {
-      const exitId = networkService.web3.utils.hexToNumberString(i.returnValues.exitId._hex);
-      const queuedExit = queues.find(i => i.exitId === exitId);
-      let queuePosition;
-      let queueLength;
-      if (queuedExit) {
-        const tokenQueue = rawQueues[queuedExit.currency];
-        queuePosition = tokenQueue.findIndex(x => x.exitId === exitId);
-        queueLength = tokenQueue.length;
-      }
-      return {
-        ...i,
-        ...queuedExit
-          ? {
-            exitableAt: queuedExit.exitableAt,
-            currency: queuedExit.currency,
-            queuePosition: queuePosition + 1,
-            queueLength
-          }
-          : {}
-      };
-    });
-  }
-
-  const _pendingExits = enhanceExits(pendingExits).filter(i => {
+  const _pendingExits = pendingExits.filter(i => {
     return i.transactionHash.includes(searchHistory);
   });
 
@@ -78,11 +50,19 @@ function Exits ({ searchHistory }) {
   const renderPending = _pendingExits.map((i, index) => {
     const exitableMoment = moment.unix(i.exitableAt);
     const isExitable = moment().isAfter(exitableMoment);
+
+    function getStatus () {
+      if (i.status === 'Confirmed' && i.pendingPercentage >= 100) {
+        return 'In Challenge Period';
+      }
+      return i.status;
+    }
+
     return (
       <Transaction
         key={`pending-${index}`}
         button={
-          isExitable
+          i.exitableAt && isExitable
             ? {
               onClick: () => setProcessExitModal(i),
               text: 'Process Exit'
@@ -90,16 +70,12 @@ function Exits ({ searchHistory }) {
             : undefined
         }
         link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
-        status={
-          i.status === 'Confirmed' && i.pendingPercentage >= 100
-            ? 'Challenge Period'
-            : i.status
-        }
+        status={getStatus()}
         subStatus={`Block ${i.blockNumber}`}
         statusPercentage={i.pendingPercentage <= 100 ? i.pendingPercentage : ''}
-        title={truncate(i.transactionHash, 10, 4, '...')}
+        title={truncate(i.transactionHash, 6, 4, '...')}
         midTitle={i.exitableAt ? `Exitable ${exitableMoment.format('lll')}` : ''}
-        subTitle={i.currency ? truncate(i.currency, 10, 4, '...'): ''}
+        subTitle={i.currency ? truncate(i.currency, 6, 4, '...'): ''}
       />
     );
   });
@@ -111,7 +87,7 @@ function Exits ({ searchHistory }) {
         link={`${config.etherscanUrl}/tx/${i.transactionHash}`}
         status='Exited'
         subStatus={`Block ${i.blockNumber}`}
-        title={truncate(i.transactionHash, 10, 4, '...')}
+        title={truncate(i.transactionHash, 6, 4, '...')}
       />
     );
   });
@@ -139,8 +115,11 @@ function Exits ({ searchHistory }) {
               onClickNext={() => setPage(page + 1)}
               onClickBack={() => setPage(page - 1)}
             />
-            {!allExits.length && (
+            {!allExits.length && !loading && (
               <div className={styles.disclaimer}>No exit history.</div>
+            )}
+            {!allExits.length && loading && (
+              <div className={styles.disclaimer}>Loading...</div>
             )}
             {React.Children.toArray(paginatedExits)}
           </div>

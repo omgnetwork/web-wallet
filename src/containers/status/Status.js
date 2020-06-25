@@ -16,14 +16,15 @@ limitations under the License. */
 import React from 'react';
 import { useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
-import { Tooltip } from '@material-ui/core';
 import { Dvr, GitHub } from '@material-ui/icons';
 
 import { selectConnection, selectByzantine, selectIsSynced } from 'selectors/statusSelector';
 
 import Info from 'components/info/Info';
 import Copy from 'components/copy/Copy';
+import Tooltip from 'components/tooltip/Tooltip';
 import config from 'util/config';
+import { getShortNetworkName } from 'util/networkName';
 import networkService from 'services/networkService';
 
 import * as styles from './Status.module.scss';
@@ -34,10 +35,7 @@ function Status ({ className }) {
   const isSynced = useSelector(selectIsSynced);
 
   const renderNoConnection = (
-    <Tooltip
-      title='Currently cannot connect to the Watcher. Either the Watcher is not operational or there is a connection issue. Please wait while we retry the connection.'
-      arrow
-    >
+    <Tooltip title='Currently cannot connect to the Watcher. Either the Watcher is not operational or there is a connection issue. Please wait while we retry the connection.'>
       <div className={styles.indicator}>
         <div
           className={[
@@ -57,9 +55,7 @@ function Status ({ className }) {
       title={
         byzantineChain
           ? 'An unhealthy status will result from byzantine conditions on the network. Users should not transact on the network until the byzantine conditions are cleared.'
-          : 'A healthy status means there are no byzantine conditions on the network.'
-      }
-      arrow
+          : 'A healthy status means there are no byzantine conditions on the network.'}
     >
       <div className={styles.indicator}>
         <div
@@ -86,9 +82,7 @@ function Status ({ className }) {
       title={
         isSynced
           ? 'There is a strong connection with the Watcher.'
-          : 'A syncing status indicates that the Watcher is still syncing with Ethereum. Transaction status will be delayed so users should wait until the Watcher is fully synced.'
-      }
-      arrow
+          : 'A syncing status indicates that the Watcher is still syncing with Ethereum. Transaction status will be delayed so users should wait until the Watcher is fully synced.'}
     >
       <div className={styles.indicator}>
         <div
@@ -130,8 +124,12 @@ function Status ({ className }) {
               value: watcherConnection ? renderChainHealth : ''
             },
             {
+              title: 'Environment',
+              value: getShortNetworkName()
+            },
+            {
               header: 'Plasma Framework Address',
-              title: truncate(networkService.plasmaContractAddress, 10, 4, '...'),
+              title: truncate(networkService.plasmaContractAddress, 6, 4, '...'),
               value: <Copy value={networkService.plasmaContractAddress} />
             },
             {

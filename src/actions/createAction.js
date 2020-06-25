@@ -25,14 +25,6 @@ export function createAction (key, asyncAction, customErrorMessage) {
       dispatch({ type: `${key}/SUCCESS`, payload: response });
       return true;
     } catch (error) {
-
-      // toggle to report every ui error to sentry, useful for debugging remote dapp browsers
-      const remoteDebug = false;
-      if (remoteDebug) {
-        console.log(`key: ${key}, action: ${asyncAction} errorObject: ${JSON.stringify(error)}`);
-        Sentry.captureException(error);
-      }
-
       // cancel request loading state
       dispatch({ type: `${key}/ERROR` });
 
@@ -42,6 +34,13 @@ export function createAction (key, asyncAction, customErrorMessage) {
       // if null returned, error is intentionally silenced
       if (!sanitizedError) {
         return false;
+      }
+
+      // toggle to report ui errors to sentry
+      const logAllErrors = true;
+      if (logAllErrors) {
+        console.log(`key: ${key}, action: ${asyncAction} errorObject: ${JSON.stringify(error)}`);
+        Sentry.captureException(error);
       }
 
       dispatch({ type: 'UI/ERROR/UPDATE', payload: customErrorMessage || sanitizedError });

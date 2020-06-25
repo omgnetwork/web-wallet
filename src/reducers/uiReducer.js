@@ -18,6 +18,7 @@ const initialState = {
   transferModal: false,
   exitModal: false,
   mergeModal: false,
+  wrongNetworkModal: false,
   alert: null,
   error: null
 };

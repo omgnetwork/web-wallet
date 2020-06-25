@@ -57,7 +57,7 @@ function Account () {
     <div className={styles.Account}>
       <h2>Account</h2>
       <div className={styles.wallet}>
-        <span className={styles.address}>{`Wallet Address : ${networkService.account ? truncate(networkService.account, 10, 4, '...') : ''}`}</span>
+        <span className={styles.address}>{`Wallet Address : ${networkService.account ? truncate(networkService.account, 6, 4, '...') : ''}`}</span>
         <Copy value={networkService.account} />
       </div>
 
