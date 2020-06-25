@@ -111,9 +111,7 @@ function WalletPicker ({ onEnable }) {
 
   useEffect(() => {
     if (walletEnabled && wrongNetwork) {
-      setTimeout(() => {
-        dispatch(openModal('wrongNetworkModal'));
-      }, 300);
+      dispatch(openModal('wrongNetworkModal'));
     }
   }, [ dispatch, walletEnabled, wrongNetwork ]);
 
