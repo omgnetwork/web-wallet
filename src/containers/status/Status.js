@@ -105,12 +105,6 @@ function Status ({ className }) {
     </Tooltip>
   );
 
-  const renderWalletProvider = (
-    <div className={styles.walletProvider}>
-      Browser Wallet
-    </div>
-  );
-
   return (
     <div
       className={[
@@ -132,10 +126,6 @@ function Status ({ className }) {
             {
               title: 'Environment',
               value: getShortNetworkName()
-            },
-            {
-              title: 'Wallet Provider',
-              value: renderWalletProvider
             },
             {
               header: 'Plasma Framework Address',
