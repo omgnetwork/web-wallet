@@ -13,9 +13,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import * as Sentry from '@sentry/browser';
-
+import errorService from 'services/errorService';
 import sanitizeError from 'util/sanitizeError';
+import config from 'util/config';
 
 export function createAction (key, asyncAction, customErrorMessage) {
   return async function (dispatch) {
@@ -36,11 +36,10 @@ export function createAction (key, asyncAction, customErrorMessage) {
         return false;
       }
 
-      // toggle to report ui errors to sentry
-      const logAllErrors = true;
-      if (logAllErrors) {
+      // toggle to report all ui errors to sentry
+      if (config.logUiErrors) {
         console.log(`key: ${key}, action: ${asyncAction} errorObject: ${JSON.stringify(error)}`);
-        Sentry.captureException(error);
+        errorService.log(error);
       }
 
       dispatch({ type: 'UI/ERROR/UPDATE', payload: customErrorMessage || sanitizedError });

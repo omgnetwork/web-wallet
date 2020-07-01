@@ -13,25 +13,22 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import TagManager from 'react-gtm-module';
+import * as Sentry from '@sentry/browser';
 
 import config from 'util/config';
-import store from 'store';
 
-import App from 'containers/app/App';
-
-import './index.scss';
-
-if (config.gtmId) {
-  TagManager.initialize({ gtmId: config.gtmId });
+if (config.sentry) {
+  Sentry.init({ dsn: config.sentry });
 }
 
-ReactDOM.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  document.getElementById('root')
-);
+class ErrorService {
+  log (error) {
+    console.warn(error.message);
+    if (config.sentry) {
+      Sentry.captureException(error);
+    }
+  }
+}
+
+const errorService = new ErrorService();
+export default errorService;

@@ -26,6 +26,7 @@ REACT_APP_ALTERNATE_WALLETS=  *optional* other web wallets hosted on different e
 REACT_APP_SENTRY_DSN=         *optional* sentry dsn handler
 REACT_APP_GTM_ID=             *optional* google tag manager id (GTM-XXXXXXX)
 REACT_APP_RPC_PROXY=          *optional, required for WalletConnect support* rpc url for connection to a remote ethereum node
+REACT_APP_LOG_UI_ERRORS=      *optional whether to log all ui errors to sentry
 ```
 
 3. Make sure you are using the correct version of Node
