@@ -128,7 +128,7 @@ function Status ({ className }) {
               : styles.unhealthyText
           }
         >
-          {isWatcherSynced ? 'Connected' : 'Syncing'}
+          {isWatcherSynced ? 'Synced' : 'Syncing'}
         </span>
       </div>
     </Tooltip>
