@@ -33,7 +33,7 @@ function Status ({ className }) {
   const watcherConnection = useSelector(selectConnection);
   const byzantineChain = useSelector(selectByzantine);
   const isSynced = useSelector(selectIsSynced);
-  const isWatcherSynced = useSelector(selectIsWatcherSynced)
+  const isWatcherSynced = useSelector(selectIsWatcherSynced);
 
   const renderNoConnection = (
     <Tooltip title='Currently cannot connect to the Watcher. Either the Watcher is not operational or there is a connection issue. Please wait while we retry the connection.'>
