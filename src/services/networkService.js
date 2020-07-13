@@ -191,7 +191,7 @@ class NetworkService {
       });
 
     const blockGetterHeight = services_synced_heights.find(i => i.service === 'block_getter' ).height
-    const watcherSynced = last_seen_eth_block_number - blockGetterHeight <= 20
+    const watcherSynced = last_seen_eth_block_number - blockGetterHeight <= config.syncThreshhold
 
     return {
       connection: !!byzantine_events,
