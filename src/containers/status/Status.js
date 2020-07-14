@@ -18,7 +18,7 @@ import { useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
 import { Dvr, GitHub } from '@material-ui/icons';
 
-import { selectConnection, selectByzantine, selectIsSynced, selectIsWatcherSynced } from 'selectors/statusSelector';
+import { selectConnection, selectByzantine, selectIsSynced} from 'selectors/statusSelector';
 
 import Info from 'components/info/Info';
 import Copy from 'components/copy/Copy';
@@ -33,7 +33,6 @@ function Status ({ className }) {
   const watcherConnection = useSelector(selectConnection);
   const byzantineChain = useSelector(selectByzantine);
   const isSynced = useSelector(selectIsSynced);
-  const isWatcherSynced = useSelector(selectIsWatcherSynced);
 
   const renderNoConnection = (
     <Tooltip title='Currently cannot connect to the Watcher. Either the Watcher is not operational or there is a connection issue. Please wait while we retry the connection.'>
@@ -82,8 +81,8 @@ function Status ({ className }) {
     <Tooltip
       title={
         isSynced
-          ? 'There is a strong connection with the Watcher.'
-          : 'A syncing status indicates that the Watcher is still syncing with Ethereum. Transaction status will be delayed so users should wait until the Watcher is fully synced.'}
+          ? 'Watcher is caught up with the current child chain blocks'
+          : 'Watcher syncing status indicates that the Watcher is still catching up with the most recent child chain blocks. Transaction status will be delayed so users should wait until the Watcher is fully synced.'}
     >
       <div className={styles.indicator}>
         <div
@@ -106,33 +105,33 @@ function Status ({ className }) {
     </Tooltip>
   );
 
-  const renderWatcherSynced = (
-    <Tooltip
-      title={
-        isWatcherSynced
-          ? 'Watcher is synced with the child chain'
-          : 'Watcher syncing status indicates that the Watcher is still syncing with the child chain. Transaction status will be delayed so users should wait until the Watcher is fully synced.'}
-    >
-      <div className={styles.indicator}>
-        <div
-          className={[
-            styles.statusCircle,
-            isWatcherSynced ? styles.healthy : '',
-            !isWatcherSynced ? styles.unhealthy : ''
-          ].join(' ')}
-        />
-        <span
-          className={
-            isWatcherSynced
-              ? styles.healthyText
-              : styles.unhealthyText
-          }
-        >
-          {isWatcherSynced ? 'Synced' : 'Syncing'}
-        </span>
-      </div>
-    </Tooltip>
-  );
+  // const renderWatcherSynced = (
+  //   <Tooltip
+  //     title={
+  //       isWatcherSynced
+  //         ? 'Watcher is synced with the child chain'
+  //         : 'Watcher syncing status indicates that the Watcher is still syncing with the child chain. Transaction status will be delayed so users should wait until the Watcher is fully synced.'}
+  //   >
+  //     <div className={styles.indicator}>
+  //       <div
+  //         className={[
+  //           styles.statusCircle,
+  //           isWatcherSynced ? styles.healthy : '',
+  //           !isWatcherSynced ? styles.unhealthy : ''
+  //         ].join(' ')}
+  //       />
+  //       <span
+  //         className={
+  //           isWatcherSynced
+  //             ? styles.healthyText
+  //             : styles.unhealthyText
+  //         }
+  //       >
+  //         {isWatcherSynced ? 'Synced' : 'Syncing'}
+  //       </span>
+  //     </div>
+  //   </Tooltip>
+  // );
 
   return (
     <div
@@ -147,10 +146,6 @@ function Status ({ className }) {
             {
               title: 'Watcher Status',
               value: watcherConnection ? renderWatcherStatus : renderNoConnection
-            },
-            {
-              title: 'Watcher Synced',
-              value: watcherConnection ? renderWatcherSynced : renderNoConnection
             },
             {
               title: 'Network Status',

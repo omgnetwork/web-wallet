@@ -27,6 +27,5 @@ export default {
   sentry: env('SENTRY_DSN'),
   gtmId: env('GTM_ID'),
   rpcProxy: env('RPC_PROXY'),
-  syncThreshhold: env('SYNC_THRESHHOLD') || 20,
   logUiErrors: env('LOG_UI_ERRORS')
 };

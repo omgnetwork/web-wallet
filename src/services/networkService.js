@@ -176,7 +176,6 @@ class NetworkService {
 
   async checkStatus () {
     const { byzantine_events, last_seen_eth_block_timestamp, last_seen_eth_block_number, services_synced_heights } = await this.childChain.status();
-    const currentUnix = Math.round((new Date()).getTime() / 1000);
 
     const filteredByzantineEvents = byzantine_events
       .filter(i => {
@@ -191,13 +190,12 @@ class NetworkService {
       });
 
     const blockGetterHeight = services_synced_heights.find(i => i.service === 'block_getter' ).height;
-    const watcherSynced = last_seen_eth_block_number - blockGetterHeight <= config.syncThreshhold;
+    const watcherSynced = last_seen_eth_block_number - blockGetterHeight <= config.checkSyncInterval;
 
     return {
       connection: !!byzantine_events,
       byzantine: !!filteredByzantineEvents.length,
       watcherSynced: watcherSynced,
-      secondsSinceLastSync: currentUnix - last_seen_eth_block_timestamp,
       lastSeenBlock: last_seen_eth_block_timestamp
     };
   }
