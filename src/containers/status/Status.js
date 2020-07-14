@@ -105,34 +105,6 @@ function Status ({ className }) {
     </Tooltip>
   );
 
-  // const renderWatcherSynced = (
-  //   <Tooltip
-  //     title={
-  //       isWatcherSynced
-  //         ? 'Watcher is synced with the child chain'
-  //         : 'Watcher syncing status indicates that the Watcher is still syncing with the child chain. Transaction status will be delayed so users should wait until the Watcher is fully synced.'}
-  //   >
-  //     <div className={styles.indicator}>
-  //       <div
-  //         className={[
-  //           styles.statusCircle,
-  //           isWatcherSynced ? styles.healthy : '',
-  //           !isWatcherSynced ? styles.unhealthy : ''
-  //         ].join(' ')}
-  //       />
-  //       <span
-  //         className={
-  //           isWatcherSynced
-  //             ? styles.healthyText
-  //             : styles.unhealthyText
-  //         }
-  //       >
-  //         {isWatcherSynced ? 'Synced' : 'Syncing'}
-  //       </span>
-  //     </div>
-  //   </Tooltip>
-  // );
-
   return (
     <div
       className={[
