@@ -81,8 +81,8 @@ function Status ({ className }) {
     <Tooltip
       title={
         isSynced
-          ? 'There is a strong connection with the Watcher.'
-          : 'A syncing status indicates that the Watcher is still syncing with Ethereum. Transaction status will be delayed so users should wait until the Watcher is fully synced.'}
+          ? 'Watcher is caught up with the current child chain blocks'
+          : 'Watcher syncing status indicates that the Watcher is still catching up with the most recent child chain blocks. Transaction status will be delayed so users should wait until the Watcher is fully synced.'}
     >
       <div className={styles.indicator}>
         <div
