@@ -18,7 +18,7 @@ import { useSelector } from 'react-redux';
 import truncate from 'truncate-middle';
 import { Dvr, GitHub } from '@material-ui/icons';
 
-import { selectConnection, selectByzantine, selectIsSynced} from 'selectors/statusSelector';
+import { selectConnection, selectByzantine, selectIsSynced } from 'selectors/statusSelector';
 
 import Info from 'components/info/Info';
 import Copy from 'components/copy/Copy';

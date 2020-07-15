@@ -21,10 +21,6 @@ export function selectByzantine (state) {
   return state.status.byzantine;
 }
 
-export function selectIsWatcherSynced (state) {
-  return state.status.watcherSynced;
-}
-
 export function selectIsSynced (state) {
   return state.status.watcherSynced;
 }
