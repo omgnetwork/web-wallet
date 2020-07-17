@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import networkService from 'services/networkService';
+import { getToken } from 'actions/tokenAction';
+import BigNumber from 'bignumber.js';
 import JSON5 from 'json5';
 
 async function sanitizeError (error) {
@@ -25,6 +27,19 @@ async function sanitizeError (error) {
   // ignore metamask rpc header not found errors
   if (error.code === -32000) {
     return null;
+  }
+
+  // web3 js create UTXOs error
+  // Insufficient funds. Needs ${diff.toString()} more of ${i.currency} to cover payments and fees
+  if (error.message.includes('Insufficient funds.')) {
+    const tokenAddress = error.message.split(' ').find(i => i.startsWith('0x'))
+    const token = await getToken(tokenAddress)
+    const tokenAmount = error.message.split(' ').find((i) => {
+      return i.match(/(?!0x)\d*/)[0] !== ""
+    })
+    BigNumber.set({ DECIMAL_PLACES: token.decimals })
+    const decimalAmount = new Bignumber(tokenAmount)
+    return `Insufficient funds, Needs ${decimalAmount.toString()} more of ${tokenAddress} to cover payments and fee` 
   }
 
   // try get reason from evm error message
