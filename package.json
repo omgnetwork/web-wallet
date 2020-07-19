@@ -18,7 +18,7 @@
     "ethereumjs-util": "^7.0.1",
     "human-standard-token-abi": "^2.0.0",
     "json5": "^2.1.2",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "moment": "^2.24.0",
     "node-sass": "^4.13.0",
     "numbro": "^2.1.2",
