@@ -29,7 +29,7 @@ export function createAction (key, asyncAction, customErrorMessage) {
       dispatch({ type: `${key}/ERROR` });
 
       // show error in ui
-      const sanitizedError = await sanitizeError(error);
+      const sanitizedError = await errorService.sanitizeError(error);
 
       // if null returned, error is intentionally silenced
       if (!sanitizedError) {
