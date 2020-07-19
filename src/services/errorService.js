@@ -46,13 +46,13 @@ class ErrorService {
 
     // omg-js create UTXOs insufficient funds error
     if (error.message && error.message.includes('Insufficient funds. Needs ')) {
-      const tokenAddress = error.message.split(' ').find(i => i.startsWith('0x'))
-      const token = await getToken(tokenAddress)
+      const tokenAddress = error.message.split(' ').find(i => i.startsWith('0x'));
+      const token = await getToken(tokenAddress);
       const tokenAmount = error.message.split(' ').find((i) => {
-        return i.match(/(?!0x)\d*/)[0] !== ""
-      })
-      const decimalAmount = logAmount(tokenAmount, token.decimals)
-      return `Insufficient funds. Needs ${decimalAmount.toString()} more of ${token.name} to cover payments and fees`
+        return i.match(/(?!0x)\d*/)[0] !== '';
+      });
+      const decimalAmount = logAmount(tokenAmount, token.decimals);
+      return 'Insufficient funds. Needs '.concat(decimalAmount.toString(), ' more of ', token.name, ' to cover payments and fees');
     }
 
     // try get reason from evm error message

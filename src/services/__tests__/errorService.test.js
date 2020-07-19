@@ -51,8 +51,8 @@ describe('sanitizeError', () => {
       message: 'Insufficient funds. Needs 100000000000000000 more of 0x123 to cover payments and fees'
     };
     // this should fetch OMG of 18 decimals
-    const res = await errorService.sanitizeError(error)
-    expect(res).toBe('Insufficient funds. Needs 0.1 more of OMG to cover payments and fees')
+    const res = await errorService.sanitizeError(error);
+    expect(res).toBe('Insufficient funds. Needs 0.1 more of OMG to cover payments and fees');
     // expect getToken to be called
     const expectedActions = [ {
       type: 'TOKEN/GET/SUCCESS',
@@ -62,8 +62,8 @@ describe('sanitizeError', () => {
         name: 'OMG'
       }
     } ];
-    expect(store.getActions()).toEqual(expectedActions)
-  })
+    expect(store.getActions()).toEqual(expectedActions);
+  });
 
   it('should return reason on EVM error if possible', async () => {
     const error = { message: exampleEVMError };
