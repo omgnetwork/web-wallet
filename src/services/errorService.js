@@ -17,7 +17,6 @@ import * as Sentry from '@sentry/browser';
 import networkService from 'services/networkService';
 import { getToken } from 'actions/tokenAction';
 import { logAmount } from 'util/amountConvert';
-import BigNumber from 'bignumber.js';
 import JSON5 from 'json5';
 import config from 'util/config';
 
