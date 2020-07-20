@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import errorService from 'services/errorService';
-import sanitizeError from 'util/sanitizeError';
 import config from 'util/config';
 
 export function createAction (key, asyncAction, customErrorMessage) {
@@ -29,7 +28,7 @@ export function createAction (key, asyncAction, customErrorMessage) {
       dispatch({ type: `${key}/ERROR` });
 
       // show error in ui
-      const sanitizedError = await sanitizeError(error);
+      const sanitizedError = await errorService.sanitizeError(error);
 
       // if null returned, error is intentionally silenced
       if (!sanitizedError) {
