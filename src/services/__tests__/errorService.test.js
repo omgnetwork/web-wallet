@@ -63,6 +63,14 @@ describe('sanitizeError', () => {
     expect(store.getActions()).toEqual(expectedActions);
   });
 
+  it('should return sensible insufficient amount error on unexpected error message', async () => {
+    const error = {
+      message: 'Insufficient funds. Needs 100000000000000000 of FOOBARBAZ'
+    };
+    const res = await errorService.sanitizeError(error);
+    expect(res).toBe('Insufficient funds to cover payments and fees');
+  });
+
   it('should return reason on EVM error if possible', async () => {
     const error = { message: exampleEVMError };
     const res = await errorService.sanitizeError(error);
