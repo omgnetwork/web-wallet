@@ -26,6 +26,7 @@ import tokenReducer from './tokenReducer';
 import feeReducer from './feeReducer';
 import gasReducer from './gasReducer';
 import uiReducer from './uiReducer';
+import setupReducer from './setupReducer';
 
 const rootReducer = combineReducers({
   loading: loadingReducer,
@@ -38,7 +39,8 @@ const rootReducer = combineReducers({
   token: tokenReducer,
   fees: feeReducer,
   gas: gasReducer,
-  ui: uiReducer
+  ui: uiReducer,
+  setup: setupReducer
 });
 
 export default rootReducer;
