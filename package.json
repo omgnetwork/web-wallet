@@ -69,6 +69,7 @@
     "audit-ci": "^2.5.1"
   },
   "resolutions": {
-    "**/**/**/http-proxy": "^1.18.1"    
+    "**/**/**/http-proxy": "^1.18.1",
+    "**/elliptic":"^6.5.3"
   }
 }
