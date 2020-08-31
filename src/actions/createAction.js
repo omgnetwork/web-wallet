@@ -37,7 +37,7 @@ export function createAction (key, asyncAction, customErrorMessage) {
 
       // toggle to report all ui errors to sentry
       if (config.logUiErrors) {
-        console.log(`key: ${key}, action: ${asyncAction} errorObject: ${JSON.stringify(error)}`);
+        console.log(`key: ${key}\naction: ${asyncAction}\nerrorObject: ${JSON.stringify(error)}`);
         errorService.log(error);
       }
 

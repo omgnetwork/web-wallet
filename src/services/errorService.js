@@ -24,11 +24,28 @@ if (config.sentry) {
   Sentry.init({ dsn: config.sentry });
 }
 
+// skip error logging
+const noLogErrors = [
+  'user denied',
+  'user rejected',
+  'server is not ready to handle the request',
+  'insufficient funds',
+  'network error',
+  'transaction has been reverted'
+];
+
+// used to prevent error spam from a single session
 const errorCache = [];
 
 class ErrorService {
   log (error) {
-    console.warn(error.message);
+    // skip logging if in defined list
+    for (const i of noLogErrors) {
+      if (error.message.toLowerCase().includes(i)) {
+        return;
+      }
+    }
+
     if (config.sentry) {
       if (errorCache.includes(error.message)) {
         // if message already seen in this session, ignore it
@@ -41,8 +58,11 @@ class ErrorService {
 
   async sanitizeError (error) {
     // user sign rejection from metamask
-    if (error.code === 4001) {
-      return error.message;
+    if (
+      error.message.toLowerCase().includes('user denied') ||
+      error.message.toLowerCase().includes('user rejected')
+    ) {
+      return null;
     }
 
     // ignore metamask rpc header not found errors
