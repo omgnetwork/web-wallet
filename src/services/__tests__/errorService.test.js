@@ -27,13 +27,13 @@ describe('sanitizeError', () => {
     jest.clearAllMocks();
   });
 
-  it('should return metamask unsign error', async () => {
+  it('should not return metamask unsign error', async () => {
     const error = {
       code: 4001,
       message: 'MetaMask Tx Signature: User denied transaction signature'
     };
     const res = await errorService.sanitizeError(error);
-    expect(res).toBe(error.message);
+    expect(res).toBe(null);
   });
 
   it('should ignore metamask -32000 header not found error', async () => {

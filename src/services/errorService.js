@@ -59,8 +59,8 @@ class ErrorService {
   async sanitizeError (error) {
     // user sign rejection from metamask
     if (
-      error.message.toLowerCase().includes('user denied') ||
-      error.message.toLowerCase().includes('user rejected')
+      error.message && error.message.toLowerCase().includes('user denied') ||
+      error.message && error.message.toLowerCase().includes('user rejected')
     ) {
       return null;
     }
