@@ -14,17 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 const initialState = {
-    walletMethod: null
-  };
-  
+  walletMethod: null
+};
+
 function setupReducer (state = initialState, action) {
-switch (action.type) {
+  switch (action.type) {
     case 'SETUP/WALLET_METHOD/SET':
-    return { ...state, walletMethod: action.payload };
+      return { ...state, walletMethod: action.payload };
     default:
-    return state;
+      return state;
+  }
 }
-}
-  
-  export default setupReducer;
-  
+
+export default setupReducer;

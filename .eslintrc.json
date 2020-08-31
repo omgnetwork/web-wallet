@@ -22,7 +22,10 @@
     "quotes": ["error", "single"],
     "no-case-declarations": "off",
     "react/prop-types": "off",
-    "no-unused-vars": "off"
+    "no-unused-vars": "off",
+    "indent": ["error", 2, { "SwitchCase": 1 }],
+    "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 1 }],
+    "no-trailing-spaces": "error"
   },
   "parserOptions": {
 		"ecmaFeatures": {

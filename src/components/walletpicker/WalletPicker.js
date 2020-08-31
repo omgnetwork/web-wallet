@@ -50,7 +50,7 @@ function WalletPicker ({ onEnable }) {
   const [ showAlternateNetworks, setShowAlternateNetworks ] = useState(false);
 
   const wrongNetworkModalState = useSelector(selectModalState('wrongNetworkModal'));
-  
+
   useEffect(() => {
     async function enableBrowserWallet () {
       const walletEnabled = await networkService.enableBrowserWallet();
@@ -140,7 +140,7 @@ function WalletPicker ({ onEnable }) {
   const browserEnabled = !!window.web3 || !!window.ethereum;
   const walletConnectEnabled = !!config.rpcProxy;
   const walletLinkEnabled = !!config.rpcProxy;
-  
+
   const alternateNetworks = getAlternateNetworks();
 
   return (
@@ -189,7 +189,7 @@ function WalletPicker ({ onEnable }) {
                   {network.name}
                 </a>
               ))}
-              </div>
+            </div>
           </div>
         </div>
 

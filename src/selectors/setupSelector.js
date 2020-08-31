@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 export function selectWalletMethod () {
-    return function (state) {
-      return state.setup['walletMethod'];
-    };
-  }
+  return function (state) {
+    return state.setup['walletMethod'];
+  };
+}

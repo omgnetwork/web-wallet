@@ -80,8 +80,7 @@ function SelectStep ({
     return utxos.filter(i => {
       return i.currency.toLowerCase().includes(searchUTXO.toLowerCase()) ||
         i.tokenInfo.name.toLowerCase().includes(searchUTXO.toLowerCase());
-      })
-      .filter(i => !!i);
+    }).filter(i => !!i);
   }, [ utxos, searchUTXO ]);
 
   function closeModal () {

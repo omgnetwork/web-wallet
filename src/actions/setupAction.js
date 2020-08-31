@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 export function setWalletMethod (methodName) {
-    return function (dispatch) {
-      return dispatch({ type: 'SETUP/WALLET_METHOD/SET', payload: methodName });
-    };
-  }
+  return function (dispatch) {
+    return dispatch({ type: 'SETUP/WALLET_METHOD/SET', payload: methodName });
+  };
+}

@@ -38,14 +38,14 @@ import * as styles from './TransferModal.module.scss';
 
 function TransferModal ({ open }) {
   const dispatch = useDispatch();
-  
+
   const [ currency, setCurrency ] = useState('');
   const [ value, setValue ] = useState('');
   const [ feeToken, setFeeToken ] = useState('');
   const [ recipient, setRecipient ] = useState('');
   const [ metadata, setMetadata ] = useState('');
   const [ usableFees, setUsableFees ] = useState([]);
-  
+
   const balances = useSelector(selectChildchainBalance, isEqual);
   const fees = useSelector(selectFees, isEqual);
 
