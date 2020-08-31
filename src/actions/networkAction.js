@@ -126,14 +126,14 @@ export function approveErc20 (value, currency, gasPrice) {
   return createAction(
     'APPROVE/CREATE',
     () => networkService.approveErc20(value, currency, gasPrice)
-  );  
+  );
 }
 
 export function resetApprove (value, currency, gasPrice) {
   return createAction(
     'APPROVE/RESET',
     () => networkService.resetApprove(value, currency, gasPrice)
-  );  
+  );
 }
 
 export function depositErc20 (value, currency, gasPrice) {

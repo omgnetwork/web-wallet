@@ -39,7 +39,7 @@ function Copy ({ value, light }) {
         </div>
       </CopyToClipboard>
       <Alert open={open} onClose={() => setOpen(false)}>
-        Copied to clipboard! 
+        Copied to clipboard!
       </Alert>
     </div>
   );

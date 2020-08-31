@@ -13,13 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import WrongNetworkModal from 'containers/modals/wrongnetwork/WrongNetworkModal';
 import networkService from 'services/networkService';
 import { selectModalState } from 'selectors/uiSelector';
+import { selectWalletMethod } from 'selectors/setupSelector';
 import { openModal } from 'actions/uiAction';
+import { setWalletMethod } from 'actions/setupAction';
 import config from 'util/config';
 import { getShortNetworkName, getAlternateNetworks } from 'util/networkName';
 
@@ -34,10 +36,15 @@ import * as styles from './WalletPicker.module.scss';
 function WalletPicker ({ onEnable }) {
   const dispatch = useDispatch();
 
-  const [ walletMethod, setWalletMethod ] = useState(null);
   const [ walletEnabled, setWalletEnabled ] = useState(false);
   const [ accountsEnabled, setAccountsEnabled ] = useState(false);
   const [ wrongNetwork, setWrongNetwork ] = useState(false);
+
+  const walletMethod = useSelector(selectWalletMethod());
+  const dispatchSetWalletMethod = useCallback((methodName) => {
+    const action = setWalletMethod(methodName);
+    dispatch(action);
+  }, [ dispatch ]);
 
   const dropdownNode = useRef(null);
   const [ showAlternateNetworks, setShowAlternateNetworks ] = useState(false);
@@ -49,19 +56,19 @@ function WalletPicker ({ onEnable }) {
       const walletEnabled = await networkService.enableBrowserWallet();
       return walletEnabled
         ? setWalletEnabled(true)
-        : setWalletMethod(null);
+        : dispatchSetWalletMethod(null);
     }
     async function enableWalletConnect () {
       const walletEnabled = await networkService.enableWalletConnect();
       return walletEnabled
         ? setWalletEnabled(true)
-        : setWalletMethod(null);
+        : dispatchSetWalletMethod(null);
     }
     async function enableWalletLink () {
       const walletEnabled = await networkService.enableWalletLink();
       return walletEnabled
         ? setWalletEnabled(true)
-        : setWalletMethod(null);
+        : dispatchSetWalletMethod(null);
     }
 
     // clean storage of any references
@@ -81,7 +88,7 @@ function WalletPicker ({ onEnable }) {
     if (walletMethod === 'walletlink') {
       enableWalletLink();
     }
-  }, [ walletMethod ]);
+  }, [ dispatchSetWalletMethod, walletMethod ]);
 
   useEffect(() => {
     async function initializeAccounts () {
@@ -99,7 +106,6 @@ function WalletPicker ({ onEnable }) {
     }
     if (walletEnabled) {
       initializeAccounts();
-      setWalletMethod(null);
     }
   }, [ walletEnabled ]);
 
@@ -126,7 +132,7 @@ function WalletPicker ({ onEnable }) {
   }, []);
 
   function resetSelection () {
-    setWalletMethod(null);
+    dispatchSetWalletMethod(null);
     setWalletEnabled(false);
     setAccountsEnabled(false);
   }
@@ -134,7 +140,7 @@ function WalletPicker ({ onEnable }) {
   const browserEnabled = !!window.web3 || !!window.ethereum;
   const walletConnectEnabled = !!config.rpcProxy;
   const walletLinkEnabled = !!config.rpcProxy;
-  
+
   const alternateNetworks = getAlternateNetworks();
 
   return (
@@ -183,7 +189,7 @@ function WalletPicker ({ onEnable }) {
                   {network.name}
                 </a>
               ))}
-              </div>
+            </div>
           </div>
         </div>
 
@@ -196,7 +202,7 @@ function WalletPicker ({ onEnable }) {
               styles.wallet,
               !browserEnabled ? styles.disabled : ''
             ].join(' ')}
-            onClick={() => setWalletMethod('browser')}
+            onClick={() => dispatchSetWalletMethod('browser')}
           >
             <img src={browserwallet} alt='browserwallet' />
             <h3>Browser Wallet</h3>
@@ -214,7 +220,7 @@ function WalletPicker ({ onEnable }) {
               styles.wallet,
               !walletConnectEnabled ? styles.disabled : ''
             ].join(' ')}
-            onClick={() => setWalletMethod('walletconnect')}
+            onClick={() => dispatchSetWalletMethod('walletconnect')}
           >
             <div className={styles.walletconnect}>
               <img src={walletconnect} alt='walletconnect' />
@@ -227,7 +233,7 @@ function WalletPicker ({ onEnable }) {
               styles.wallet,
               !walletLinkEnabled ? styles.disabled : ''
             ].join(' ')}
-            onClick={() => setWalletMethod('walletlink')}
+            onClick={() => dispatchSetWalletMethod('walletlink')}
           >
             <img src={coinbase} alt='coinbase' />
             <h3>WalletLink</h3>

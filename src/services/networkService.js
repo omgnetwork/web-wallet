@@ -539,7 +539,6 @@ class NetworkService {
     return await this.getDepositStatus(deposit);
   }
 
-
   // run on poll to check status of any 'pending' deposits
   async checkPendingDepositStatus () {
     const state = store.getState();

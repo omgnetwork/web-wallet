@@ -14,17 +14,25 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import reduxThunk from 'redux-thunk';
+import * as Sentry from '@sentry/react';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { createStore, applyMiddleware } from 'redux';
 import reducers from 'reducers';
 
 const initialState = {};
 
+const sentryReduxEnhancer = Sentry.createReduxEnhancer({
+  configureScopeWithState: (scope, state) => {
+    scope.setTag('wallet-method', state.setup.walletMethod);
+  }
+});
+
 const store = createStore(
   reducers,
   initialState,
   composeWithDevTools (
-    applyMiddleware(reduxThunk)
+    applyMiddleware(reduxThunk),
+    sentryReduxEnhancer
   )
 );
 

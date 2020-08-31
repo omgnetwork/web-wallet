@@ -50,7 +50,7 @@ function DepositModal ({ open }) {
   const handleClose = useCallback(() => {
     setCurrency(ETH);
     setValue('');
-    setStep('INPUT_STEP');    
+    setStep('INPUT_STEP');
     dispatch(closeModal('depositModal'));
   }, [ dispatch ]);
 

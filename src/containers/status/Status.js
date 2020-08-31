@@ -133,12 +133,12 @@ function Status ({ className }) {
               value: <Copy value={networkService.plasmaContractAddress} />
             },
             {
-              header: 'Watcher URL', 
+              header: 'Watcher URL',
               title: config.watcherUrl,
               value: <Copy value={config.watcherUrl} />
             },
             {
-              header: 'Block Explorer', 
+              header: 'Block Explorer',
               title: config.blockExplorerUrl,
               value: (
                 <a

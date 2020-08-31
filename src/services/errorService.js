@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '@sentry/react';
 import networkService from 'services/networkService';
 import { getToken } from 'actions/tokenAction';
 import { logAmount } from 'util/amountConvert';

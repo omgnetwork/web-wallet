@@ -55,14 +55,14 @@ function Transaction ({
               status === 'Failed' ? styles.failed : ''
             ].join(' ')}
           />
-            <span>{status}</span>
-            {status === 'Pending' && !!statusPercentage && (
-              <Tooltip title={tooltip}>
-                <span className={styles.percentage}>
-                  {`(${Math.max(statusPercentage, 0)}%)`}
-                </span>
-              </Tooltip>
-            )}
+          <span>{status}</span>
+          {status === 'Pending' && !!statusPercentage && (
+            <Tooltip title={tooltip}>
+              <span className={styles.percentage}>
+                {`(${Math.max(statusPercentage, 0)}%)`}
+              </span>
+            </Tooltip>
+          )}
         </div>
         <div>{subStatus}</div>
       </div>
@@ -85,7 +85,7 @@ function Transaction ({
         <div>{subTitle}</div>
       </Resolved>
       <div className={styles.right}>
-        {renderValue()} 
+        {renderValue()}
       </div>
     </div>
   );
