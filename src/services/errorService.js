@@ -24,10 +24,17 @@ if (config.sentry) {
   Sentry.init({ dsn: config.sentry });
 }
 
+const errorCache = [];
+
 class ErrorService {
   log (error) {
     console.warn(error.message);
     if (config.sentry) {
+      if (errorCache.includes(error.message)) {
+        // if message already seen in this session, ignore it
+        return;
+      }
+      errorCache.push(error.message);
       Sentry.captureException(error);
     }
   }
@@ -76,7 +83,6 @@ class ErrorService {
     // default to original error message
     return error.message || 'Something went wrong';
   }
-
 }
 
 const errorService = new ErrorService();
