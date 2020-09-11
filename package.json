@@ -6,6 +6,8 @@
     "node": "12.16.1"
   },
   "dependencies": {
+    "@ledgerhq/hw-app-eth": "^5.23.0",
+    "@ledgerhq/hw-transport-webusb": "^5.23.0",
     "@material-ui/core": "^4.8.3",
     "@material-ui/icons": "^4.5.1",
     "@material-ui/lab": "^4.0.0-alpha.39",
@@ -70,6 +72,6 @@
   },
   "resolutions": {
     "**/**/**/http-proxy": "^1.18.1",
-    "**/elliptic":"^6.5.3"
+    "**/elliptic": "^6.5.3"
   }
 }

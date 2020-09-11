@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 /*
 Copyright 2019-present OmiseGO Pte Ltd
 
@@ -14,6 +15,10 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
+
+import Transport from '@ledgerhq/hw-transport-webusb';
+import Eth from '@ledgerhq/hw-app-eth';
+
 import { orderBy, flatten, uniq, get, pickBy, keyBy } from 'lodash';
 import BN from 'bn.js';
 import axios from 'axios';
@@ -300,44 +305,67 @@ class NetworkService {
     });
   }
 
-  // normalize signing methods across wallet providers
-  async signTypedData (typedData) {
-    function isExpectedSignTypedV3Error (message) {
-      if (
-        message.includes('The method eth_signTypedData_v3 does not exist')
-        || message.includes('Invalid JSON RPC response')
-        || message.includes('Cannot read property') // walletlink
-        || message.includes('undefined is not an object') // walletlink safari
-      ) {
-        return true;
-      }
-      return false;
-    }
+  // TODO: see if this works
+  async ledgerSign (typedData) {
+    const typedDataHash = OmgUtil.transaction.getToSignHash(typedData);
+
+    const transport = await Transport.create();
+    const eth = new Eth(transport);
 
     try {
-      const signature = await this.web3.currentProvider.send(
-        'eth_signTypedData_v3',
-        [
-          this.web3.utils.toChecksumAddress(this.account),
-          JSONBigNumber.stringify(typedData)
-        ]
-      );
-      return signature;
+      console.log('hi');
+      const address = await eth.getAddress("44'/60'/0'/0/0");
+      console.log('address: ', address);
+      const message = bufferToHex(typedDataHash);
+      console.log('message: ', message);
+      const res = await eth.signTransaction("44'/60'/0'/0/0", message);
+      console.log('res: ', res);
     } catch (error) {
-      if (!isExpectedSignTypedV3Error(error.message)) {
-        // not an expected error
-        console.log('unexpected signing error: ', error.message);
-        throw error;
-      }
-      // method doesnt exist try another
+      console.log('LEDGER ERROR: ', error);
+      throw error;
     }
+  }
+
+  // normalize signing methods across wallet providers
+  async signTypedData (typedData) {
+    // function isExpectedSignTypedV3Error (message) {
+    //   if (
+    //     message.includes('The method eth_signTypedData_v3 does not exist')
+    //     || message.includes('Invalid JSON RPC response')
+    //     || message.includes('Cannot read property') // walletlink
+    //     || message.includes('undefined is not an object') // walletlink safari
+    //   ) {
+    //     return true;
+    //   }
+    //   return false;
+    // }
+
+    // try {
+    //   const signature = await this.web3.currentProvider.send(
+    //     'eth_signTypedData_v3',
+    //     [
+    //       this.web3.utils.toChecksumAddress(this.account),
+    //       JSONBigNumber.stringify(typedData)
+    //     ]
+    //   );
+    //   return signature;
+    // } catch (error) {
+    //   if (!isExpectedSignTypedV3Error(error.message)) {
+    //     // not an expected error
+    //     console.log('unexpected signing error: ', error.message);
+    //     throw error;
+    //   }
+    //   // method doesnt exist try another
+    // }
 
     // fallback signing method if signTypedData is not implemented by the provider
     const typedDataHash = OmgUtil.transaction.getToSignHash(typedData);
+    console.log('trying normal sign...');
     const signature = await this.web3.eth.sign(
       bufferToHex(typedDataHash),
       this.web3.utils.toChecksumAddress(this.account)
     );
+    console.log('signature: ', signature);
     return signature;
   }
 
@@ -422,7 +450,8 @@ class NetworkService {
       metadata: metadata || OmgUtil.transaction.NULL_METADATA
     });
     const typedData = OmgUtil.transaction.getTypedData(txBody, this.plasmaContractAddress);
-    const signature = await this.signTypedData(typedData);
+    // const signature = await this.signTypedData(typedData);
+    const signature = await this.ledgerSign(typedData);
     const signatures = new Array(txBody.inputs.length).fill(signature);
     const signedTxn = this.childChain.buildSignedTransaction(typedData, signatures);
     const submittedTransaction = await this.childChain.submitTransaction(signedTxn);
