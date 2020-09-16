@@ -66,7 +66,7 @@ describe('createAction', () => {
     const expectedActions = [
       { type: 'TEST/GET/REQUEST' },
       { type: 'TEST/GET/ERROR' },
-      { type: 'UI/ERROR/UPDATE', payload: 'toto-failed' }
+      { type: 'UI/ERROR/UPDATE', payload: 'Something went wrong' }
     ];
     await store.dispatch(
       createAction('TEST/GET', () => fakeAsyncRequestFailure())
@@ -81,22 +81,6 @@ describe('createAction', () => {
     ];
     await store.dispatch(
       createAction('TEST/GET', () => fakeSilencedError())
-    );
-    expect(store.getActions()).toEqual(expectedActions);
-  });
-
-  it('should use custom error message when passed', async () => {
-    const expectedActions = [
-      { type: 'TEST/GET/REQUEST' },
-      { type: 'TEST/GET/ERROR' },
-      { type: 'UI/ERROR/UPDATE', payload: 'custom-error-message' }
-    ];
-    await store.dispatch(
-      createAction(
-        'TEST/GET',
-        () => fakeAsyncRequestFailure(),
-        'custom-error-message'
-      )
     );
     expect(store.getActions()).toEqual(expectedActions);
   });

@@ -15,7 +15,7 @@ limitations under the License. */
 
 import { WebWalletError } from 'services/errorService';
 
-export function createAction (key, asyncAction, customErrorMessage) {
+export function createAction (key, asyncAction) {
   return async function (dispatch) {
     dispatch({ type: `${key}/REQUEST` });
     try {
