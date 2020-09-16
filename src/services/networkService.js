@@ -313,7 +313,7 @@ class NetworkService {
       throw new WebWalletError({
         originalError: error,
         customErrorMessage: 'Could not approve ERC20 for deposit.',
-        reportToSentry: true,
+        reportToSentry: false,
         reportToUi: true
       });
     }
@@ -398,7 +398,7 @@ class NetworkService {
       throw new WebWalletError({
         originalError: error,
         customErrorMessage: 'Could not sign the transaction. Please try again.',
-        reportToSentry: true,
+        reportToSentry: false,
         reportToUi: true
       });
     }
@@ -440,10 +440,14 @@ class NetworkService {
         status: 'Pending'
       };
     } catch (error) {
+      if (error instanceof WebWalletError) {
+        throw error;
+      }
+
       throw new WebWalletError({
         originalError: error,
         customErrorMessage: 'Could not merge utxos. Please try again.',
-        reportToSentry: true,
+        reportToSentry: false,
         reportToUi: true
       });
     }
@@ -538,6 +542,9 @@ class NetworkService {
         status: 'Pending'
       };
     } catch (error) {
+      if (error instanceof WebWalletError) {
+        throw error;
+      }
       throw new WebWalletError({
         originalError: error,
         customErrorMessage: 'Could not create the transaction. Please try again.',

@@ -26,6 +26,5 @@ export default {
   alternateWallets: env('ALTERNATE_WALLETS'),
   sentry: env('SENTRY_DSN'),
   gtmId: env('GTM_ID'),
-  rpcProxy: env('RPC_PROXY'),
-  logUiErrors: env('LOG_UI_ERRORS')
+  rpcProxy: env('RPC_PROXY')
 };
