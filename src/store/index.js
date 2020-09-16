@@ -29,7 +29,7 @@ const sentryReduxEnhancer = Sentry.createReduxEnhancer({
     return {
       status: state.status,
       ui: state.ui,
-      setup: state.setup.walletMethod
+      setup: state.setup
     };
   }
 });
