@@ -23,7 +23,8 @@ if (config.sentry) {
 const errorCache = [];
 const noLogErrors = [
   'user denied',
-  'user rejected'
+  'user rejected',
+  'user canceled'
 ];
 
 export class WebWalletError extends Error {

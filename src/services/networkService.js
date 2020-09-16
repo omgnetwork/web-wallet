@@ -379,7 +379,7 @@ class NetworkService {
         throw new WebWalletError({
           originalError: error,
           customErrorMessage: 'Could not sign the transaction. Please try again.',
-          reportToSentry: true,
+          reportToSentry: false,
           reportToUi: true
         });
       }
