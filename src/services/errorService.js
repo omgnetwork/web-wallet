@@ -43,7 +43,7 @@ export class WebWalletError extends Error {
 
   report (dispatchMethod) {
     if (
-      noLogErrors.find(i => this._originalError.message.toLowerCase().includes(i)) ||
+      noLogErrors.find(i => this._originalError.message && this._originalError.message.toLowerCase().includes(i)) ||
       this._originalError.code === -32000
     ) {
       return;
