@@ -24,7 +24,8 @@ const errorCache = [];
 const noLogErrors = [
   'user denied',
   'user rejected',
-  'user canceled'
+  'user canceled',
+  'user cancelled'
 ];
 
 export class WebWalletError extends Error {
@@ -42,9 +43,10 @@ export class WebWalletError extends Error {
   }
 
   report (dispatchMethod) {
+    const metamaskHeaderNotFoundCode = -3200;
     if (
       noLogErrors.find(i => this._originalError.message && this._originalError.message.toLowerCase().includes(i)) ||
-      this._originalError.code === -32000
+      this._originalError.code === metamaskHeaderNotFoundCode
     ) {
       return;
     }
