@@ -13,10 +13,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import errorService from 'services/errorService';
-import config from 'util/config';
+import { WebWalletError } from 'services/errorService';
 
-export function createAction (key, asyncAction, customErrorMessage) {
+export function createAction (key, asyncAction) {
   return async function (dispatch) {
     dispatch({ type: `${key}/REQUEST` });
     try {
@@ -27,22 +26,17 @@ export function createAction (key, asyncAction, customErrorMessage) {
       // cancel request loading state
       dispatch({ type: `${key}/ERROR` });
 
-      // show error in ui
-      const sanitizedError = await errorService.sanitizeError(error);
+      const _error = error instanceof WebWalletError
+        ? error
+        : new WebWalletError({
+          originalError: error,
+          customErrorMessage: 'Something went wrong',
+          reportToSentry: true,
+          reportToUi: true
+        });
 
-      // if null returned, error is intentionally silenced
-      if (!sanitizedError) {
-        return false;
-      }
-
-      // toggle to report all ui errors to sentry
-      if (config.logUiErrors) {
-        console.log(`key: ${key}, action: ${asyncAction}, errorObject: ${JSON.stringify(error)}`);
-        errorService.log(error);
-      }
-
-      dispatch({ type: 'UI/ERROR/UPDATE', payload: customErrorMessage || sanitizedError });
-      // resolve the result to the view
+      // perform necessary reports
+      _error.report(dispatch);
       return false;
     }
   };

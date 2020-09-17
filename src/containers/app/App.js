@@ -43,7 +43,7 @@ function App () {
         open={!!errorMessage}
         onClose={handleErrorClose}
       >
-        {`Error! ${errorMessage}`}
+        {errorMessage}
       </Alert>
 
       <Alert
