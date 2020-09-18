@@ -213,9 +213,20 @@ class NetworkService {
     }
   }
 
+  async recursiveTransactionFetch (page = 1, transactions = []) {
+    const result = await this.childChain.getTransactions({
+      address: this.account,
+      page
+    });
+    if (result.length > 0) {
+      return await this.recursiveTransactionFetch(page + 1, [ ...transactions, ...result ]);
+    }
+    return transactions;
+  }
+
   async getAllTransactions () {
     try {
-      const rawTransactions = await this.childChain.getTransactions({ address: this.account });
+      const rawTransactions = await this.recursiveTransactionFetch();
       const currencies = uniq(flatten(rawTransactions.map(i => i.inputs.map(input => input.currency))));
       await Promise.all(currencies.map(i => getToken(i)));
       return rawTransactions.map(i => {
@@ -803,7 +814,7 @@ class NetworkService {
 
       const pendingExits = allExits
         .filter(i => {
-          const foundMatch = exitedExits.find(x => x.blockNumber === i.blockNumber);
+          const foundMatch = exitedExits.find(x => x.transactionHash === i.transactionHash);
           return !foundMatch;
         })
         .map(this.getExitStatus);

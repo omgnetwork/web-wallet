@@ -67,7 +67,14 @@ function Home () {
       .filter(i => i.status !== 'Pending')
       .map(i => i.inputs)
     );
-    return uniq(inputs.map(i => i.currency));
+    const outputs = flatten(transactions
+      .filter(i => i.status !== 'Pending')
+      .map(i => i.outputs)
+    );
+    return uniq([
+      ...inputs.map(i => i.currency),
+      ...outputs.map(i => i.currency)
+    ]);
   }, [ transactions ]);
 
   useEffect(() => {
