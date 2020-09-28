@@ -17,7 +17,13 @@ limitations under the License. */
 import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
 
 import Transport from '@ledgerhq/hw-transport-webusb';
-import Eth from '@ledgerhq/hw-app-eth';
+
+// import Eth from '@ledgerhq/hw-app-eth';
+// TODO: use personally hosted build for now
+import Eth from 'ledger-eip-support-poc/packages/hw-app-eth';
+import { concatSig } from 'eth-sig-util';
+
+import { getDomainSeperatorHash, hashTypedDataMessage } from './omgService';
 
 import { orderBy, flatten, uniq, get, pickBy, keyBy } from 'lodash';
 import BN from 'bn.js';
@@ -356,19 +362,40 @@ class NetworkService {
   }
 
   async ledgerSign (typedData) {
-    const typedDataHash = OmgUtil.transaction.getToSignHash(typedData);
+    console.log('starting ledger sign...');
 
     const transport = await Transport.create();
     const eth = new Eth(transport);
 
     try {
-      console.log('hi');
-      const address = await eth.getAddress("44'/60'/0'/0/0");
-      console.log('address: ', address);
-      const message = bufferToHex(typedDataHash);
-      console.log('message: ', message);
-      const res = await eth.signTransaction("44'/60'/0'/0/0", message);
-      console.log('res: ', res);
+      const messageHash = hashTypedDataMessage(typedData);
+      console.log('messageHash: ', messageHash);
+      // const _messageHash = OmgUtil.transaction.getToSignHash(typedData);
+      // const messageHash = bufferToHex(_messageHash);
+      // console.log('messageHash: ', messageHash);
+
+      const domainSeperatorHash = getDomainSeperatorHash(typedData);
+      console.log('domainSeperatorHash: ', domainSeperatorHash);
+
+      // https://github.com/btchip/ledgerjs/tree/eip712_v0/packages/hw-app-eth#signeip712hashedmessage
+      const { v: _v, r, s } = await eth.signEIP712HashedMessage(
+        "44'/60'/0'/0/0",
+        domainSeperatorHash,
+        messageHash
+      );
+
+      let v = (_v - 27).toString(16);
+      if (v.length < 2) {
+        v = "0" + v;
+      }
+
+      console.log('v: ', v);
+      console.log('r: ', r);
+      console.log('s: ', s);
+
+      const signature = concatSig(new Buffer(v), new Buffer(r), new Buffer(s));
+      console.log('signature: ', signature);
+      return signature;
     } catch (error) {
       console.log('ledger signing error: ', error);
       throw error;
@@ -554,7 +581,7 @@ class NetworkService {
       });
       const typedData = OmgUtil.transaction.getTypedData(txBody, this.plasmaContractAddress);
 
-      // TODO: trying new ledgerSign here...
+      // TODO: call new ledgerSign here...
       // const signature = await this.signTypedData(typedData);
       const signature = await this.ledgerSign(typedData);
 
@@ -571,6 +598,7 @@ class NetworkService {
         status: 'Pending'
       };
     } catch (error) {
+      console.log(error);
       if (error instanceof WebWalletError) {
         throw error;
       }
