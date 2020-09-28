@@ -32,6 +32,7 @@ import WalletLink from 'walletlink';
 
 import store from 'store';
 import { getToken } from 'actions/tokenAction';
+import { WebWalletError } from 'services/errorService';
 import config from 'util/config';
 
 class NetworkService {
@@ -126,7 +127,11 @@ class NetworkService {
       return;
     }
     if (appRegisteredAcount.toLowerCase() !== providerRegisteredAccount.toLowerCase()) {
-      window.location.reload(false);
+      try {
+        window.location.reload(false);
+      } catch (error) {
+        //
+      }
     }
   }
 
@@ -140,7 +145,7 @@ class NetworkService {
           window.location.reload(false);
         });
       } catch (err) {
-        console.warn('Web3 event handling not available');
+        console.log('Web3 event handling not available');
       }
     }
 
@@ -153,7 +158,7 @@ class NetworkService {
           window.location.reload(false);
         });
       } catch (err) {
-        console.warn('WalletConnect event handling not available');
+        console.log('WalletConnect event handling not available');
       }
     }
 
@@ -161,7 +166,7 @@ class NetworkService {
       try {
         // add any walletlink listeners
       } catch (err) {
-        console.warn('WalletLink event handling not available');
+        console.log('WalletLink event handling not available');
       }
     }
   }
@@ -180,84 +185,106 @@ class NetworkService {
   }
 
   async checkStatus () {
-    const { byzantine_events, last_seen_eth_block_timestamp, last_seen_eth_block_number, services_synced_heights } = await this.childChain.status();
+    try {
+      const { byzantine_events, last_seen_eth_block_timestamp, last_seen_eth_block_number, services_synced_heights } = await this.childChain.status();
 
-    const filteredByzantineEvents = byzantine_events
-      .filter(i => {
-        if (
-          i.event === 'unchallenged_exit' ||
-          i.event === 'invalid_block' ||
-          i.event === 'block_withholding'
-        ) {
-          return true;
-        }
-        return false;
+      const filteredByzantineEvents = byzantine_events
+        .filter(i => {
+          if (
+            i.event === 'unchallenged_exit' ||
+            i.event === 'invalid_block' ||
+            i.event === 'block_withholding'
+          ) {
+            return true;
+          }
+          return false;
+        });
+
+      const blockGetterHeight = services_synced_heights.find(i => i.service === 'block_getter' ).height;
+      const watcherSynced = last_seen_eth_block_number - blockGetterHeight <= config.checkSyncInterval;
+
+      return {
+        connection: !!byzantine_events,
+        byzantine: !!filteredByzantineEvents.length,
+        watcherSynced: watcherSynced,
+        lastSeenBlock: last_seen_eth_block_timestamp
+      };
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        reportToSentry: false,
+        reportToUi: false
       });
-
-    const blockGetterHeight = services_synced_heights.find(i => i.service === 'block_getter' ).height;
-    const watcherSynced = last_seen_eth_block_number - blockGetterHeight <= config.checkSyncInterval;
-
-    return {
-      connection: !!byzantine_events,
-      byzantine: !!filteredByzantineEvents.length,
-      watcherSynced: watcherSynced,
-      lastSeenBlock: last_seen_eth_block_timestamp
-    };
+    }
   }
 
   async getAllTransactions () {
-    const rawTransactions = await this.childChain.getTransactions({ address: this.account });
-    const currencies = uniq(flatten(rawTransactions.map(i => i.inputs.map(input => input.currency))));
-    await Promise.all(currencies.map(i => getToken(i)));
-
-    const transactions = rawTransactions.map(i => {
-      return {
-        ...i,
-        metadata: OmgUtil.transaction.decodeMetadata(i.metadata)
-      };
-    });
-    return transactions;
+    try {
+      const rawTransactions = await this.childChain.getTransactions({ address: this.account });
+      const currencies = uniq(flatten(rawTransactions.map(i => i.inputs.map(input => input.currency))));
+      await Promise.all(currencies.map(i => getToken(i)));
+      return rawTransactions.map(i => {
+        return {
+          ...i,
+          metadata: OmgUtil.transaction.decodeMetadata(String(i.metadata))
+        };
+      });
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        reportToSentry: false,
+        reportToUi: false
+      });
+    }
   }
 
   async getBalances () {
-    const _childchainBalances = await this.childChain.getBalance(this.account);
-    const childchainBalances = await Promise.all(_childchainBalances.map(
-      async i => {
-        const token = await getToken(i.currency);
-        return {
-          ...token,
-          amount: i.amount.toString()
-        };
-      }
-    ));
-
-    const rootErc20Balances = await Promise.all(childchainBalances.map(
-      async i => {
-        if (i.name !== 'ETH') {
-          const balance = await OmgUtil.getErc20Balance({
-            web3: this.web3,
-            address: this.account,
-            erc20Address: i.currency
-          });
+    try {
+      const _childchainBalances = await this.childChain.getBalance(this.account);
+      const childchainBalances = await Promise.all(_childchainBalances.map(
+        async i => {
+          const token = await getToken(i.currency);
           return {
-            ...i,
-            amount: balance.toString()
+            ...token,
+            amount: i.amount.toString()
           };
         }
-      }
-    ));
+      ));
 
-    const _rootEthBalance = await this.web3.eth.getBalance(this.account);
-    const ethToken = await getToken(OmgUtil.transaction.ETH_CURRENCY);
-    const rootchainEthBalance = {
-      ...ethToken,
-      amount: _rootEthBalance
-    };
+      const rootErc20Balances = await Promise.all(childchainBalances.map(
+        async i => {
+          if (i.name !== 'ETH') {
+            const balance = await OmgUtil.getErc20Balance({
+              web3: this.web3,
+              address: this.account,
+              erc20Address: i.currency
+            });
+            return {
+              ...i,
+              amount: balance.toString()
+            };
+          }
+        }
+      ));
 
-    return {
-      rootchain: orderBy([ rootchainEthBalance, ...rootErc20Balances.filter(i => !!i) ], i => i.currency),
-      childchain: orderBy(childchainBalances, i => i.currency)
-    };
+      const _rootEthBalance = await this.web3.eth.getBalance(this.account);
+      const ethToken = await getToken(OmgUtil.transaction.ETH_CURRENCY);
+      const rootchainEthBalance = {
+        ...ethToken,
+        amount: _rootEthBalance
+      };
+
+      return {
+        rootchain: orderBy([ rootchainEthBalance, ...rootErc20Balances.filter(i => !!i) ], i => i.currency),
+        childchain: orderBy(childchainBalances, i => i.currency)
+      };
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        reportToSentry: false,
+        reportToUi: false
+      });
+    }
   }
 
   async checkAllowance (currency) {
@@ -267,45 +294,67 @@ class NetworkService {
       const allowance = await tokenContract.methods.allowance(this.account, erc20VaultAddress).call();
       return allowance.toString();
     } catch (error) {
-      throw new Error('Error checking deposit allowance for ERC20');
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: 'Could not check deposit allowance for ERC20.',
+        reportToSentry: false,
+        reportToUi: true
+      });
     }
   }
 
   async approveErc20 (value, currency, gasPrice) {
-    const valueBN = new BN(value.toString());
-    return this.rootChain.approveToken({
-      erc20Address: currency,
-      amount: valueBN,
-      txOptions: {
-        from: this.account,
-        gasPrice: gasPrice.toString()
-      }
-    });
+    try {
+      const valueBN = new BN(value.toString());
+      await this.rootChain.approveToken({
+        erc20Address: currency,
+        amount: valueBN,
+        txOptions: {
+          from: this.account,
+          gasPrice: gasPrice.toString()
+        }
+      });
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: 'Could not approve ERC20 for deposit.',
+        reportToSentry: false,
+        reportToUi: true
+      });
+    }
   }
 
   async resetApprove (value, currency, gasPrice) {
-    const valueBN = new BN(value.toString());
-    // the reset approval
-    await this.rootChain.approveToken({
-      erc20Address: currency,
-      amount: 0,
-      txOptions: {
-        from: this.account,
-        gasPrice: gasPrice.toString()
-      }
-    });
-    // approval for new amount
-    return this.rootChain.approveToken({
-      erc20Address: currency,
-      amount: valueBN,
-      txOptions: {
-        from: this.account,
-        gasPrice: gasPrice.toString()
-      }
-    });
+    try {
+      const valueBN = new BN(value.toString());
+      // the reset approval
+      await this.rootChain.approveToken({
+        erc20Address: currency,
+        amount: 0,
+        txOptions: {
+          from: this.account,
+          gasPrice: gasPrice.toString()
+        }
+      });
+      // approval for new amount
+      await this.rootChain.approveToken({
+        erc20Address: currency,
+        amount: valueBN,
+        txOptions: {
+          from: this.account,
+          gasPrice: gasPrice.toString()
+        }
+      });
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: 'Could not check reset approval allowance for ERC20.',
+        reportToSentry: false,
+        reportToUi: true
+      });
+    }
   }
 
-  // TODO: see if this works
   async ledgerSign (typedData) {
     const typedDataHash = OmgUtil.transaction.getToSignHash(typedData);
 
@@ -321,93 +370,125 @@ class NetworkService {
       const res = await eth.signTransaction("44'/60'/0'/0/0", message);
       console.log('res: ', res);
     } catch (error) {
-      console.log('LEDGER ERROR: ', error);
+      console.log('ledger signing error: ', error);
       throw error;
     }
   }
 
   // normalize signing methods across wallet providers
   async signTypedData (typedData) {
-    // function isExpectedSignTypedV3Error (message) {
-    //   if (
-    //     message.includes('The method eth_signTypedData_v3 does not exist')
-    //     || message.includes('Invalid JSON RPC response')
-    //     || message.includes('Cannot read property') // walletlink
-    //     || message.includes('undefined is not an object') // walletlink safari
-    //   ) {
-    //     return true;
-    //   }
-    //   return false;
-    // }
+    function isExpectedSignTypedV3Error (message) {
+      if (
+        message.includes('The method eth_signTypedData_v3 does not exist')
+        || message.includes('Invalid JSON RPC response')
+        || message.includes('Cannot read property') // walletlink
+        || message.includes('undefined is not an object') // walletlink safari
+      ) {
+        return true;
+      }
+      return false;
+    }
 
-    // try {
-    //   const signature = await this.web3.currentProvider.send(
-    //     'eth_signTypedData_v3',
-    //     [
-    //       this.web3.utils.toChecksumAddress(this.account),
-    //       JSONBigNumber.stringify(typedData)
-    //     ]
-    //   );
-    //   return signature;
-    // } catch (error) {
-    //   if (!isExpectedSignTypedV3Error(error.message)) {
-    //     // not an expected error
-    //     console.log('unexpected signing error: ', error.message);
-    //     throw error;
-    //   }
-    //   // method doesnt exist try another
-    // }
+    try {
+      const signature = await this.web3.currentProvider.send(
+        'eth_signTypedData_v3',
+        [
+          this.web3.utils.toChecksumAddress(this.account),
+          JSONBigNumber.stringify(typedData)
+        ]
+      );
+      return signature;
+    } catch (error) {
+      if (!isExpectedSignTypedV3Error(error.message)) {
+        // not an expected error
+        throw new WebWalletError({
+          originalError: error,
+          customErrorMessage: 'Could not sign the transaction. Please try again.',
+          reportToSentry: true,
+          reportToUi: true
+        });
+      }
+      // method doesnt exist try another
+    }
 
     // fallback signing method if signTypedData is not implemented by the provider
-    const typedDataHash = OmgUtil.transaction.getToSignHash(typedData);
-    console.log('trying normal sign...');
-    const signature = await this.web3.eth.sign(
-      bufferToHex(typedDataHash),
-      this.web3.utils.toChecksumAddress(this.account)
-    );
-    console.log('signature: ', signature);
-    return signature;
+    try {
+      const typedDataHash = OmgUtil.transaction.getToSignHash(typedData);
+      const signature = await this.web3.eth.sign(
+        bufferToHex(typedDataHash),
+        this.web3.utils.toChecksumAddress(this.account)
+      );
+      return signature;
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: 'Could not sign the transaction. Please try again.',
+        reportToSentry: false,
+        reportToUi: true
+      });
+    }
   }
 
   async mergeUtxos (utxos) {
-    const _metadata = 'Merge UTXOs';
-    const payments = [ {
-      owner: this.account,
-      currency: utxos[0].currency,
-      amount: utxos.reduce((prev, curr) => {
-        return prev.add(new BN(curr.amount));
-      }, new BN(0))
-    } ];
-    const fee = {
-      currency: OmgUtil.transaction.ETH_CURRENCY,
-      amount: 0
-    };
-    const txBody = OmgUtil.transaction.createTransactionBody({
-      fromAddress: this.account,
-      fromUtxos: utxos,
-      payments,
-      fee,
-      metadata: OmgUtil.transaction.encodeMetadata(_metadata)
-    });
-    const typedData = OmgUtil.transaction.getTypedData(txBody, this.plasmaContractAddress);
-    const signature = await this.signTypedData(typedData);
-    const signatures = new Array(txBody.inputs.length).fill(signature);
-    const signedTxn = this.childChain.buildSignedTransaction(typedData, signatures);
-    const submittedTransaction = await this.childChain.submitTransaction(signedTxn);
-    return {
-      ...submittedTransaction,
-      block: {
-        blknum: submittedTransaction.blknum,
-        timestamp: Math.round((new Date()).getTime() / 1000)
-      },
-      metadata: _metadata,
-      status: 'Pending'
-    };
+    try {
+      const _metadata = 'Merge UTXOs';
+      const payments = [ {
+        owner: this.account,
+        currency: utxos[0].currency,
+        amount: utxos.reduce((prev, curr) => {
+          return prev.add(new BN(curr.amount.toString()));
+        }, new BN(0))
+      } ];
+      const fee = {
+        currency: OmgUtil.transaction.ETH_CURRENCY,
+        amount: 0
+      };
+      const txBody = OmgUtil.transaction.createTransactionBody({
+        fromAddress: this.account,
+        fromUtxos: utxos,
+        payments,
+        fee,
+        metadata: OmgUtil.transaction.encodeMetadata(_metadata)
+      });
+      const typedData = OmgUtil.transaction.getTypedData(txBody, this.plasmaContractAddress);
+      const signature = await this.signTypedData(typedData);
+      const signatures = new Array(txBody.inputs.length).fill(signature);
+      const signedTxn = this.childChain.buildSignedTransaction(typedData, signatures);
+      const submittedTransaction = await this.childChain.submitTransaction(signedTxn);
+      return {
+        ...submittedTransaction,
+        block: {
+          blknum: submittedTransaction.blknum,
+          timestamp: Math.round((new Date()).getTime() / 1000)
+        },
+        metadata: _metadata,
+        status: 'Pending'
+      };
+    } catch (error) {
+      if (error instanceof WebWalletError) {
+        throw error;
+      }
+
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: 'Could not merge utxos. Please try again.',
+        reportToSentry: false,
+        reportToUi: true
+      });
+    }
   }
 
   async fetchFees () {
-    const allFees = await this.childChain.getFees();
-    return allFees['1'];
+    try {
+      const allFees = await this.childChain.getFees();
+      return allFees['1'];
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        reportToSentry: false,
+        reportToUi: false
+      });
+    }
   }
 
   async transfer ({
@@ -417,70 +498,113 @@ class NetworkService {
     feeToken,
     metadata
   }) {
-    const _utxos = await this.childChain.getUtxos(this.account);
-    const utxos = orderBy(_utxos, i => i.amount, 'desc');
+    let utxos;
+    try {
+      const _utxos = await this.childChain.getUtxos(this.account);
+      utxos = orderBy(_utxos, i => i.amount, 'desc');
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: 'Could not fetch account utxos. Please try transfer again.',
+        reportToSentry: false,
+        reportToUi: true
+      });
+    }
 
     const allFees = await this.fetchFees();
     const feeInfo = allFees.find(i => i.currency === feeToken);
-    if (!feeInfo) throw new Error(`${feeToken} is not a supported fee token.`);
+    if (!feeInfo) {
+      throw new WebWalletError({
+        originalError: new Error(`${feeToken} is not a supported fee token.`),
+        customErrorMessage: `${feeToken} is not a supported fee token.`,
+        reportToSentry: false,
+        reportToUi: true
+      });
+    }
 
     const isAddress = this.web3.utils.isAddress(recipient);
     if (!isAddress) {
       recipient = await this.web3.eth.ens.getAddress(recipient);
     }
-
     if (!recipient) {
-      throw Error('Not a valid ENS name');
+      throw new WebWalletError({
+        originalError: new Error('Not a valid ENS name.'),
+        customErrorMessage: 'Not a valid ENS name.',
+        reportToSentry: false,
+        reportToUi: true
+      });
     }
 
-    const payments = [ {
-      owner: recipient,
-      currency,
-      amount: new BN(value)
-    } ];
-    const fee = {
-      currency: feeToken,
-      amount: new BN(feeInfo.amount)
-    };
-    const txBody = OmgUtil.transaction.createTransactionBody({
-      fromAddress: this.account,
-      fromUtxos: utxos,
-      payments,
-      fee,
-      metadata: metadata || OmgUtil.transaction.NULL_METADATA
-    });
-    const typedData = OmgUtil.transaction.getTypedData(txBody, this.plasmaContractAddress);
-    // const signature = await this.signTypedData(typedData);
-    const signature = await this.ledgerSign(typedData);
-    const signatures = new Array(txBody.inputs.length).fill(signature);
-    const signedTxn = this.childChain.buildSignedTransaction(typedData, signatures);
-    const submittedTransaction = await this.childChain.submitTransaction(signedTxn);
-    return {
-      ...submittedTransaction,
-      block: {
-        blknum: submittedTransaction.blknum,
-        timestamp: Math.round((new Date()).getTime() / 1000)
-      },
-      metadata,
-      status: 'Pending'
-    };
+    try {
+      const payments = [ {
+        owner: recipient,
+        currency,
+        amount: new BN(value.toString())
+      } ];
+      const fee = {
+        currency: feeToken,
+        amount: new BN(feeInfo.amount.toString())
+      };
+      const txBody = OmgUtil.transaction.createTransactionBody({
+        fromAddress: this.account,
+        fromUtxos: utxos,
+        payments,
+        fee,
+        metadata: metadata || OmgUtil.transaction.NULL_METADATA
+      });
+      const typedData = OmgUtil.transaction.getTypedData(txBody, this.plasmaContractAddress);
+
+      // TODO: trying new ledgerSign here...
+      // const signature = await this.signTypedData(typedData);
+      const signature = await this.ledgerSign(typedData);
+
+      const signatures = new Array(txBody.inputs.length).fill(signature);
+      const signedTxn = this.childChain.buildSignedTransaction(typedData, signatures);
+      const submittedTransaction = await this.childChain.submitTransaction(signedTxn);
+      return {
+        ...submittedTransaction,
+        block: {
+          blknum: submittedTransaction.blknum,
+          timestamp: Math.round((new Date()).getTime() / 1000)
+        },
+        metadata,
+        status: 'Pending'
+      };
+    } catch (error) {
+      if (error instanceof WebWalletError) {
+        throw error;
+      }
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: 'Could not create the transaction. Please try again.',
+        reportToSentry: false,
+        reportToUi: true
+      });
+    }
   }
 
   async getUtxos () {
-    const _utxos = await this.childChain.getUtxos(this.account);
-    const utxos = await Promise.all(_utxos.map(async utxo => {
-      const tokenInfo = await getToken(utxo.currency);
-      return { ...utxo, tokenInfo };
-    }));
-    return utxos;
+    try {
+      const _utxos = await this.childChain.getUtxos(this.account);
+      const utxos = await Promise.all(_utxos.map(async utxo => {
+        const tokenInfo = await getToken(utxo.currency);
+        return { ...utxo, tokenInfo };
+      }));
+      return utxos;
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: 'Could not fetch account utxos. Please try again',
+        reportToSentry: false,
+        reportToUi: true
+      });
+    }
   }
 
   async getEthStats () {
     try {
       const currentETHBlockNumber = await this.web3.eth.getBlockNumber();
-      return {
-        currentETHBlockNumber
-      };
+      return { currentETHBlockNumber };
     } catch (error) {
       return null;
     }
@@ -488,32 +612,41 @@ class NetworkService {
 
   // run on boot to get past deposits
   async getDeposits () {
-    const { contract: ethVault } = await this.rootChain.getEthVault();
-    const { contract: erc20Vault } = await this.rootChain.getErc20Vault();
-
-    let _ethDeposits = [];
     try {
-      _ethDeposits = await ethVault.getPastEvents('DepositCreated', {
-        filter: { depositor: this.account },
-        fromBlock: 0
-      });
-    } catch (error) {
-      console.log('Getting past ETH DepositCreated events timed out: ', error.message);
-    }
+      const { contract: ethVault } = await this.rootChain.getEthVault();
+      const { contract: erc20Vault } = await this.rootChain.getErc20Vault();
 
-    let _erc20Deposits = [];
-    try {
-      _erc20Deposits = await erc20Vault.getPastEvents('DepositCreated', {
-        filter: { depositor: this.account },
-        fromBlock: 0
-      });
-    } catch (error) {
-      console.log('Getting past ERC20 DepositCreated events timed out: ', error.message);
-    }
+      let _ethDeposits = [];
+      try {
+        _ethDeposits = await ethVault.getPastEvents('DepositCreated', {
+          filter: { depositor: this.account },
+          fromBlock: 0
+        });
+      } catch (error) {
+        console.log('Getting past ETH DepositCreated events timed out: ', error.message);
+      }
 
-    const ethDeposits = await Promise.all(_ethDeposits.map(i => this.getDepositStatus(i)));
-    const erc20Deposits = await Promise.all(_erc20Deposits.map(i => this.getDepositStatus(i)));
-    return { eth: ethDeposits, erc20: erc20Deposits };
+      let _erc20Deposits = [];
+      try {
+        _erc20Deposits = await erc20Vault.getPastEvents('DepositCreated', {
+          filter: { depositor: this.account },
+          fromBlock: 0
+        });
+      } catch (error) {
+        console.log('Getting past ERC20 DepositCreated events timed out: ', error.message);
+      }
+
+      const ethDeposits = await Promise.all(_ethDeposits.map(i => this.getDepositStatus(i)));
+      const erc20Deposits = await Promise.all(_erc20Deposits.map(i => this.getDepositStatus(i)));
+      return { eth: ethDeposits, erc20: erc20Deposits };
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: 'Could not fetch deposit information. Please try restarting the application.',
+        reportToSentry: false,
+        reportToUi: true
+      });
+    }
   }
 
   async getDepositStatus (deposit) {
@@ -527,70 +660,104 @@ class NetworkService {
   }
 
   async depositEth (value, gasPrice) {
-    const valueBN = new BN(value.toString());
-    const result = await this.rootChain.deposit({
-      amount: valueBN,
-      txOptions: {
-        from: this.account,
-        gasPrice: gasPrice.toString()
-      }
-    });
-    // normalize against deposits from pastevents
-    const deposit = {
-      ...result,
-      isEth: true,
-      returnValues: {
-        token: OmgUtil.transaction.ETH_CURRENCY,
-        amount: value.toString()
-      }
-    };
-    return await this.getDepositStatus(deposit);
+    try {
+      const valueBN = new BN(value.toString());
+      const result = await this.rootChain.deposit({
+        amount: valueBN,
+        txOptions: {
+          from: this.account,
+          gasPrice: gasPrice.toString()
+        }
+      });
+      // normalize against deposits from pastevents
+      const deposit = {
+        ...result,
+        isEth: true,
+        returnValues: {
+          token: OmgUtil.transaction.ETH_CURRENCY,
+          amount: value.toString()
+        }
+      };
+      return await this.getDepositStatus(deposit);
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: 'Could not deposit ETH. Please try again.',
+        reportToSentry: false,
+        reportToUi: true
+      });
+    }
   }
 
   async depositErc20 (value, currency, gasPrice) {
-    const valueBN = new BN(value.toString());
-    const result = await this.rootChain.deposit({
-      amount: valueBN,
-      currency,
-      txOptions: {
-        from: this.account,
-        gasPrice: gasPrice.toString()
-      }
-    });
-    // normalize against deposits from pastevents
-    const deposit = {
-      ...result,
-      returnValues: {
-        token: currency,
-        amount: value.toString()
-      }
-    };
-    return await this.getDepositStatus(deposit);
+    try {
+      const valueBN = new BN(value.toString());
+      const result = await this.rootChain.deposit({
+        amount: valueBN,
+        currency,
+        txOptions: {
+          from: this.account,
+          gasPrice: gasPrice.toString()
+        }
+      });
+      // normalize against deposits from pastevents
+      const deposit = {
+        ...result,
+        returnValues: {
+          token: currency,
+          amount: value.toString()
+        }
+      };
+      return await this.getDepositStatus(deposit);
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: 'Could not deposit ERC20. Please try again.',
+        reportToSentry: false,
+        reportToUi: true
+      });
+    }
   }
 
   // run on poll to check status of any 'pending' deposits
   async checkPendingDepositStatus () {
-    const state = store.getState();
-    const { eth: ethDeposits, erc20: erc20Deposits } = state.deposit;
+    try {
+      const state = store.getState();
+      const { eth: ethDeposits, erc20: erc20Deposits } = state.deposit;
 
-    const pendingEthDeposits = pickBy(ethDeposits, (deposit, transactionHash) => {
-      return deposit.status === 'Pending';
-    });
-    const pendingErc20Deposits = pickBy(erc20Deposits, (deposit, transactionHash) => {
-      return deposit.status === 'Pending';
-    });
+      const pendingEthDeposits = pickBy(ethDeposits, (deposit, transactionHash) => {
+        return deposit.status === 'Pending';
+      });
+      const pendingErc20Deposits = pickBy(erc20Deposits, (deposit, transactionHash) => {
+        return deposit.status === 'Pending';
+      });
 
-    const updatedEthDeposits = await Promise.all(Object.values(pendingEthDeposits).map(this.getDepositStatus));
-    const updatedErc20Deposits = await Promise.all(Object.values(pendingErc20Deposits).map(this.getDepositStatus));
-    return { eth: updatedEthDeposits, erc20: updatedErc20Deposits };
+      const updatedEthDeposits = await Promise.all(Object.values(pendingEthDeposits).map(this.getDepositStatus));
+      const updatedErc20Deposits = await Promise.all(Object.values(pendingErc20Deposits).map(this.getDepositStatus));
+      return { eth: updatedEthDeposits, erc20: updatedErc20Deposits };
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        reportToSentry: false,
+        reportToUi: false
+      });
+    }
   }
 
   // run on poll to check status of any 'pending' exits
   async checkPendingExitStatus () {
-    const state = store.getState();
-    const pendingExits = Object.values(state.exit.pending);
-    const updatedExits = pendingExits.map(this.getExitStatus);
-    return updatedExits;
+    try {
+      const state = store.getState();
+      const pendingExits = Object.values(state.exit.pending);
+      const updatedExits = pendingExits.map(this.getExitStatus);
+      return updatedExits;
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        reportToSentry: false,
+        reportToUi: false
+      });
+    }
   }
 
   getExitStatus (exit) {
@@ -632,130 +799,182 @@ class NetworkService {
   }
 
   async getExits () {
-    const { contract } = await this.rootChain.getPaymentExitGame();
-
-    let allExits = [];
     try {
-      allExits = await contract.getPastEvents('ExitStarted', {
-        filter: { owner: this.account },
-        fromBlock: 0
-      });
-    } catch (error) {
-      console.log('Getting past ExitStarted events timed out: ', error.message);
-      return null;
-    }
+      const { contract } = await this.rootChain.getPaymentExitGame();
 
-    const exitedExits = [];
-    for (const exit of allExits) {
-      let isFinalized = [];
+      let allExits = [];
       try {
-        isFinalized = await contract.getPastEvents('ExitFinalized', {
-          filter: { exitId: exit.returnValues.exitId.toString() },
+        allExits = await contract.getPastEvents('ExitStarted', {
+          filter: { owner: this.account },
           fromBlock: 0
         });
       } catch (error) {
-        console.log('Getting past ExitFinalized events timed out: ', error.message);
+        console.log('Getting past ExitStarted events timed out: ', error.message);
         return null;
       }
-      if (isFinalized.length) {
-        exitedExits.push(exit);
+
+      const exitedExits = [];
+      for (const exit of allExits) {
+        let isFinalized = [];
+        try {
+          isFinalized = await contract.getPastEvents('ExitFinalized', {
+            filter: { exitId: exit.returnValues.exitId.toString() },
+            fromBlock: 0
+          });
+        } catch (error) {
+          console.log('Getting past ExitFinalized events timed out: ', error.message);
+          return null;
+        }
+        if (isFinalized.length) {
+          exitedExits.push(exit);
+        }
       }
+
+      const pendingExits = allExits
+        .filter(i => {
+          const foundMatch = exitedExits.find(x => x.blockNumber === i.blockNumber);
+          return !foundMatch;
+        })
+        .map(this.getExitStatus);
+
+      return {
+        pending: { ...keyBy(pendingExits, 'transactionHash') },
+        exited: { ...keyBy(exitedExits, 'transactionHash') }
+      };
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: 'Could not fetch past exit information. Please try restarting the application.',
+        reportToSentry: false,
+        reportToUi: true
+      });
     }
-
-    const pendingExits = allExits
-      .filter(i => {
-        const foundMatch = exitedExits.find(x => x.blockNumber === i.blockNumber);
-        return !foundMatch;
-      })
-      .map(this.getExitStatus);
-
-    return {
-      pending: { ...keyBy(pendingExits, 'transactionHash') },
-      exited: { ...keyBy(exitedExits, 'transactionHash') }
-    };
   }
 
   async checkForExitQueue (token) {
-    return this.rootChain.hasToken(token);
+    try {
+      return await this.rootChain.hasToken(token);
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: `Could not check if exit queue already exists for ${token}.`,
+        reportToSentry: false,
+        reportToUi: true
+      });
+    }
   }
 
   async getExitQueue (_currency) {
-    const currency = _currency.toLowerCase();
-    let queue = [];
     try {
-      queue = await this.rootChain.getExitQueue(currency);
+      const currency = _currency.toLowerCase();
+      let queue = [];
+      try {
+        queue = await this.rootChain.getExitQueue(currency);
+      } catch (error) {
+        console.log('Getting the exitQueue timed out: ', error.message);
+        return null;
+      }
+      return {
+        currency,
+        queue: queue.map(i => ({
+          ...i,
+          currency
+        }))
+      };
     } catch (error) {
-      console.log('Getting the exitQueue timed out: ', error.message);
-      return null;
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: `Could not fetch exit queue for ${_currency}`,
+        reportToSentry: false,
+        reportToUi: true
+      });
     }
-
-    return {
-      currency,
-      queue: queue.map(i => ({
-        ...i,
-        currency
-      }))
-    };
   }
 
   async addExitQueue (token, gasPrice) {
-    return this.rootChain.addToken({
-      token,
-      txOptions: {
-        from: this.account,
-        gasPrice: gasPrice.toString()
-      }
-    });
-  }
-
-  async exitUtxo (utxo, gasPrice) {
-    const exitData = await this.childChain.getExitData(utxo);
     try {
-      const res = await this.rootChain.startStandardExit({
-        utxoPos: exitData.utxo_pos,
-        outputTx: exitData.txbytes,
-        inclusionProof: exitData.proof,
+      return await this.rootChain.addToken({
+        token,
         txOptions: {
           from: this.account,
           gasPrice: gasPrice.toString()
         }
       });
-      return {
-        ...res,
-        status: 'Pending',
-        pendingPercentage: 0
-      };
     } catch (error) {
-      // if error from user cancellation dont retry
-      if (error.code !== 4001) {
-        // sometimes gas estimation can fail
-        // so try again but set the gas explicitly to avoid the estimiate
-        return this.rootChain.startStandardExit({
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: 'Could not add exit queue. Please try again.',
+        reportToSentry: false,
+        reportToUi: true
+      });
+    }
+  }
+
+  async exitUtxo (utxo, gasPrice) {
+    try {
+      const exitData = await this.childChain.getExitData(utxo);
+      try {
+        const res = await this.rootChain.startStandardExit({
           utxoPos: exitData.utxo_pos,
           outputTx: exitData.txbytes,
           inclusionProof: exitData.proof,
           txOptions: {
             from: this.account,
-            gasPrice: gasPrice.toString(),
-            gas: 400000
+            gasPrice: gasPrice.toString()
           }
         });
+        return {
+          ...res,
+          status: 'Pending',
+          pendingPercentage: 0
+        };
+      } catch (error) {
+        // if error from user cancellation dont retry
+        if (error.code !== 4001) {
+          // sometimes gas estimation can fail
+          // so try again but set the gas explicitly to avoid the estimate
+          return this.rootChain.startStandardExit({
+            utxoPos: exitData.utxo_pos,
+            outputTx: exitData.txbytes,
+            inclusionProof: exitData.proof,
+            txOptions: {
+              from: this.account,
+              gasPrice: gasPrice.toString(),
+              gas: 400000
+            }
+          });
+        }
+        throw error;
       }
-
-      throw error;
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: 'Could not start exit for this utxo. Please try again.',
+        reportToSentry: false,
+        reportToUi: true
+      });
     }
   }
 
   async processExits (maxExits, currency, gasPrice) {
-    return this.rootChain.processExits({
-      token: currency,
-      exitId: 0,
-      maxExitsToProcess: maxExits,
-      txOptions: {
-        from: this.account,
-        gasPrice: gasPrice.toString()
-      }
-    });
+    try {
+      return await this.rootChain.processExits({
+        token: currency,
+        exitId: 0,
+        maxExitsToProcess: maxExits,
+        txOptions: {
+          from: this.account,
+          gasPrice: gasPrice.toString()
+        }
+      });
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: 'Could not process exits. Please try again later.',
+        reportToSentry: false,
+        reportToUi: true
+      });
+    }
   }
 
   async getGasPrice () {

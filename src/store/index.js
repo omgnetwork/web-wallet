@@ -24,6 +24,13 @@ const initialState = {};
 const sentryReduxEnhancer = Sentry.createReduxEnhancer({
   configureScopeWithState: (scope, state) => {
     scope.setTag('wallet-method', state.setup.walletMethod);
+  },
+  stateTransformer: state => {
+    return {
+      status: state.status,
+      ui: state.ui,
+      setup: state.setup
+    };
   }
 });
 
