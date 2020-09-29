@@ -22,6 +22,7 @@ import Transport from '@ledgerhq/hw-transport-webusb';
 // TODO: use personally hosted build for now
 import Eth from 'ledger-eip-support-poc/packages/hw-app-eth';
 import { concatSig } from 'eth-sig-util';
+import { Buffer } from 'buffer';
 
 import { getDomainSeperatorHash, hashTypedDataMessage } from './omgService';
 
@@ -362,7 +363,7 @@ class NetworkService {
   }
 
   async ledgerSign (typedData) {
-    console.log('starting ledger sign...');
+    console.log('starting ledger sign with: ', typedData);
 
     const transport = await Transport.create();
     const eth = new Eth(transport);
@@ -380,8 +381,8 @@ class NetworkService {
       // https://github.com/btchip/ledgerjs/tree/eip712_v0/packages/hw-app-eth#signeip712hashedmessage
       const { v: _v, r, s } = await eth.signEIP712HashedMessage(
         "44'/60'/0'/0/0",
-        domainSeperatorHash,
-        messageHash
+        new Buffer(domainSeperatorHash).toString('hex'),
+        new Buffer(messageHash).toString('hex')
       );
 
       let v = (_v - 27).toString(16);
@@ -393,7 +394,8 @@ class NetworkService {
       console.log('r: ', r);
       console.log('s: ', s);
 
-      const signature = concatSig(new Buffer(v), new Buffer(r), new Buffer(s));
+      // const signature = concatSig(new Buffer(v), new Buffer(r), new Buffer(s));
+      const signature = `0x${r}${s}${v}`;
       console.log('signature: ', signature);
       return signature;
     } catch (error) {

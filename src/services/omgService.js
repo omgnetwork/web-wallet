@@ -68,7 +68,7 @@ function encodeData (types, primaryType, data) {
     }
   }
 
-  return new Buffer(rawEncode(encTypes, encValues));
+  return rawEncode(encTypes, encValues);
 }
 
 function structHash (types, primaryType, data) {
@@ -77,10 +77,10 @@ function structHash (types, primaryType, data) {
 
 export function hashTypedDataMessage (typedData) {
   const messageHash = structHash(typedData.types, typedData.primaryType, typedData.message);
-  return bufferToHex(messageHash);
+  return messageHash;
 }
 
 export function getDomainSeperatorHash (typedData) {
   const domainHash = structHash(typedData.types, 'EIP712Domain', typedData.domain);
-  return bufferToHex(domainHash);
+  return domainHash;
 }
