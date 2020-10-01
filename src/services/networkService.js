@@ -363,41 +363,24 @@ class NetworkService {
   }
 
   async ledgerSign (typedData) {
-    console.log('starting ledger sign with: ', typedData);
-
     const transport = await Transport.create();
     const eth = new Eth(transport);
 
     try {
       const messageHash = hashTypedDataMessage(typedData);
-      console.log('messageHash: ', messageHash);
-      // const _messageHash = OmgUtil.transaction.getToSignHash(typedData);
-      // const messageHash = bufferToHex(_messageHash);
-      // console.log('messageHash: ', messageHash);
-
       const domainSeperatorHash = getDomainSeperatorHash(typedData);
-      console.log('domainSeperatorHash: ', domainSeperatorHash);
-
-      // https://github.com/btchip/ledgerjs/tree/eip712_v0/packages/hw-app-eth#signeip712hashedmessage
       const { v: _v, r, s } = await eth.signEIP712HashedMessage(
         "44'/60'/0'/0/0",
-        new Buffer(domainSeperatorHash).toString('hex'),
-        new Buffer(messageHash).toString('hex')
+        bufferToHex(domainSeperatorHash),
+        bufferToHex(messageHash)
       );
 
-      let v = (_v - 27).toString(16);
+      let v = _v.toString(16);
       if (v.length < 2) {
         v = "0" + v;
       }
 
-      console.log('v: ', v);
-      console.log('r: ', r);
-      console.log('s: ', s);
-
-      // const signature = concatSig(new Buffer(v), new Buffer(r), new Buffer(s));
-      const signature = `0x${r}${s}${v}`;
-      console.log('signature: ', signature);
-      return signature;
+      return `0x${r}${s}${v}`;
     } catch (error) {
       console.log('ledger signing error: ', error);
       throw error;
