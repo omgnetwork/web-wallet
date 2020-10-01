@@ -1,7 +1,7 @@
 // temporarily do hash signing here
 // TODO: export these helpers from omg-js instead
 
-import { bufferToHex, keccak256 } from 'ethereumjs-util';
+import { keccak256 } from 'ethereumjs-util';
 import { rawEncode } from 'ethereumjs-abi';
 import { Buffer } from 'buffer';
 

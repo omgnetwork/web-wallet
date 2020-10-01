@@ -16,13 +16,10 @@ limitations under the License. */
 
 import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
 
-import Transport from '@ledgerhq/hw-transport-webusb';
-
 // import Eth from '@ledgerhq/hw-app-eth';
 // TODO: use personally hosted build for now
 import Eth from 'ledger-eip-support-poc/packages/hw-app-eth';
-import { concatSig } from 'eth-sig-util';
-import { Buffer } from 'buffer';
+import Transport from '@ledgerhq/hw-transport-webusb';
 
 import { getDomainSeperatorHash, hashTypedDataMessage } from './omgService';
 
