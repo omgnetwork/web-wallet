@@ -124,6 +124,17 @@ class NetworkService {
     }
   }
 
+  async enableLedger () {
+    try {
+      this.provider = new Web3.providers.HttpProvider(config.rpcProxy);
+      this.web3 = this.makeWeb3(this.provider);
+      this.bindProviderListeners('ledger');
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
   handleAccountsChanged (accounts) {
     const providerRegisteredAccount = accounts ? accounts[0] : null;
     const appRegisteredAcount = networkService.account;
@@ -171,6 +182,14 @@ class NetworkService {
         // add any walletlink listeners
       } catch (err) {
         console.log('WalletLink event handling not available');
+      }
+    }
+
+    if (walletProvider === 'ledger') {
+      try {
+        // add any ledger listeners
+      } catch (err) {
+        console.log('Ledger event handling not available');
       }
     }
   }
