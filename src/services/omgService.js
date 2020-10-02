@@ -1,7 +1,7 @@
 // temporarily do hash signing here
 // TODO: export these helpers from omg-js instead
 
-import { keccak256 } from 'ethereumjs-util';
+import { keccak256, bufferToHex } from 'ethereumjs-util';
 import { rawEncode } from 'ethereumjs-abi';
 import { Buffer } from 'buffer';
 
@@ -77,10 +77,10 @@ function structHash (types, primaryType, data) {
 
 export function hashTypedDataMessage (typedData) {
   const messageHash = structHash(typedData.types, typedData.primaryType, typedData.message);
-  return messageHash;
+  return bufferToHex(messageHash);
 }
 
 export function getDomainSeperatorHash (typedData) {
   const domainHash = structHash(typedData.types, 'EIP712Domain', typedData.domain);
-  return domainHash;
+  return bufferToHex(domainHash);
 }

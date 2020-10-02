@@ -25,6 +25,8 @@ import { transfer } from 'actions/networkAction';
 import { getToken } from 'actions/tokenAction';
 import { closeModal, openAlert } from 'actions/uiAction';
 
+import LedgerPrompt from 'containers/modals/ledger/LedgerPrompt';
+
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
 import Input from 'components/input/Input';
@@ -131,39 +133,6 @@ function TransferModal ({ open }) {
     dispatch(closeModal('transferModal'));
   }
 
-  function renderLedgerScreen () {
-    return (
-      <>
-        <h2>Ledger Sign</h2>
-        <div>
-          Please make sure your Ledger is unlocked, connected and the Ethereum application is open.
-        </div>
-        {loading && (
-          <p>
-            Please check the Ledger to sign the transaction.
-          </p>
-        )}
-        <div className={styles.buttons}>
-          <Button
-            onClick={handleClose}
-            type='outline'
-            className={styles.button}
-          >
-            CANCEL
-          </Button>
-          <Button
-            className={styles.button}
-            onClick={() => submit({ useLedgerSign: true })}
-            type='primary'
-            loading={loading}
-          >
-            SIGN
-          </Button>
-        </div>
-      </>
-    );
-  }
-
   function renderTransferScreen () {
     return (
       <>
@@ -252,7 +221,13 @@ function TransferModal ({ open }) {
   return (
     <Modal open={open} onClose={handleClose}>
       {!ledgerModal && renderTransferScreen()}
-      {ledgerModal && renderLedgerScreen()}
+      {ledgerModal && (
+        <LedgerPrompt
+          loading={loading}
+          submit={submit}
+          handleClose={handleClose}
+        />
+      )}
     </Modal>
   );
 }

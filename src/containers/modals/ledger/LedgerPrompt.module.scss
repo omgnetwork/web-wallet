@@ -1,0 +1,18 @@
+.buttons {
+  display: flex;
+  flex-direction: row;
+  margin-top: 30px;
+  justify-content: flex-end;
+
+  .button {
+    margin-right: 10px;
+    min-width: 0;
+    &:last-child {
+      margin-right: 0px;
+    }
+  }
+}
+
+.hash {
+  word-break: break-all;
+}

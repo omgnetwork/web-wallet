@@ -157,10 +157,10 @@ export function transfer (data) {
   );
 }
 
-export function mergeUtxos (utxos) {
+export function mergeUtxos (useLedgerSign, utxos) {
   return createAction(
     'TRANSFER/CREATE',
-    () => networkService.mergeUtxos(utxos)
+    () => networkService.mergeUtxos(useLedgerSign, utxos)
   );
 }
 

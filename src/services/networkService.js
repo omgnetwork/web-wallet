@@ -399,8 +399,8 @@ class NetworkService {
       const domainSeperatorHash = getDomainSeperatorHash(typedData);
       const { v: _v, r, s } = await eth.signEIP712HashedMessage(
         "44'/60'/0'/0/0",
-        bufferToHex(domainSeperatorHash),
-        bufferToHex(messageHash)
+        domainSeperatorHash,
+        messageHash
       );
 
       let v = _v.toString(16);
@@ -476,29 +476,41 @@ class NetworkService {
     }
   }
 
-  async mergeUtxos (utxos) {
+  getMergeTypedData (utxos) {
+    const _metadata = 'Merge UTXOs';
+    const payments = [ {
+      owner: this.account,
+      currency: utxos[0].currency,
+      amount: utxos.reduce((prev, curr) => {
+        return prev.add(new BN(curr.amount.toString()));
+      }, new BN(0))
+    } ];
+    const fee = {
+      currency: OmgUtil.transaction.ETH_CURRENCY,
+      amount: 0
+    };
+    const txBody = OmgUtil.transaction.createTransactionBody({
+      fromAddress: this.account,
+      fromUtxos: utxos,
+      payments,
+      fee,
+      metadata: OmgUtil.transaction.encodeMetadata(_metadata)
+    });
+    const typedData = OmgUtil.transaction.getTypedData(txBody, this.plasmaContractAddress);
+    return {
+      typedData,
+      txBody
+    };
+  }
+
+  async mergeUtxos (useLedgerSign = false, utxos) {
     try {
-      const _metadata = 'Merge UTXOs';
-      const payments = [ {
-        owner: this.account,
-        currency: utxos[0].currency,
-        amount: utxos.reduce((prev, curr) => {
-          return prev.add(new BN(curr.amount.toString()));
-        }, new BN(0))
-      } ];
-      const fee = {
-        currency: OmgUtil.transaction.ETH_CURRENCY,
-        amount: 0
-      };
-      const txBody = OmgUtil.transaction.createTransactionBody({
-        fromAddress: this.account,
-        fromUtxos: utxos,
-        payments,
-        fee,
-        metadata: OmgUtil.transaction.encodeMetadata(_metadata)
-      });
-      const typedData = OmgUtil.transaction.getTypedData(txBody, this.plasmaContractAddress);
-      const signature = await this.signTypedData(typedData);
+      const { typedData, txBody } = this.getMergeTypedData(utxos);
+
+      const signature = useLedgerSign
+        ? await this.ledgerSign(typedData)
+        : await this.signTypedData(typedData);
+
       const signatures = new Array(txBody.inputs.length).fill(signature);
       const signedTxn = this.childChain.buildSignedTransaction(typedData, signatures);
       const submittedTransaction = await this.childChain.submitTransaction(signedTxn);
@@ -508,7 +520,7 @@ class NetworkService {
           blknum: submittedTransaction.blknum,
           timestamp: Math.round((new Date()).getTime() / 1000)
         },
-        metadata: _metadata,
+        metadata: 'Merge UTXOs',
         status: 'Pending'
       };
     } catch (error) {
