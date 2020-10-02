@@ -378,6 +378,18 @@ class NetworkService {
     }
   }
 
+  async isConnectedLedger () {
+    try {
+      const transport = await Transport.create();
+      const eth = new Eth(transport);
+      const { address } = await eth.getAddress("44'/60'/0'/0/0");
+      return address.toLowerCase() === this.account.toLowerCase();
+    } catch (error) {
+      console.log('connected ledger error: ', error.message);
+      return false;
+    }
+  }
+
   async ledgerSign (typedData) {
     const transport = await Transport.create();
     const eth = new Eth(transport);
@@ -398,7 +410,14 @@ class NetworkService {
 
       return `0x${r}${s}${v}`;
     } catch (error) {
-      console.log('ledger signing error: ', error);
+      if (error.message.includes('Condition of use not satisfied')) {
+        throw new WebWalletError({
+          originalError: error,
+          customErrorMessage: 'User denied ledger signature',
+          reportToSentry: false,
+          reportToUi: true
+        });
+      }
       throw error;
     }
   }
@@ -520,6 +539,7 @@ class NetworkService {
   }
 
   async transfer ({
+    useLedgerSign = false,
     recipient,
     value,
     currency,
@@ -582,9 +602,9 @@ class NetworkService {
       });
       const typedData = OmgUtil.transaction.getTypedData(txBody, this.plasmaContractAddress);
 
-      // TODO: call new ledgerSign here...
-      // const signature = await this.signTypedData(typedData);
-      const signature = await this.ledgerSign(typedData);
+      const signature = useLedgerSign
+        ? await this.ledgerSign(typedData)
+        : await this.signTypedData(typedData);
 
       const signatures = new Array(txBody.inputs.length).fill(signature);
       const signedTxn = this.childChain.buildSignedTransaction(typedData, signatures);
