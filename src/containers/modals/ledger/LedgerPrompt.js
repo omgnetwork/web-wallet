@@ -30,24 +30,28 @@ function LedgerPrompt ({
   return (
     <>
       <h2>Ledger Sign</h2>
-      <p>Please make sure your Ledger is unlocked, connected and the Ethereum application is open.</p>
-      <p>{'This only works on Ledger running firmware version >= 1.5.0-rc2.'}</p>
+      {!loading && (
+        <>
+          <p>Please make sure your Ledger is unlocked, connected and the Ethereum application is open.</p>
+          <div className={styles.disclaimer}>
+            {'*This only works with the Ethereum application version >= 1.5.0-rc1'}
+          </div>
+        </>
+      )}
+
       {loading && (
         <>
           <p>Please check the Ledger to sign the transaction.</p>
           <p>Check that the domain and message hash match the following:</p>
           {typedData && (
-            <>
-              <p className={styles.hash}>
-                Domain hash: {getDomainSeperatorHash(typedData)}
-              </p>
-              <p className={styles.hash}>
-                Message hash: {hashTypedDataMessage(typedData)}
-              </p>
-            </>
+            <div className={styles.disclaimer}>
+              <p className={styles.hash}>Domain hash: {getDomainSeperatorHash(typedData)}</p>
+              <p className={styles.hash}>Message hash: {hashTypedDataMessage(typedData)}</p>
+            </div>
           )}
         </>
       )}
+
       <div className={styles.buttons}>
         <Button
           onClick={handleClose}

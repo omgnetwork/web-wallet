@@ -371,7 +371,7 @@ class NetworkService {
     } catch (error) {
       throw new WebWalletError({
         originalError: error,
-        customErrorMessage: 'Could not check reset approval allowance for ERC20.',
+        customErrorMessage: 'Could not reset approval allowance for ERC20.',
         reportToSentry: false,
         reportToUi: true
       });
@@ -391,13 +391,23 @@ class NetworkService {
   }
 
   async ledgerSign (typedData) {
-    const transport = await Transport.create();
-    const eth = new Eth(transport);
+    let transporter;
+    try {
+      const transport = await Transport.create();
+      transporter = new Eth(transport);
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: 'Could not create a Ledger connection.',
+        reportToSentry: false,
+        reportToUi: true
+      });
+    }
 
     try {
       const messageHash = hashTypedDataMessage(typedData);
       const domainSeperatorHash = getDomainSeperatorHash(typedData);
-      const { v: _v, r, s } = await eth.signEIP712HashedMessage(
+      const { v: _v, r, s } = await transporter.signEIP712HashedMessage(
         "44'/60'/0'/0/0",
         domainSeperatorHash,
         messageHash
@@ -410,10 +420,18 @@ class NetworkService {
 
       return `0x${r}${s}${v}`;
     } catch (error) {
+      if (error.message.includes('INS_NOT_SUPPORTED')) {
+        throw new WebWalletError({
+          originalError: error,
+          customErrorMessage: 'Unsupported Ledger version. Please update device firmware.',
+          reportToSentry: false,
+          reportToUi: true
+        });
+      }
       if (error.message.includes('Condition of use not satisfied')) {
         throw new WebWalletError({
           originalError: error,
-          customErrorMessage: 'User denied ledger signature',
+          customErrorMessage: 'User denied signature.',
           reportToSentry: false,
           reportToUi: true
         });
