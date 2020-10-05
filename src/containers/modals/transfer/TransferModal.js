@@ -21,7 +21,7 @@ import BN from 'bignumber.js';
 import { selectChildchainBalance } from 'selectors/balanceSelector';
 import { selectLoading } from 'selectors/loadingSelector';
 import { selectFees } from 'selectors/feeSelector';
-import { transfer } from 'actions/networkAction';
+import { transfer, getTransferTypedData } from 'actions/networkAction';
 import { getToken } from 'actions/tokenAction';
 import { closeModal, openAlert } from 'actions/uiAction';
 
@@ -48,6 +48,7 @@ function TransferModal ({ open }) {
   const [ metadata, setMetadata ] = useState('');
   const [ usableFees, setUsableFees ] = useState([]);
   const [ ledgerModal, setLedgerModal ] = useState(false);
+  const [ typedData, setTypedData ] = useState({});
 
   const balances = useSelector(selectChildchainBalance, isEqual);
   const fees = useSelector(selectFees, isEqual);
@@ -105,20 +106,25 @@ function TransferModal ({ open }) {
     ) {
       try {
         const valueTokenInfo = await getToken(currency);
-        const res = await dispatch(transfer({
-          useLedgerSign,
+        const { txBody, typedData } = await dispatch(getTransferTypedData({
           recipient,
           value: powAmount(value, valueTokenInfo.decimals),
           currency,
           feeToken,
           metadata
         }));
+        setTypedData(typedData);
+        const res = await dispatch(transfer({
+          useLedgerSign,
+          txBody,
+          typedData
+        }));
         if (res) {
           dispatch(openAlert('Transfer submitted. You will be blocked from making further transactions until the transfer is confirmed.'));
           handleClose();
         }
       } catch (err) {
-        console.warn(err);
+        //
       }
     }
   }
@@ -132,6 +138,8 @@ function TransferModal ({ open }) {
     setLedgerModal(false);
     dispatch(closeModal('transferModal'));
   }
+
+  const disabledTransfer = value <= 0 || !currency || !feeToken || !recipient;
 
   function renderTransferScreen () {
     return (
@@ -189,12 +197,7 @@ function TransferModal ({ open }) {
             type='primary'
             loading={loading}
             tooltip='Your transfer transaction is still pending. Please wait for confirmation.'
-            disabled={
-              value <= 0 ||
-              !currency ||
-              !feeToken ||
-              !recipient
-            }
+            disabled={disabledTransfer}
           >
             TRANSFER
           </Button>
@@ -204,12 +207,7 @@ function TransferModal ({ open }) {
             className={styles.button}
             loading={loading}
             tooltip='Your transfer transaction is still pending. Please wait for confirmation.'
-            disabled={
-              value <= 0 ||
-              !currency ||
-              !feeToken ||
-              !recipient
-            }
+            disabled={disabledTransfer}
           >
             LEDGER
           </Button>
@@ -226,6 +224,7 @@ function TransferModal ({ open }) {
           loading={loading}
           submit={submit}
           handleClose={handleClose}
+          typedData={typedData}
         />
       )}
     </Modal>

@@ -568,8 +568,7 @@ class NetworkService {
     }
   }
 
-  async transfer ({
-    useLedgerSign = false,
+  async getTransferTypedData ({
     recipient,
     value,
     currency,
@@ -631,7 +630,23 @@ class NetworkService {
         metadata: metadata || OmgUtil.transaction.NULL_METADATA
       });
       const typedData = OmgUtil.transaction.getTypedData(txBody, this.plasmaContractAddress);
+      return { txBody, typedData };
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: 'Could not create the transaction. Please try again.',
+        reportToSentry: false,
+        reportToUi: true
+      });
+    }
+  }
 
+  async transfer ({
+    useLedgerSign = false,
+    typedData,
+    txBody
+  }) {
+    try {
       const signature = useLedgerSign
         ? await this.ledgerSign(typedData)
         : await this.signTypedData(typedData);
@@ -645,17 +660,16 @@ class NetworkService {
           blknum: submittedTransaction.blknum,
           timestamp: Math.round((new Date()).getTime() / 1000)
         },
-        metadata,
+        metadata: OmgUtil.transaction.decodeMetadata(String(txBody.metadata)),
         status: 'Pending'
       };
     } catch (error) {
-      console.log(error);
       if (error instanceof WebWalletError) {
         throw error;
       }
       throw new WebWalletError({
         originalError: error,
-        customErrorMessage: 'Could not create the transaction. Please try again.',
+        customErrorMessage: 'Failed to submit the transaction. Please try again.',
         reportToSentry: false,
         reportToUi: true
       });
