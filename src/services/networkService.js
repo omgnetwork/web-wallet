@@ -423,7 +423,7 @@ class NetworkService {
       if (error.message.includes('INS_NOT_SUPPORTED')) {
         throw new WebWalletError({
           originalError: error,
-          customErrorMessage: 'Unsupported Ledger version. Please update device firmware.',
+          customErrorMessage: 'Could not call method on Ledger. Please make sure the Ethereum application is open.',
           reportToSentry: false,
           reportToUi: true
         });
