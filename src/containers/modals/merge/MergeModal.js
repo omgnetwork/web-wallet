@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Check } from '@material-ui/icons';
 
 import { selectLoading } from 'selectors/loadingSelector';
+import { selectLedger } from 'selectors/uiSelector';
 import { mergeUtxos } from 'actions/networkAction';
 import { closeModal, openAlert } from 'actions/uiAction';
 
@@ -42,6 +43,7 @@ function MergeModal ({ open }) {
   const [ typedData, setTypedData ] = useState({});
 
   const loading = useSelector(selectLoading([ 'TRANSFER/CREATE' ]));
+  const ledgerConnect = useSelector(selectLedger);
 
   useEffect(() => {
     async function fetchUTXOS () {
@@ -145,26 +147,27 @@ function MergeModal ({ open }) {
           >
             CANCEL
           </Button>
-          <Button
-            onClick={submit}
-            type='primary'
-            className={styles.button}
-            loading={loading}
-            tooltip='Your merge transaction is still pending. Please wait for confirmation.'
-            disabled={selectedUTXOs.length <= 1 || selectedUTXOs.length > 4}
-          >
+          {ledgerConnect ? (
+            <Button
+              onClick={() => setLedgerModal(true)}
+              type='primary'
+              className={styles.button}
+              loading={loading}
+              tooltip='Your merge transaction is still pending. Please wait for confirmation.'
+              disabled={selectedUTXOs.length <= 1 || selectedUTXOs.length > 4}
+            >
+            TRANSFER WITH LEDGER
+            </Button>) : (
+            <Button
+              onClick={submit}
+              type='primary'
+              className={styles.button}
+              loading={loading}
+              tooltip='Your merge transaction is still pending. Please wait for confirmation.'
+              disabled={selectedUTXOs.length <= 1 || selectedUTXOs.length > 4}
+            >
             MERGE
-          </Button>
-          <Button
-            onClick={() => setLedgerModal(true)}
-            type='primary'
-            className={styles.button}
-            loading={loading}
-            tooltip='Your merge transaction is still pending. Please wait for confirmation.'
-            disabled={selectedUTXOs.length <= 1 || selectedUTXOs.length > 4}
-          >
-            LEDGER
-          </Button>
+            </Button>)}
         </div>
       </>
     );
