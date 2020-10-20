@@ -34,7 +34,7 @@ function LedgerPrompt ({
         <>
           <p>Please make sure your Ledger is unlocked, connected and the Ethereum application is open.</p>
           <div className={styles.disclaimer}>
-            {'*This only works with the Ethereum application version >= 1.5.0-rc1'}
+            {'*This only works with the Ethereum application version >= 1.4.0'}
           </div>
         </>
       )}
