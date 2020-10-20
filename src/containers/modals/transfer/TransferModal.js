@@ -21,6 +21,7 @@ import BN from 'bignumber.js';
 import { selectChildchainBalance } from 'selectors/balanceSelector';
 import { selectLoading } from 'selectors/loadingSelector';
 import { selectFees } from 'selectors/feeSelector';
+import { selectLedger } from 'selectors/uiSelector';
 import { transfer, getTransferTypedData } from 'actions/networkAction';
 import { getToken } from 'actions/tokenAction';
 import { closeModal, openAlert } from 'actions/uiAction';
@@ -52,6 +53,7 @@ function TransferModal ({ open }) {
 
   const balances = useSelector(selectChildchainBalance, isEqual);
   const fees = useSelector(selectFees, isEqual);
+  const ledgerConnect = useSelector(selectLedger);
 
   const feesLoading = useSelector(selectLoading([ 'FEE/GET' ]));
   const loading = useSelector(selectLoading([ 'TRANSFER/CREATE' ]));
@@ -191,26 +193,31 @@ function TransferModal ({ open }) {
           >
             CANCEL
           </Button>
-          <Button
-            className={styles.button}
-            onClick={() => submit({ useLedgerSign: false })}
-            type='primary'
-            loading={loading}
-            tooltip='Your transfer transaction is still pending. Please wait for confirmation.'
-            disabled={disabledTransfer}
-          >
-            TRANSFER
-          </Button>
-          <Button
-            onClick={() => setLedgerModal(true)}
-            type='primary'
-            className={styles.button}
-            loading={loading}
-            tooltip='Your transfer transaction is still pending. Please wait for confirmation.'
-            disabled={disabledTransfer}
-          >
-            LEDGER
-          </Button>
+
+          {ledgerConnect ?
+            (
+              <Button
+                onClick={() => setLedgerModal(true)}
+                type='primary'
+                className={styles.button}
+                loading={loading}
+                tooltip='Your transfer transaction is still pending. Please wait for confirmation.'
+                disabled={disabledTransfer}
+              >
+                TRANSFER WITH LEDGER
+              </Button>)
+            :
+            (<Button
+              className={styles.button}
+              onClick={() => submit({ useLedgerSign: false })}
+              type='primary'
+              loading={loading}
+              tooltip='Your transfer transaction is still pending. Please wait for confirmation.'
+              disabled={disabledTransfer}
+            >
+              TRANSFER
+            </Button>)
+          }
         </div>
       </>
     );

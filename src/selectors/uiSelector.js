@@ -26,3 +26,7 @@ export function selectAlert (state) {
 export function selectError (state) {
   return state.ui.error;
 }
+
+export function selectLedger (state) {
+  return state.ui.useLedger;
+}

@@ -20,6 +20,7 @@ const initialState = {
   mergeModal: false,
   wrongNetworkModal: false,
   ledgerConnectModal: true,
+  useLedger: false,
   alert: null,
   error: null
 };
@@ -34,6 +35,8 @@ function uiReducer (state = initialState, action) {
       return { ...state, alert: action.payload };
     case 'UI/ERROR/UPDATE':
       return { ...state, error: action.payload };
+    case 'UI/LEDGER/UPDATE':
+      return { ...state, useLedger: action.payload };
     default:
       return state;
   }

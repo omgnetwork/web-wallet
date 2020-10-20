@@ -15,7 +15,7 @@ limitations under the License. */
 
 import React, { useState } from "react";
 import { useDispatch } from 'react-redux';
-import { closeModal, openAlert } from 'actions/uiAction';
+import { closeModal, openAlert, ledgerConnect } from 'actions/uiAction';
 
 import Button from "components/button/Button";
 import Modal from "components/modal/Modal";
@@ -26,6 +26,11 @@ function LedgerConnect ({ submit, open }) {
   const dispatch = useDispatch();
 
   function handleClose () {
+    dispatch(closeModal('ledgerConnectModal'));
+  }
+
+  function handleYes () {
+    dispatch(ledgerConnect(true));
     dispatch(closeModal('ledgerConnectModal'));
   }
 
@@ -43,7 +48,7 @@ function LedgerConnect ({ submit, open }) {
         </Button>
         <Button
           className={styles.button}
-          onClick={() => submit({ useLedgerSign: true })}
+          onClick={handleYes}
           type="primary">
           YES
         </Button>
