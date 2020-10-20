@@ -250,20 +250,6 @@ function WalletPicker ({ onEnable }) {
             <h3>WalletLink</h3>
             <div>Use a Coinbase wallet.</div>
           </div>
-
-          <div
-            className={[
-              styles.wallet,
-              // !ledgerEnabled ? styles.disabled : ''
-              styles.disabled
-            ].join(' ')}
-            onClick={() => dispatchSetWalletMethod('ledger')}
-          >
-            <img src={ledger} alt='ledger' />
-            <h3>Ledger</h3>
-            <div>Use a hardware wallet.</div>
-            <div>Coming soon...</div>
-          </div>
         </div>
       </div>
     </>
