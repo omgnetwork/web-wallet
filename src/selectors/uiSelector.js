@@ -28,5 +28,5 @@ export function selectError (state) {
 }
 
 export function selectLedger (state) {
-  return state.ui.useLedger;
+  return state.ui.ledger;
 }
