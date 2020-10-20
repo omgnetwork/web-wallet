@@ -1,0 +1,38 @@
+@import 'index.scss';
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  margin-top: 30px;
+  justify-content: flex-end;
+
+  div:first-child {
+    margin-right: 10px;
+  }
+}
+
+.logo {
+  padding: 10px;
+  border-radius: 25px;
+  background-color: white;
+}
+
+.logoContainer {
+  display: flex;
+  margin-top: 30px;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  margin-top: 30px;
+  font-size: 1.5em;
+  font-family: 'Messina';
+  font-weight: 400;
+  color: white;
+  text-align: center;
+}
+
+.tabs {
+  margin-top: 20px;
+}

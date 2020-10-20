@@ -39,6 +39,7 @@ import DepositModal from 'containers/modals/deposit/DepositModal';
 import TransferModal from 'containers/modals/transfer/TransferModal';
 import ExitModal from 'containers/modals/exit/ExitModal';
 import MergeModal from 'containers/modals/merge/MergeModal';
+import LedgerConnect from 'containers/modals/ledger/LedgerConnect';
 
 import Status from 'containers/status/Status';
 import Account from 'containers/account/Account';
@@ -60,6 +61,7 @@ function Home () {
   const transferModalState = useSelector(selectModalState('transferModal'));
   const exitModalState = useSelector(selectModalState('exitModal'));
   const mergeModalState = useSelector(selectModalState('mergeModal'));
+  const ledgerConnectModalState = useSelector(selectModalState('ledgerConnectModal'));
 
   const transactions = useSelector(selectChildchainTransactions, isEqual);
   const transactedTokens = useMemo(() => {
@@ -115,6 +117,7 @@ function Home () {
       <TransferModal open={transferModalState} />
       <ExitModal open={exitModalState} />
       <MergeModal open={mergeModalState} />
+      <LedgerConnect open={ledgerConnectModalState} />
 
       <div className={styles.Home}>
         <div className={styles.sidebar}>
