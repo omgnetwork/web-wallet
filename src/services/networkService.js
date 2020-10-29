@@ -19,7 +19,7 @@ import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
 import Eth from '@ledgerhq/hw-app-eth';
 import Transport from '@ledgerhq/hw-transport-webusb';
 
-import { getDomainSeperatorHash, hashTypedDataMessage } from './omgService';
+import { hashTypedDataDomain, hashTypedDataMessage } from '@omisego/omg-js-util';
 
 import { orderBy, flatten, uniq, get, pickBy, keyBy } from 'lodash';
 import BN from 'bn.js';
@@ -404,7 +404,7 @@ class NetworkService {
 
     try {
       const messageHash = hashTypedDataMessage(typedData);
-      const domainSeperatorHash = getDomainSeperatorHash(typedData);
+      const domainSeperatorHash = hashTypedDataDomain(typedData);
       const { v: _v, r, s } = await transporter.signEIP712HashedMessage(
         "44'/60'/0'/0/0",
         domainSeperatorHash,

@@ -17,7 +17,7 @@ import React, { useState } from 'react';
 
 import Button from 'components/button/Button';
 
-import { hashTypedDataMessage, getDomainSeperatorHash } from 'services/omgService';
+import { hashTypedDataMessage, hashTypedDataDomain } from '@omisego/omg-js-util';
 
 import * as styles from './LedgerPrompt.module.scss';
 
@@ -45,7 +45,7 @@ function LedgerPrompt ({
           <p>Check that the domain and message hash match the following:</p>
           {typedData && (
             <div className={styles.disclaimer}>
-              <p className={styles.hash}>Domain hash: {getDomainSeperatorHash(typedData)}</p>
+              <p className={styles.hash}>Domain hash: {hashTypedDataDomain(typedData)}</p>
               <p className={styles.hash}>Message hash: {hashTypedDataMessage(typedData)}</p>
             </div>
           )}

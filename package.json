@@ -11,7 +11,7 @@
     "@material-ui/core": "^4.8.3",
     "@material-ui/icons": "^4.5.1",
     "@material-ui/lab": "^4.0.0-alpha.39",
-    "@omisego/omg-js": "^4.0.1-1.0.0",
+    "@omisego/omg-js": "^4.1.0-1.0.4",
     "@sentry/react": "^5.21.4",
     "@walletconnect/web3-provider": "^1.0.0-rc.3",
     "axios": "^0.19.2",
