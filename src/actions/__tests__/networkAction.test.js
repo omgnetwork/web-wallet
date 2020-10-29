@@ -154,8 +154,8 @@ describe('networkActions', () => {
       { type: 'TRANSFER/CREATE/REQUEST' },
       { type: 'TRANSFER/CREATE/SUCCESS', payload: 'toto' }
     ];
-    await store.dispatch(actions.mergeUtxos('data'));
-    expect(networkService.mergeUtxos).toHaveBeenCalledWith('data');
+    await store.dispatch(actions.mergeUtxos(false, 'data'));
+    expect(networkService.mergeUtxos).toHaveBeenCalledWith(false, 'data');
     expect(store.getActions()).toEqual(expectedActions);
   });
 
