@@ -312,7 +312,7 @@ class NetworkService {
     try {
       const tokenContract = new this.web3.eth.Contract(erc20abi, currency);
       const { address: erc20VaultAddress } = await this.rootChain.getErc20Vault();
-      const allowance = await tokenContract.methods.allowance(this.account, erc20VaultAddress).call();
+      const allowance = await tokenContract.methods.allowance(this.account, erc20VaultAddress).call({ from: currency });
       return allowance.toString();
     } catch (error) {
       throw new WebWalletError({

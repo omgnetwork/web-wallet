@@ -23,5 +23,5 @@ yarn-error.log*
 # generated runtime envs
 public/env.js
 
-# enforce yarn
-package-lock.json
+# enforce npm
+yarn.lock

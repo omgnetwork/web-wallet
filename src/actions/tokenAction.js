@@ -27,9 +27,10 @@ export async function getToken (_currency) {
   }
 
   const tokenContract = new networkService.web3.eth.Contract(erc20abi, currency);
+  const callOptions = { from: currency };
   const [ _name, _decimals ] = await Promise.all([
-    tokenContract.methods.symbol().call(),
-    tokenContract.methods.decimals().call()
+    tokenContract.methods.symbol().call(callOptions),
+    tokenContract.methods.decimals().call(callOptions)
   ]).catch(e => [ null, null ]);
 
   const decimals = _decimals ? Number(_decimals.toString()) : 0;

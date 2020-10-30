@@ -27,11 +27,11 @@ jobs:
       - run: |
           apk update && apk upgrade
           apk add --no-cache git openssh make gcc g++ python
-      - run: yarn install --frozen-lockfile
-      - run: yarn audit-check
-      - run: yarn lint
-      - run: yarn test
-      - run: yarn build
+      - run: npm install
+      - run: npm run audit-check
+      - run: npm run lint
+      - run: npm run test
+      - run: npm run build
 
   build-and-deploy:
     docker:
