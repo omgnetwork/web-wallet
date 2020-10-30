@@ -39,6 +39,7 @@
     "web3": "1.0.0-beta.55"
   },
   "scripts": {
+    "preinstall": "npx npm-force-resolutions",
     "buildenv-dev": "react-env",
     "buildenv-prod": "NODE_ENV=production react-env --dest build",
     "serve": "yarn buildenv-prod && serve -s build -l 3000 -c public/serve.json",
@@ -69,7 +70,9 @@
     "audit-ci": "^2.5.1"
   },
   "resolutions": {
-    "**/**/**/http-proxy": "^1.18.1",
-    "**/elliptic":"^6.5.3"
+    "http-proxy": "^1.18.1",
+    "elliptic": "^6.5.3",
+    "object-path": "^0.11.5",
+    "node-forge": "0.10.0"
   }
 }

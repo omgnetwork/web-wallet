@@ -10,7 +10,7 @@ To run this application locally, make sure you have a local instance of elixir-o
 
 ## Initial Setup
 
-1. Install dependencies by running `yarn install` from the root
+1. Install dependencies by running `npm install` from the root
 
 2. Create a `.env` file in the root and add your configuration. See `.env.template` for an example with fake variables.
 
@@ -30,7 +30,7 @@ REACT_APP_RPC_PROXY=          *optional, required for WalletConnect support* rpc
 
 3. Make sure you are using the correct version of Node
 
-4. Start the app by running `yarn start` from the root directory.
+4. Start the app by running `npm run start` from the root directory.
 
 ## Running the wallet locally
 
