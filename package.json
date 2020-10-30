@@ -75,6 +75,7 @@
   },
   "resolutions": {
     "**/**/**/http-proxy": "^1.18.1",
-    "**/elliptic": "^6.5.3"
+    "**/elliptic": "^6.5.3",
+    "object-path": "^0.11.5"
   }
 }

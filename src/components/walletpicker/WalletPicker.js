@@ -30,7 +30,6 @@ import chevron from 'images/chevron.svg';
 import browserwallet from 'images/browserwallet.png';
 import coinbase from 'images/coinbase.jpg';
 import walletconnect from 'images/walletconnect.png';
-import ledger from 'images/ledger.png';
 
 import * as styles from './WalletPicker.module.scss';
 
