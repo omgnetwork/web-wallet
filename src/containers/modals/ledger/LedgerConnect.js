@@ -13,9 +13,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
-import { closeModal, openAlert, ledgerConnect } from 'actions/uiAction';
+import { closeModal, ledgerConnect } from 'actions/uiAction';
 
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
