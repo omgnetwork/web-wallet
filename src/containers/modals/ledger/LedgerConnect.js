@@ -13,14 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { closeModal, openAlert, ledgerConnect } from 'actions/uiAction';
 
-import Button from "components/button/Button";
-import Modal from "components/modal/Modal";
-import ledger from "images/ledger_connect.png";
-import * as styles from "./LedgerConnect.module.scss";
+import Button from 'components/button/Button';
+import Modal from 'components/modal/Modal';
+import ledger from 'images/ledger_connect.png';
+import * as styles from './LedgerConnect.module.scss';
 
 function LedgerConnect ({ submit, open }) {
   const dispatch = useDispatch();
