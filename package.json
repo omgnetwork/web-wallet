@@ -45,14 +45,15 @@
     "web3": "1.0.0-beta.55"
   },
   "scripts": {
+    "preinstall": "npx npm-force-resolutions",
     "buildenv-dev": "react-env",
     "buildenv-prod": "NODE_ENV=production react-env --dest build",
-    "serve": "yarn buildenv-prod && serve -s build -l 3000 -c public/serve.json",
-    "start": "yarn buildenv-dev && react-scripts start",
+    "serve": "npm run buildenv-prod && serve -s build -l 3000 -c public/serve.json",
+    "start": "npm run buildenv-dev && react-scripts start",
     "build": "react-scripts build",
     "lint": "eslint . --ext .js,.jsx",
     "test": "react-scripts test --watchAll=false",
-    "test:coverage": "yarn test --coverage",
+    "test:coverage": "npm run test --coverage",
     "audit-check": "audit-ci --moderate"
   },
   "eslintConfig": {
@@ -75,9 +76,9 @@
     "audit-ci": "^2.5.1"
   },
   "resolutions": {
-    "**/**/**/http-proxy": "^1.18.1",
-    "**/elliptic": "^6.5.3",
-    "**/object-path": "^0.11.5",
-    "**/node-forge": "^0.10.0"
+    "http-proxy": "^1.18.1",
+    "elliptic": "^6.5.3",
+    "object-path": "^0.11.5",
+    "node-forge": "^0.10.0"
   }
 }
