@@ -21,6 +21,8 @@ const initialState = {
   exitModal: false,
   mergeModal: false,
   wrongNetworkModal: false,
+  ledger: false,
+  ledgerConnectModal: true,
   alert: null,
   error: null
 };

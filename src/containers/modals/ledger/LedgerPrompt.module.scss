@@ -15,9 +15,11 @@
   }
 }
 
-.address {
-  font-size: 0.9em;
-  margin-bottom: 20px;
-  margin-top: 20px;
+.hash {
   word-break: break-all;
+}
+
+.disclaimer {
+  padding: 10px 15px;
+  background-color: $gray2;
 }

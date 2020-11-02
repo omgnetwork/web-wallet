@@ -21,9 +21,12 @@ import BN from 'bignumber.js';
 import { selectChildchainBalance } from 'selectors/balanceSelector';
 import { selectLoading } from 'selectors/loadingSelector';
 import { selectFees } from 'selectors/feeSelector';
-import { transfer } from 'actions/networkAction';
+import { selectLedger } from 'selectors/uiSelector';
+import { transfer, getTransferTypedData } from 'actions/networkAction';
 import { getToken } from 'actions/tokenAction';
 import { closeModal, openAlert } from 'actions/uiAction';
+
+import LedgerPrompt from 'containers/modals/ledger/LedgerPrompt';
 
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
@@ -45,9 +48,12 @@ function TransferModal ({ open }) {
   const [ recipient, setRecipient ] = useState('');
   const [ metadata, setMetadata ] = useState('');
   const [ usableFees, setUsableFees ] = useState([]);
+  const [ ledgerModal, setLedgerModal ] = useState(false);
+  const [ typedData, setTypedData ] = useState({});
 
   const balances = useSelector(selectChildchainBalance, isEqual);
   const fees = useSelector(selectFees, isEqual);
+  const ledgerConnect = useSelector(selectLedger);
 
   const feesLoading = useSelector(selectLoading([ 'FEE/GET' ]));
   const loading = useSelector(selectLoading([ 'TRANSFER/CREATE' ]));
@@ -93,7 +99,7 @@ function TransferModal ({ open }) {
     subTitle: `Balance: ${logAmount(i.amount, i.decimals)}`
   }));
 
-  async function submit () {
+  async function submit ({ useLedgerSign }) {
     if (
       value > 0 &&
       currency &&
@@ -102,19 +108,25 @@ function TransferModal ({ open }) {
     ) {
       try {
         const valueTokenInfo = await getToken(currency);
-        const res = await dispatch(transfer({
+        const { txBody, typedData } = await dispatch(getTransferTypedData({
           recipient,
           value: powAmount(value, valueTokenInfo.decimals),
           currency,
           feeToken,
           metadata
         }));
+        setTypedData(typedData);
+        const res = await dispatch(transfer({
+          useLedgerSign,
+          txBody,
+          typedData
+        }));
         if (res) {
           dispatch(openAlert('Transfer submitted. You will be blocked from making further transactions until the transfer is confirmed.'));
           handleClose();
         }
       } catch (err) {
-        console.warn(err);
+        //
       }
     }
   }
@@ -125,75 +137,103 @@ function TransferModal ({ open }) {
     setFeeToken('');
     setRecipient('');
     setMetadata('');
+    setLedgerModal(false);
     dispatch(closeModal('transferModal'));
+  }
+
+  const disabledTransfer = value <= 0 || !currency || !feeToken || !recipient;
+
+  function renderTransferScreen () {
+    return (
+      <>
+        <h2>Transfer</h2>
+        <div className={styles.address}>
+          {`From address : ${networkService.account}`}
+        </div>
+
+        <Input
+          label='To Address'
+          placeholder='Hash or ENS name'
+          paste
+          value={recipient}
+          onChange={i => setRecipient(i.target.value)}
+        />
+
+        <InputSelect
+          label='Amount to transfer'
+          placeholder={0}
+          value={value}
+          onChange={i => setValue(i.target.value)}
+          selectOptions={selectOptions}
+          onSelect={i => setCurrency(i.target.value)}
+          selectValue={currency}
+        />
+
+        <Select
+          loading={feesLoading}
+          label='Fee'
+          value={feeToken}
+          options={usableFees}
+          onSelect={i => setFeeToken(i.target.value)}
+          error="No balance to pay fees"
+        />
+
+        <Input
+          label='Message'
+          placeholder='-'
+          value={metadata}
+          onChange={i => setMetadata(i.target.value || '')}
+        />
+
+        <div className={styles.buttons}>
+          <Button
+            onClick={handleClose}
+            type='outline'
+            className={styles.button}
+          >
+            CANCEL
+          </Button>
+
+          {ledgerConnect ?
+            (
+              <Button
+                onClick={() => setLedgerModal(true)}
+                type='primary'
+                className={styles.button}
+                loading={loading}
+                tooltip='Your transfer transaction is still pending. Please wait for confirmation.'
+                disabled={disabledTransfer}
+              >
+                TRANSFER WITH LEDGER
+              </Button>)
+            :
+            (<Button
+              className={styles.button}
+              onClick={() => submit({ useLedgerSign: false })}
+              type='primary'
+              loading={loading}
+              tooltip='Your transfer transaction is still pending. Please wait for confirmation.'
+              disabled={disabledTransfer}
+            >
+              TRANSFER
+            </Button>)
+          }
+        </div>
+      </>
+    );
   }
 
   return (
     <Modal open={open} onClose={handleClose}>
-      <h2>Transfer</h2>
-
-      <div className={styles.address}>
-        {`From address : ${networkService.account}`}
-      </div>
-
-      <Input
-        label='To Address'
-        placeholder='Hash or ENS name'
-        paste
-        value={recipient}
-        onChange={i => setRecipient(i.target.value)}
-      />
-
-      <InputSelect
-        label='Amount to transfer'
-        placeholder={0}
-        value={value}
-        onChange={i => setValue(i.target.value)}
-        selectOptions={selectOptions}
-        onSelect={i => setCurrency(i.target.value)}
-        selectValue={currency}
-      />
-
-      <Select
-        loading={feesLoading}
-        label='Fee'
-        value={feeToken}
-        options={usableFees}
-        onSelect={i => setFeeToken(i.target.value)}
-        error="No balance to pay fees"
-      />
-
-      <Input
-        label='Message'
-        placeholder='-'
-        value={metadata}
-        onChange={i => setMetadata(i.target.value || '')}
-      />
-
-      <div className={styles.buttons}>
-        <Button
-          onClick={handleClose}
-          type='outline'
-          style={{ flex: 0 }}
-        >
-          CANCEL
-        </Button>
-        <Button
-          onClick={submit}
-          type='primary'
-          style={{ flex: 0 }}
+      {!ledgerModal && renderTransferScreen()}
+      {ledgerModal && (
+        <LedgerPrompt
           loading={loading}
-          tooltip='Your transfer transaction is still pending. Please wait for confirmation.'
-          disabled={
-            value <= 0 ||
-            !currency ||
-            !feeToken ||
-            !recipient
-          }
-        >
-          TRANSFER
-        </Button>
-      </div>
+          submit={submit}
+          handleClose={handleClose}
+          typedData={typedData}
+        />
+      )}
     </Modal>
   );
 }

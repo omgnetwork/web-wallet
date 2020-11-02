@@ -82,7 +82,7 @@
           border-radius: 4px;
         }
       }
-    }  
+    }
   }
 
   .directive {
@@ -102,15 +102,15 @@
   .wallets {
     display: flex;
     flex-direction: row;
-    width: 600px;
-    justify-content: space-between;
+    width: 800px;
+    justify-content: space-around;
     margin-top: 20px;
     @include mobile {
       flex-direction: column;
       width: 100%;
     }
     .wallet {
-      width: 30%;
+      width: calc(25% - 10px);
       border: 2px solid transparent;
       border-radius: 4px;
       transition: all 200ms ease-in-out;

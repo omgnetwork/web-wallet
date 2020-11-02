@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import networkService from 'services/networkService';
+import { WebWalletError } from 'services/errorService';
+
 import { createAction } from './createAction';
 import store from 'store';
 
@@ -157,10 +159,30 @@ export function transfer (data) {
   );
 }
 
-export function mergeUtxos (utxos) {
+export function getTransferTypedData (data) {
+  return async function (dispatch) {
+    try {
+      const response = await networkService.getTransferTypedData(data);
+      return response;
+    } catch (error) {
+      dispatch({ type: 'TRANSFER_TYPED/ERROR' });
+      const _error = error instanceof WebWalletError
+        ? error
+        : new WebWalletError({
+          originalError: error,
+          customErrorMessage: 'Something went wrong',
+          reportToSentry: true,
+          reportToUi: true
+        });
+      _error.report(dispatch);
+    }
+  };
+}
+
+export function mergeUtxos (useLedgerSign, utxos) {
   return createAction(
     'TRANSFER/CREATE',
-    () => networkService.mergeUtxos(utxos)
+    () => networkService.mergeUtxos(useLedgerSign, utxos)
   );
 }
 

@@ -19,11 +19,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Check } from '@material-ui/icons';
 
 import { selectLoading } from 'selectors/loadingSelector';
+import { selectLedger } from 'selectors/uiSelector';
 import { mergeUtxos } from 'actions/networkAction';
 import { closeModal, openAlert } from 'actions/uiAction';
 
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
+
+import LedgerPrompt from 'containers/modals/ledger/LedgerPrompt';
 
 import networkService from 'services/networkService';
 import { logAmount } from 'util/amountConvert';
@@ -32,11 +35,15 @@ import * as styles from './MergeModal.module.scss';
 
 function MergeModal ({ open }) {
   const dispatch = useDispatch();
+
   const [ selectedUTXOs, setSelectedUTXOs ] = useState([]);
   const [ searchUTXO, setSearchUTXO ] = useState('');
   const [ utxos, setUtxos ] = useState([]);
+  const [ ledgerModal, setLedgerModal ] = useState(false);
+  const [ typedData, setTypedData ] = useState({});
 
   const loading = useSelector(selectLoading([ 'TRANSFER/CREATE' ]));
+  const ledgerConnect = useSelector(selectLedger);
 
   useEffect(() => {
     async function fetchUTXOS () {
@@ -52,15 +59,17 @@ function MergeModal ({ open }) {
   useEffect(() => {
     if (selectedUTXOs.length) {
       setSearchUTXO(selectedUTXOs[0].currency);
+      const { typedData } = networkService.getMergeTypedData(selectedUTXOs);
+      setTypedData(typedData);
     }
     if (!selectedUTXOs.length) {
       setSearchUTXO('');
     }
   }, [ selectedUTXOs ]);
 
-  async function submit () {
+  async function submit ({ useLedgerSign }) {
     if (selectedUTXOs.length > 1 && selectedUTXOs.length < 5) {
-      const res = await dispatch(mergeUtxos(selectedUTXOs));
+      const res = await dispatch(mergeUtxos(useLedgerSign, selectedUTXOs));
       if (res) {
         dispatch(openAlert('Merge submitted. You will be blocked from making further transactions until the merge is confirmed.'));
         handleClose();
@@ -71,6 +80,7 @@ function MergeModal ({ open }) {
   function handleClose () {
     setSelectedUTXOs([]);
     setSearchUTXO('');
+    setLedgerModal(false);
     dispatch(closeModal('mergeModal'));
   }
 
@@ -84,69 +94,96 @@ function MergeModal ({ open }) {
     }
   }
 
-  const _utxos = utxos
-    .filter(i => i.currency.includes(searchUTXO))
-    .filter(i => i);
+  function renderMergeScreen () {
+    const _utxos = utxos
+      .filter(i => i.currency.includes(searchUTXO))
+      .filter(i => i);
+
+    return (
+      <>
+        <h2>Merge UTXOs</h2>
+        <div className={styles.disclaimer}>Select the UTXOs you want to merge</div>
+
+        <div className={styles.list}>
+          {!utxos.length && (
+            <div className={styles.disclaimer}>You do not have any UTXOs on the OMG Network.</div>
+          )}
+          {_utxos.map((i, index) => {
+            const selected = selectedUTXOs.some(selected => selected.utxo_pos === i.utxo_pos);
+            return (
+              <div
+                key={index}
+                onClick={() => handleUtxoClick(i)}
+                className={[
+                  styles.utxo,
+                  selected ? styles.selected : ''
+                ].join(' ')}
+              >
+                <div className={styles.title}>
+                  {i.tokenInfo.name}
+                </div>
+
+                <div className={styles.value}>
+                  <div className={styles.amount}>
+                    {logAmount(i.amount.toString(), i.tokenInfo.decimals)}
+                  </div>
+
+                  <div className={styles.check}>
+                    {selected && <Check />}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className={styles.disclaimer}>You can select a maximum of 4 UTXOs to merge at once.</div>
+
+        <div className={styles.buttons}>
+          <Button
+            onClick={handleClose}
+            type='outline'
+            className={styles.button}
+          >
+            CANCEL
+          </Button>
+          {ledgerConnect ? (
+            <Button
+              onClick={() => setLedgerModal(true)}
+              type='primary'
+              className={styles.button}
+              loading={loading}
+              tooltip='Your merge transaction is still pending. Please wait for confirmation.'
+              disabled={selectedUTXOs.length <= 1 || selectedUTXOs.length > 4}
+            >
+            MERGE WITH LEDGER
+            </Button>) : (
+            <Button
+              onClick={submit}
+              type='primary'
+              className={styles.button}
+              loading={loading}
+              tooltip='Your merge transaction is still pending. Please wait for confirmation.'
+              disabled={selectedUTXOs.length <= 1 || selectedUTXOs.length > 4}
+            >
+            MERGE
+            </Button>)}
+        </div>
+      </>
+    );
+  }
 
   return (
     <Modal open={open} onClose={handleClose}>
-      <h2>Merge UTXOs</h2>
-      <div className={styles.disclaimer}>Select the UTXOs you want to merge</div>
-
-      <div className={styles.list}>
-        {!utxos.length && (
-          <div className={styles.disclaimer}>You do not have any UTXOs on the OMG Network.</div>
-        )}
-        {_utxos.map((i, index) => {
-          const selected = selectedUTXOs.some(selected => selected.utxo_pos === i.utxo_pos);
-          return (
-            <div
-              key={index}
-              onClick={() => handleUtxoClick(i)}
-              className={[
-                styles.utxo,
-                selected ? styles.selected : ''
-              ].join(' ')}
-            >
-              <div className={styles.title}>
-                {i.tokenInfo.name}
-              </div>
-
-              <div className={styles.value}>
-                <div className={styles.amount}>
-                  {logAmount(i.amount.toString(), i.tokenInfo.decimals)}
-                </div>
-
-                <div className={styles.check}>
-                  {selected && <Check />}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className={styles.disclaimer}>You can select a maximum of 4 UTXOs to merge at once.</div>
-
-      <div className={styles.buttons}>
-        <Button
-          onClick={handleClose}
-          type='outline'
-          style={{ flex: 0 }}
-        >
-          CANCEL
-        </Button>
-        <Button
-          onClick={submit}
-          type='primary'
-          style={{ flex: 0 }}
+      {!ledgerModal && renderMergeScreen()}
+      {ledgerModal && (
+        <LedgerPrompt
           loading={loading}
-          tooltip='Your merge transaction is still pending. Please wait for confirmation.'
-          disabled={selectedUTXOs.length <= 1 || selectedUTXOs.length > 4}
-        >
-          MERGE
-        </Button>
-      </div>
+          submit={submit}
+          handleClose={handleClose}
+          typedData={typedData}
+        />
+      )}
     </Modal>
   );
 }

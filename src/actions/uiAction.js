@@ -48,3 +48,9 @@ export function closeError () {
     return dispatch({ type: 'UI/ERROR/UPDATE', payload: null });
   };
 }
+
+export function ledgerConnect (connect) {
+  return function (dispatch) {
+    return dispatch({ type: 'UI/LEDGER/UPDATE', payload: connect });
+  };
+}

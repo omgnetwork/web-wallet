@@ -22,8 +22,8 @@ import { selectModalState } from 'selectors/uiSelector';
 import { selectWalletMethod } from 'selectors/setupSelector';
 import { openModal } from 'actions/uiAction';
 import { setWalletMethod } from 'actions/setupAction';
-import config from 'util/config';
 import { getShortNetworkName, getAlternateNetworks } from 'util/networkName';
+import config from 'util/config';
 
 import logo from 'images/omg_logo.svg';
 import chevron from 'images/chevron.svg';
@@ -35,21 +35,19 @@ import * as styles from './WalletPicker.module.scss';
 
 function WalletPicker ({ onEnable }) {
   const dispatch = useDispatch();
+  const dropdownNode = useRef(null);
 
   const [ walletEnabled, setWalletEnabled ] = useState(false);
   const [ accountsEnabled, setAccountsEnabled ] = useState(false);
   const [ wrongNetwork, setWrongNetwork ] = useState(false);
-
-  const walletMethod = useSelector(selectWalletMethod());
-  const dispatchSetWalletMethod = useCallback((methodName) => {
-    const action = setWalletMethod(methodName);
-    dispatch(action);
-  }, [ dispatch ]);
-
-  const dropdownNode = useRef(null);
   const [ showAlternateNetworks, setShowAlternateNetworks ] = useState(false);
 
+  const walletMethod = useSelector(selectWalletMethod());
   const wrongNetworkModalState = useSelector(selectModalState('wrongNetworkModal'));
+
+  const dispatchSetWalletMethod = useCallback((methodName) => {
+    dispatch(setWalletMethod(methodName));
+  }, [ dispatch ]);
 
   useEffect(() => {
     async function enableBrowserWallet () {
@@ -66,6 +64,12 @@ function WalletPicker ({ onEnable }) {
     }
     async function enableWalletLink () {
       const walletEnabled = await networkService.enableWalletLink();
+      return walletEnabled
+        ? setWalletEnabled(true)
+        : dispatchSetWalletMethod(null);
+    }
+    async function enableLedger () {
+      const walletEnabled = await networkService.enableLedger();
       return walletEnabled
         ? setWalletEnabled(true)
         : dispatchSetWalletMethod(null);
@@ -87,6 +91,9 @@ function WalletPicker ({ onEnable }) {
     }
     if (walletMethod === 'walletlink') {
       enableWalletLink();
+    }
+    if (walletMethod === 'ledger') {
+      enableLedger();
     }
   }, [ dispatchSetWalletMethod, walletMethod ]);
 
@@ -140,6 +147,7 @@ function WalletPicker ({ onEnable }) {
   const browserEnabled = !!window.web3 || !!window.ethereum;
   const walletConnectEnabled = !!config.rpcProxy;
   const walletLinkEnabled = !!config.rpcProxy;
+  // const ledgerEnabled = !!config.rpcProxy;
 
   const alternateNetworks = getAlternateNetworks();
 
@@ -215,6 +223,7 @@ function WalletPicker ({ onEnable }) {
               <div>Your browser does not have a web3 provider.</div>
             )}
           </div>
+
           <div
             className={[
               styles.wallet,
@@ -228,6 +237,7 @@ function WalletPicker ({ onEnable }) {
             <h3>WalletConnect</h3>
             <div>Use a WalletConnect-compatible wallet.</div>
           </div>
+
           <div
             className={[
               styles.wallet,

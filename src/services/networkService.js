@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 /*
 Copyright 2019-present OmiseGO Pte Ltd
 
@@ -14,6 +15,12 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import { ChildChain, RootChain, OmgUtil } from '@omisego/omg-js';
+
+import Eth from '@ledgerhq/hw-app-eth';
+import Transport from '@ledgerhq/hw-transport-webusb';
+
+import { hashTypedDataDomain, hashTypedDataMessage } from '@omisego/omg-js-util';
+
 import { orderBy, flatten, uniq, get, pickBy, keyBy } from 'lodash';
 import BN from 'bn.js';
 import axios from 'axios';
@@ -115,6 +122,17 @@ class NetworkService {
     }
   }
 
+  async enableLedger () {
+    try {
+      this.provider = new Web3.providers.HttpProvider(config.rpcProxy);
+      this.web3 = this.makeWeb3(this.provider);
+      this.bindProviderListeners('ledger');
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
   handleAccountsChanged (accounts) {
     const providerRegisteredAccount = accounts ? accounts[0] : null;
     const appRegisteredAcount = networkService.account;
@@ -162,6 +180,14 @@ class NetworkService {
         // add any walletlink listeners
       } catch (err) {
         console.log('WalletLink event handling not available');
+      }
+    }
+
+    if (walletProvider === 'ledger') {
+      try {
+        // add any ledger listeners
+      } catch (err) {
+        console.log('Ledger event handling not available');
       }
     }
   }
@@ -343,10 +369,72 @@ class NetworkService {
     } catch (error) {
       throw new WebWalletError({
         originalError: error,
-        customErrorMessage: 'Could not check reset approval allowance for ERC20.',
+        customErrorMessage: 'Could not reset approval allowance for ERC20.',
         reportToSentry: false,
         reportToUi: true
       });
+    }
+  }
+
+  async isConnectedLedger () {
+    try {
+      const transport = await Transport.create();
+      const eth = new Eth(transport);
+      const { address } = await eth.getAddress("44'/60'/0'/0/0");
+      return address.toLowerCase() === this.account.toLowerCase();
+    } catch (error) {
+      console.log('connected ledger error: ', error.message);
+      return false;
+    }
+  }
+
+  async ledgerSign (typedData) {
+    let transporter;
+    try {
+      const transport = await Transport.create();
+      transporter = new Eth(transport);
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: 'Could not create a Ledger connection.',
+        reportToSentry: false,
+        reportToUi: true
+      });
+    }
+
+    try {
+      const messageHash = hashTypedDataMessage(typedData);
+      const domainSeperatorHash = hashTypedDataDomain(typedData);
+      const { v: _v, r, s } = await transporter.signEIP712HashedMessage(
+        "44'/60'/0'/0/0",
+        domainSeperatorHash,
+        messageHash
+      );
+
+      let v = _v.toString(16);
+      if (v.length < 2) {
+        v = "0" + v;
+      }
+
+      return `0x${r}${s}${v}`;
+    } catch (error) {
+      if (error.message.includes('INS_NOT_SUPPORTED')) {
+        throw new WebWalletError({
+          originalError: error,
+          customErrorMessage: 'Could not call method on Ledger. Please make sure the Ethereum application is open.',
+          reportToSentry: false,
+          reportToUi: true
+        });
+      }
+      if (error.message.includes('Condition of use not satisfied')) {
+        throw new WebWalletError({
+          originalError: error,
+          customErrorMessage: 'User denied signature.',
+          reportToSentry: false,
+          reportToUi: true
+        });
+      }
+      throw error;
     }
   }
 
@@ -379,7 +467,7 @@ class NetworkService {
         throw new WebWalletError({
           originalError: error,
           customErrorMessage: 'Could not sign the transaction. Please try again.',
-          reportToSentry: false,
+          reportToSentry: true,
           reportToUi: true
         });
       }
@@ -404,29 +492,41 @@ class NetworkService {
     }
   }
 
-  async mergeUtxos (utxos) {
+  getMergeTypedData (utxos) {
+    const _metadata = 'Merge UTXOs';
+    const payments = [ {
+      owner: this.account,
+      currency: utxos[0].currency,
+      amount: utxos.reduce((prev, curr) => {
+        return prev.add(new BN(curr.amount.toString()));
+      }, new BN(0))
+    } ];
+    const fee = {
+      currency: OmgUtil.transaction.ETH_CURRENCY,
+      amount: 0
+    };
+    const txBody = OmgUtil.transaction.createTransactionBody({
+      fromAddress: this.account,
+      fromUtxos: utxos,
+      payments,
+      fee,
+      metadata: OmgUtil.transaction.encodeMetadata(_metadata)
+    });
+    const typedData = OmgUtil.transaction.getTypedData(txBody, this.plasmaContractAddress);
+    return {
+      typedData,
+      txBody
+    };
+  }
+
+  async mergeUtxos (useLedgerSign = false, utxos) {
     try {
-      const _metadata = 'Merge UTXOs';
-      const payments = [ {
-        owner: this.account,
-        currency: utxos[0].currency,
-        amount: utxos.reduce((prev, curr) => {
-          return prev.add(new BN(curr.amount.toString()));
-        }, new BN(0))
-      } ];
-      const fee = {
-        currency: OmgUtil.transaction.ETH_CURRENCY,
-        amount: 0
-      };
-      const txBody = OmgUtil.transaction.createTransactionBody({
-        fromAddress: this.account,
-        fromUtxos: utxos,
-        payments,
-        fee,
-        metadata: OmgUtil.transaction.encodeMetadata(_metadata)
-      });
-      const typedData = OmgUtil.transaction.getTypedData(txBody, this.plasmaContractAddress);
-      const signature = await this.signTypedData(typedData);
+      const { typedData, txBody } = this.getMergeTypedData(utxos);
+
+      const signature = useLedgerSign
+        ? await this.ledgerSign(typedData)
+        : await this.signTypedData(typedData);
+
       const signatures = new Array(txBody.inputs.length).fill(signature);
       const signedTxn = this.childChain.buildSignedTransaction(typedData, signatures);
       const submittedTransaction = await this.childChain.submitTransaction(signedTxn);
@@ -436,7 +536,7 @@ class NetworkService {
           blknum: submittedTransaction.blknum,
           timestamp: Math.round((new Date()).getTime() / 1000)
         },
-        metadata: _metadata,
+        metadata: 'Merge UTXOs',
         status: 'Pending'
       };
     } catch (error) {
@@ -466,7 +566,7 @@ class NetworkService {
     }
   }
 
-  async transfer ({
+  async getTransferTypedData ({
     recipient,
     value,
     currency,
@@ -528,7 +628,27 @@ class NetworkService {
         metadata: metadata || OmgUtil.transaction.NULL_METADATA
       });
       const typedData = OmgUtil.transaction.getTypedData(txBody, this.plasmaContractAddress);
-      const signature = await this.signTypedData(typedData);
+      return { txBody, typedData };
+    } catch (error) {
+      throw new WebWalletError({
+        originalError: error,
+        customErrorMessage: 'Could not create the transaction. Please try again.',
+        reportToSentry: false,
+        reportToUi: true
+      });
+    }
+  }
+
+  async transfer ({
+    useLedgerSign = false,
+    typedData,
+    txBody
+  }) {
+    try {
+      const signature = useLedgerSign
+        ? await this.ledgerSign(typedData)
+        : await this.signTypedData(typedData);
+
       const signatures = new Array(txBody.inputs.length).fill(signature);
       const signedTxn = this.childChain.buildSignedTransaction(typedData, signatures);
       const submittedTransaction = await this.childChain.submitTransaction(signedTxn);
@@ -538,7 +658,7 @@ class NetworkService {
           blknum: submittedTransaction.blknum,
           timestamp: Math.round((new Date()).getTime() / 1000)
         },
-        metadata,
+        metadata: OmgUtil.transaction.decodeMetadata(String(txBody.metadata)),
         status: 'Pending'
       };
     } catch (error) {
@@ -547,7 +667,7 @@ class NetworkService {
       }
       throw new WebWalletError({
         originalError: error,
-        customErrorMessage: 'Could not create the transaction. Please try again.',
+        customErrorMessage: 'Failed to submit the transaction. Please try again.',
         reportToSentry: false,
         reportToUi: true
       });
