@@ -7,13 +7,13 @@ RUN addgroup -g 10000 -S omg && \
     adduser -u 10000 -S omg -G omg
 USER omg
 WORKDIR /home/omg
+COPY --chown=omg:omg package.json .
+COPY --chown=omg:omg package-lock.json .
 
-COPY package.json .
-COPY yarn.lock .
-RUN yarn install
+RUN npm install
 
-COPY . .
-RUN yarn build
+COPY --chown=omg:omg . .
+RUN npm run build
 
 EXPOSE 3000
-CMD ["yarn", "serve"]
+CMD npm run serve
