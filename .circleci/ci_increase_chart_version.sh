@@ -18,7 +18,7 @@ set -ex
 [ -z "$CHART_NAME" ] && echo "CHART_NAME should be set" && exit 1
 [ -z "$APP_VERSION" ] && echo "APP_VERSION should be set" && exit 1
 [ -z "$HELM_CHART_REPO" ] && echo "HELM_CHART_REPO should be set" && exit 1
-[ -z "$UPDATE_DEV" ] && echo "HELM_CHART_REPO should be set" && exit 1
+[ -z "$UPDATE_DEV" ] && echo "UPDATE_DEV should be set" && exit 1
 [ -z "$GITHUB_API_TOKEN" ] && echo "GITHUB_API_TOKEN should be set" && exit 1
 
 
