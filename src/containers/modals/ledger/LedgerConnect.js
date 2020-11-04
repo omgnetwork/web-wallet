@@ -37,19 +37,26 @@ function LedgerConnect ({ submit, open }) {
   return (
     <Modal open={open} onClose={handleClose}>
       <div className={styles.logoContainer}>
-        <img src={ledger} className={styles.logo} alt="ledger_logo" />
+        <img src={ledger} className={styles.logo} alt='ledger_logo' />
       </div>
 
       <div className={styles.title}>Are you connecting with Ledger?</div>
+      <div className={styles.description}>If so, please make sure Contract Data is allowed in your Ledger&apos;s Ethereum application settings.</div>
+      <div className={styles.steps}>
+        <p>1. Connect and unlock your Ledger device.</p>
+        <p>2. Open the Ethereum application.</p>
+        <p>3. Press the right button to navigate to Settings. Then press both buttons to validate.</p>
+        <p>4. In the Contract data settings, press both buttons to allow contract data in transactions. The device displays Allowed.</p>
+      </div>
 
       <div className={styles.buttons}>
-        <Button onClick={handleClose} type="outline" className={styles.button}>
+        <Button onClick={handleClose} type='outline' className={styles.button}>
           NO
         </Button>
         <Button
           className={styles.button}
           onClick={handleYes}
-          type="primary">
+          type='primary'>
           YES
         </Button>
       </div>

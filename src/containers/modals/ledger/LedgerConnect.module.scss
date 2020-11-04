@@ -22,6 +22,9 @@
   margin-top: 30px;
   align-items: center;
   justify-content: center;
+  @include mobile {
+    display: none;
+  }
 }
 
 .title {
@@ -31,6 +34,22 @@
   font-weight: 400;
   color: white;
   text-align: center;
+}
+
+.description {
+  font-family: 'Messina';
+  margin-top: 20px;
+  color: white;
+  font-size: 1em;
+}
+
+.steps {
+  margin-top: 20px;
+  padding: 10px 15px;
+  background-color: $gray2;
+  @include mobile {
+    font-size: 0.8em;
+  }
 }
 
 .tabs {
