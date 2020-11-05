@@ -44,11 +44,32 @@
 }
 
 .steps {
-  margin-top: 20px;
-  padding: 10px 15px;
-  background-color: $gray2;
-  @include mobile {
-    font-size: 0.8em;
+  margin: 20px 0;
+  .step {
+    min-height: 40px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    background-color: $gray2;
+    display: flex;
+    flex-direction: row;
+    font-family: 'Messina';
+    @include mobile {
+      font-size: 0.8em;
+    }
+    .text {
+      padding: 10px 15px;
+    }
+    .iconWrapper {
+      border-radius: 4px 0px 0px 4px;
+      min-width: 40px;
+      background-color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      img {
+        height: 15px;
+      }
+    }
   }
 }
 
