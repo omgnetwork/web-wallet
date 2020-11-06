@@ -64,6 +64,23 @@ function LedgerPrompt ({
               <div className={styles.text}>The Ethereum application is open and running a version greater than 1.4.0</div>
             </div>
           </div>
+          <div className={styles.buttons}>
+            <Button
+              onClick={handleClose}
+              type='outline'
+              className={styles.button}
+            >
+              CANCEL
+            </Button>
+            <Button
+              className={styles.button}
+              onClick={() => submit({ useLedgerSign: true })}
+              type='primary'
+              loading={loading}
+            >
+              SIGN
+            </Button>
+          </div>
         </>
       )}
 
@@ -94,24 +111,6 @@ function LedgerPrompt ({
           )}
         </>
       )}
-
-      <div className={styles.buttons}>
-        <Button
-          onClick={handleClose}
-          type='outline'
-          className={styles.button}
-        >
-          CANCEL
-        </Button>
-        <Button
-          className={styles.button}
-          onClick={() => submit({ useLedgerSign: true })}
-          type='primary'
-          loading={loading}
-        >
-          SIGN
-        </Button>
-      </div>
     </>
   );
 }

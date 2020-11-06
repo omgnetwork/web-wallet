@@ -174,7 +174,7 @@ function MergeModal ({ open }) {
   }
 
   return (
-    <Modal open={open} onClose={handleClose}>
+    <Modal open={open}>
       {!ledgerModal && renderMergeScreen()}
       {ledgerModal && (
         <LedgerPrompt
