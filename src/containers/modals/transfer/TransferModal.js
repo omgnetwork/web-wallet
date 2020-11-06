@@ -224,7 +224,7 @@ function TransferModal ({ open }) {
   }
 
   return (
-    <Modal open={open} onClose={handleClose}>
+    <Modal open={open}>
       {!ledgerModal && renderTransferScreen()}
       {ledgerModal && (
         <LedgerPrompt

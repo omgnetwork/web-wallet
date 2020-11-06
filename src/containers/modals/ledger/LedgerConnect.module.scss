@@ -22,6 +22,9 @@
   margin-top: 30px;
   align-items: center;
   justify-content: center;
+  @include mobile {
+    display: none;
+  }
 }
 
 .title {
@@ -31,6 +34,45 @@
   font-weight: 400;
   color: white;
   text-align: center;
+}
+
+.description {
+  font-family: 'Messina';
+  margin-top: 20px;
+  color: white;
+  font-size: 1em;
+}
+
+.steps {
+  margin: 20px 0;
+  .step {
+    min-height: 40px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    background-color: $gray2;
+    display: flex;
+    flex-direction: row;
+    font-family: 'Messina';
+    @include mobile {
+      font-size: 0.8em;
+    }
+    .text {
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+    }
+    .iconWrapper {
+      border-radius: 4px 0px 0px 4px;
+      min-width: 40px;
+      background-color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      img {
+        height: 15px;
+      }
+    }
+  }
 }
 
 .tabs {
