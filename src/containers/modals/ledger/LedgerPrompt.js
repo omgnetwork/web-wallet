@@ -14,10 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import React from 'react';
+import { CircularProgress } from '@material-ui/core';
+
+import { hashTypedDataMessage, hashTypedDataDomain } from '@omisego/omg-js-util';
 
 import Button from 'components/button/Button';
 
-import { hashTypedDataMessage, hashTypedDataDomain } from '@omisego/omg-js-util';
+import ledger from 'images/ledger_connect.png';
+import eth from 'images/eth.svg';
+import connect from 'images/connect.svg';
+import lock from 'images/lock.svg';
 
 import * as styles from './LedgerPrompt.module.scss';
 
@@ -29,24 +35,61 @@ function LedgerPrompt ({
 }) {
   return (
     <>
-      <h2>Ledger Sign</h2>
       {!loading && (
         <>
-          <p>Please make sure your Ledger is unlocked, connected and the Ethereum application is open.</p>
-          <div className={styles.disclaimer}>
-            {'*This only works with the Ethereum application version >= 1.4.0'}
+          <div className={styles.header}>
+            <div className={styles.logoContainer}>
+              <img src={ledger} className={styles.logo} alt='ledger_logo' />
+            </div>
+            <div className={styles.title}>Ledger Sign</div>
+          </div>
+          <div className={styles.description}>Please make sure your Ledger meets the following conditions:</div>
+          <div className={styles.steps}>
+            <div className={styles.step}>
+              <div className={styles.iconWrapper}>
+                <img src={connect} alt='connect' />
+              </div>
+              <div className={styles.text}>Connected</div>
+            </div>
+            <div className={styles.step}>
+              <div className={styles.iconWrapper}>
+                <img src={lock} alt='lock' />
+              </div>
+              <div className={styles.text}>Unlocked</div>
+            </div>
+            <div className={styles.step}>
+              <div className={styles.iconWrapper}>
+                <img src={eth} alt='eth' />
+              </div>
+              <div className={styles.text}>The Ethereum application is open and running a version greater than 1.4.0</div>
+            </div>
           </div>
         </>
       )}
 
       {loading && (
         <>
-          <p>Please check the Ledger to sign the transaction.</p>
-          <p>Check that the domain and message hash match the following:</p>
+          <div className={styles.header}>
+            <div className={styles.logoContainer}>
+              <img src={ledger} className={styles.logo} alt='ledger_logo' />
+              <div className={styles.spinner}>
+                <CircularProgress className={styles.spinnerGraphic} size={15} color='white' />
+              </div>
+            </div>
+            <div className={styles.title}>Processing...</div>
+          </div>
+          <div className={styles.description}>
+            Please continue signing the transaction on your Ledger device.<br />
+            Check that the domain and message hash displayed on the device match the following:
+          </div>
           {typedData && (
-            <div className={styles.disclaimer}>
-              <p className={styles.hash}>Domain hash: {hashTypedDataDomain(typedData)}</p>
-              <p className={styles.hash}>Message hash: {hashTypedDataMessage(typedData)}</p>
+            <div className={styles.steps}>
+              <div className={[ styles.step, styles.code ].join(' ')}>
+                Domain Hash: {hashTypedDataDomain(typedData).toUpperCase()}
+              </div>
+              <div className={[ styles.step, styles.code ].join(' ')}>
+                Message Hash: {hashTypedDataMessage(typedData).toUpperCase()}
+              </div>
             </div>
           )}
         </>
