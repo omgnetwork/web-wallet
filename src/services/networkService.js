@@ -381,10 +381,15 @@ class NetworkService {
       const transport = await Transport.create();
       const eth = new Eth(transport);
       const { address } = await eth.getAddress("44'/60'/0'/0/0");
-      return address.toLowerCase() === this.account.toLowerCase();
+      return {
+        connected: true,
+        addressMatch: address.toLowerCase() === this.account.toLowerCase()
+      };
     } catch (error) {
-      console.log('connected ledger error: ', error.message);
-      return false;
+      return {
+        connected: false,
+        addressMatch: false
+      };
     }
   }
 

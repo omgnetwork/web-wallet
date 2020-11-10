@@ -16,6 +16,8 @@ limitations under the License. */
 import * as Sentry from '@sentry/react';
 import config from 'util/config';
 
+import { openError } from 'actions/uiAction';
+
 if (config.sentry) {
   Sentry.init({ dsn: config.sentry });
 }
@@ -63,10 +65,9 @@ export class WebWalletError extends Error {
     }
 
     if (this._reportToUi) {
-      dispatchMethod({
-        type: 'UI/ERROR/UPDATE',
-        payload: this._customErrorMessage || this._originalError.message || 'Something went wrong.'
-      });
+      dispatchMethod(
+        openError(this._customErrorMessage || this._originalError.message || 'Something went wrong.')
+      );
     }
   }
 }
