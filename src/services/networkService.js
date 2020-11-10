@@ -376,14 +376,17 @@ class NetworkService {
     }
   }
 
-  async isConnectedLedger () {
+  async getLedgerConfiguration () {
     try {
       const transport = await Transport.create();
       const eth = new Eth(transport);
       const { address } = await eth.getAddress("44'/60'/0'/0/0");
+      const { version, arbitraryDataEnabled } = await eth.getAppConfiguration();
       return {
         connected: true,
-        addressMatch: address.toLowerCase() === this.account.toLowerCase()
+        addressMatch: address.toLowerCase() === this.account.toLowerCase(),
+        version,
+        dataEnabled: arbitraryDataEnabled
       };
     } catch (error) {
       return {

@@ -41,17 +41,27 @@ function LedgerConnect ({ submit, open }) {
 
   async function handleYes () {
     setLoading(true);
-    const { connected, addressMatch } = await networkService.isConnectedLedger();
+    const ledgerConfig = await networkService.getLedgerConfiguration();
     setLoading(false);
 
-    if (!connected) {
-      dispatch(openError('Could not connect to the Ledger. Please check that your Ledger is unlocked and the Ethereum application is open.'));
-      return;
+    if (!ledgerConfig.connected) {
+      return dispatch(openError('Could not connect to the Ledger. Please check that your Ledger is unlocked and the Ethereum application is open.'));
+    }
+    if (!ledgerConfig.addressMatch) {
+      return dispatch(openError('Your Web3 provider is not connected to your Ledger. Please make sure your Web3 provider is pointing to your Ledger.'));
     }
 
-    if (!addressMatch) {
-      dispatch(openError('Your Web3 provider is not connected to your Ledger. Please make sure your Web3 provider is pointing to your Ledger.'));
-      return;
+    // check eth app is greater than or equal to 1.4.0
+    const version = ledgerConfig.version.split('.').map(Number);
+    if (
+      version[0] < 1 ||
+      (version[0] === 1 && version[1] < 4)
+    ) {
+      return dispatch(openError(`Ethereum application version ${ledgerConfig.version} is unsupported. Please install version 1.4.0 or greater on your device.`));
+    }
+
+    if (!ledgerConfig.dataEnabled) {
+      return dispatch(openError('Contract Data is not configured correctly. Please follow the steps outlined to allow Contract Data.'));
     }
 
     dispatch(ledgerConnect(true));
