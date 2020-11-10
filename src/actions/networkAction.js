@@ -17,6 +17,7 @@ import networkService from 'services/networkService';
 import { WebWalletError } from 'services/errorService';
 
 import { createAction } from './createAction';
+import { openError } from './uiAction';
 import store from 'store';
 
 export function checkWatcherStatus () {
@@ -90,7 +91,7 @@ export function checkForExitQueue (_token) {
       dispatch({ type: `QUEUE/GET_${token}/SUCCESS` });
       return false;
     } catch (error) {
-      dispatch({ type: 'UI/ERROR/UPDATE', payload: `Unable to check exit queue for ${token}` });
+      dispatch(openError(`Unable to check exit queue for ${token}`));
       return false;
     }
   };

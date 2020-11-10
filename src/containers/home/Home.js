@@ -17,6 +17,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector, batch } from 'react-redux';
 import { uniq, flatten, isEqual } from 'lodash';
 
+import { selectWalletMethod } from 'selectors/setupSelector';
 import { selectModalState } from 'selectors/uiSelector';
 import { selectChildchainTransactions } from 'selectors/transactionSelector';
 import config from 'util/config';
@@ -62,6 +63,7 @@ function Home () {
   const exitModalState = useSelector(selectModalState('exitModal'));
   const mergeModalState = useSelector(selectModalState('mergeModal'));
   const ledgerConnectModalState = useSelector(selectModalState('ledgerConnectModal'));
+  const walletMethod = useSelector(selectWalletMethod());
 
   const transactions = useSelector(selectChildchainTransactions, isEqual);
   const transactedTokens = useMemo(() => {
@@ -117,7 +119,12 @@ function Home () {
       <TransferModal open={transferModalState} />
       <ExitModal open={exitModalState} />
       <MergeModal open={mergeModalState} />
-      <LedgerConnect open={ledgerConnectModalState} />
+      <LedgerConnect
+        open={walletMethod === 'browser'
+          ? ledgerConnectModalState
+          : false
+        }
+      />
 
       <div className={styles.Home}>
         <div className={styles.sidebar}>

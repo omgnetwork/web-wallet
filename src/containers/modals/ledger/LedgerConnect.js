@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { closeModal, ledgerConnect } from 'actions/uiAction';
 
@@ -26,16 +26,44 @@ import eth from 'images/eth.svg';
 import key from 'images/key.svg';
 import lock from 'images/lock.svg';
 
+import { openError } from 'actions/uiAction';
+import networkService from 'services/networkService';
+
 import * as styles from './LedgerConnect.module.scss';
 
 function LedgerConnect ({ submit, open }) {
   const dispatch = useDispatch();
+  const [ loading, setLoading ] = useState(false);
 
   function handleClose () {
     dispatch(closeModal('ledgerConnectModal'));
   }
 
-  function handleYes () {
+  async function handleYes () {
+    setLoading(true);
+    const ledgerConfig = await networkService.getLedgerConfiguration();
+    setLoading(false);
+
+    if (!ledgerConfig.connected) {
+      return dispatch(openError('Could not connect to the Ledger. Please check that your Ledger is unlocked and the Ethereum application is open.'));
+    }
+    if (!ledgerConfig.addressMatch) {
+      return dispatch(openError('Your Web3 provider is not connected to your Ledger. Please make sure your Web3 provider is pointing to your Ledger.'));
+    }
+
+    // check eth app is greater than or equal to 1.4.0
+    const version = ledgerConfig.version.split('.').map(Number);
+    if (
+      version[0] < 1 ||
+      (version[0] === 1 && version[1] < 4)
+    ) {
+      return dispatch(openError(`Ethereum application version ${ledgerConfig.version} is unsupported. Please install version 1.4.0 or greater on your device.`));
+    }
+
+    if (!ledgerConfig.dataEnabled) {
+      return dispatch(openError('Contract Data is not configured correctly. Please follow the steps outlined to allow Contract Data.'));
+    }
+
     dispatch(ledgerConnect(true));
     dispatch(closeModal('ledgerConnectModal'));
   }
@@ -83,7 +111,9 @@ function LedgerConnect ({ submit, open }) {
         <Button
           className={styles.button}
           onClick={handleYes}
-          type='primary'>
+          type='primary'
+          loading={loading}
+        >
           YES
         </Button>
       </div>
