@@ -376,11 +376,11 @@ class NetworkService {
     }
   }
 
-  async getLedgerConfiguration () {
+  async getLedgerConfiguration (derivation) {
     try {
       const transport = await Transport.create();
       const eth = new Eth(transport);
-      const { address } = await eth.getAddress("44'/60'/0'/0/0");
+      const { address } = await eth.getAddress(derivation);
       const { version, arbitraryDataEnabled } = await eth.getAppConfiguration();
       return {
         connected: true,
@@ -411,10 +411,12 @@ class NetworkService {
     }
 
     try {
+      const state = store.getState();
+      const derivationPath = get(state, 'ui.ledger');
       const messageHash = hashTypedDataMessage(typedData);
       const domainSeperatorHash = hashTypedDataDomain(typedData);
       const { v: _v, r, s } = await transporter.signEIP712HashedMessage(
-        "44'/60'/0'/0/0",
+        derivationPath,
         domainSeperatorHash,
         messageHash
       );

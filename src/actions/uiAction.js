@@ -49,8 +49,8 @@ export function closeError () {
   };
 }
 
-export function ledgerConnect (connect) {
+export function ledgerConnect (derivation) {
   return function (dispatch) {
-    return dispatch({ type: 'UI/LEDGER/UPDATE', payload: connect });
+    return dispatch({ type: 'UI/LEDGER/UPDATE', payload: derivation });
   };
 }

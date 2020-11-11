@@ -26,6 +26,18 @@ function Select ({
 }) {
   const selected = options.find(i => i.value === value);
 
+  function renderOption (i) {
+    if (i.title && i.subTitle) {
+      return `${i.title} - ${i.subTitle}`;
+    }
+    if (i.title && !i.subTitle) {
+      return i.title;
+    }
+    if (i.subTitle && !i.title) {
+      return i.subTitle;
+    }
+  }
+
   const renderLoading = (
     <div className={[ styles.selected, styles.loading ].join(' ')}>
       Loading...
@@ -44,7 +56,7 @@ function Select ({
             key={index}
             value={i.value}
           >
-            {i.title} - {i.subTitle}
+            {renderOption(i)}
           </option>
         ))}
       </select>

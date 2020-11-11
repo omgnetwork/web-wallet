@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 /*
 Copyright 2019-present OmiseGO Pte Ltd
 
@@ -19,6 +20,7 @@ import { closeModal, ledgerConnect } from 'actions/uiAction';
 
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
+import Select from 'components/select/Select';
 
 import ledger from 'images/ledger_connect.png';
 import boxarrow from 'images/boxarrow.svg';
@@ -31,9 +33,24 @@ import networkService from 'services/networkService';
 
 import * as styles from './LedgerConnect.module.scss';
 
+const derivationOptions = {
+  0: "44'/60'/0'/0/0",
+  1: "44'/60'/1'/0/0",
+  2: "44'/60'/2'/0/0",
+  3: "44'/60'/3'/0/0",
+  4: "44'/60'/4'/0/0",
+  5: "44'/60'/5'/0/0",
+  6: "44'/60'/6'/0/0",
+  7: "44'/60'/7'/0/0",
+  8: "44'/60'/8'/0/0",
+  9: "44'/60'/9'/0/0",
+  10: "44'/60'/10'/0/0"
+};
+
 function LedgerConnect ({ submit, open }) {
   const dispatch = useDispatch();
   const [ loading, setLoading ] = useState(false);
+  const [ derivation, setDerivation ] = useState(derivationOptions[0]);
 
   function handleClose () {
     dispatch(closeModal('ledgerConnectModal'));
@@ -41,14 +58,14 @@ function LedgerConnect ({ submit, open }) {
 
   async function handleYes () {
     setLoading(true);
-    const ledgerConfig = await networkService.getLedgerConfiguration();
+    const ledgerConfig = await networkService.getLedgerConfiguration(derivation);
     setLoading(false);
 
     if (!ledgerConfig.connected) {
       return dispatch(openError('Could not connect to the Ledger. Please check that your Ledger is unlocked and the Ethereum application is open.'));
     }
     if (!ledgerConfig.addressMatch) {
-      return dispatch(openError('Your Web3 provider is not connected to your Ledger. Please make sure your Web3 provider is pointing to your Ledger.'));
+      return dispatch(openError('Your Web3 provider is not connected to your Ledger address. Please make sure your Web3 provider is pointing to the correct Ledger address.'));
     }
 
     // check eth app is greater than or equal to 1.4.0
@@ -64,7 +81,7 @@ function LedgerConnect ({ submit, open }) {
       return dispatch(openError('Contract Data is not configured correctly. Please follow the steps outlined to allow Contract Data.'));
     }
 
-    dispatch(ledgerConnect(true));
+    dispatch(ledgerConnect(derivation));
     dispatch(closeModal('ledgerConnectModal'));
   }
 
@@ -103,6 +120,13 @@ function LedgerConnect ({ submit, open }) {
           <div className={styles.text}>4. In the Contract data settings, press both buttons to allow contract data in transactions. The device displays Allowed.</div>
         </div>
       </div>
+
+      <Select
+        label='Derivation Path'
+        value={derivation}
+        options={Object.values(derivationOptions).map(i => ({ title: i, value: i }))}
+        onSelect={i => setDerivation(i.target.value)}
+      />
 
       <div className={styles.buttons}>
         <Button onClick={handleClose} type='outline' className={styles.button}>
