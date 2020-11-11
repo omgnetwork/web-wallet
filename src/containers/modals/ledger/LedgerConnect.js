@@ -20,7 +20,6 @@ import { closeModal, ledgerConnect } from 'actions/uiAction';
 
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
-import Select from 'components/select/Select';
 
 import ledger from 'images/ledger_connect.png';
 import boxarrow from 'images/boxarrow.svg';
@@ -43,7 +42,6 @@ function LedgerConnect ({ submit, open }) {
   const [ loading, setLoading ] = useState(false);
   const [ getConnectedAddressLoading, setGetConnectedAddressLoading ] = useState(false);
 
-  const [ derivationMap, setDerivationMap ] = useState({});
   const [ step, setStep ] = useState(steps.usingLedger);
 
   const [ selectedAddress, setAddress ] = useState('');
@@ -67,7 +65,7 @@ function LedgerConnect ({ submit, open }) {
     if (step === steps.selectAddress) {
       fetchConnectedAddress();
     }
-  }, [ step ]);
+  }, [ dispatch, step ]);
 
   function handleClose () {
     dispatch(closeModal('ledgerConnectModal'));
@@ -160,7 +158,6 @@ function LedgerConnect ({ submit, open }) {
       {step === steps.selectAddress && (
         <div className={styles.selectAddressContainer}>
           <div className={styles.title}>Confirm Address</div>
-          <div className={styles.description}>Confirm the Ledger address you will use with this wallet.</div>
 
           {getConnectedAddressLoading && (
             <p>Verifying Web3 connected to Ledger...</p>
@@ -168,6 +165,8 @@ function LedgerConnect ({ submit, open }) {
 
           {!getConnectedAddressLoading && (
             <>
+              <div className={styles.description}>Confirm the Ledger address you will use with this wallet.</div>
+
               <div className={styles.addressSelect}>
                 {selectedAddress}
               </div>
