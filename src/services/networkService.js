@@ -376,33 +376,34 @@ class NetworkService {
     }
   }
 
-  async getLedgerAddresses () {
+  async getConnectedLedgerAddress () {
     const transport = await Transport.create();
     const eth = new Eth(transport);
 
-    const derivationMap = {
-      "44'/60'/0'/0/0": null,
-      "44'/60'/1'/0/0": null,
-      "44'/60'/2'/0/0": null,
-      "44'/60'/3'/0/0": null,
-      "44'/60'/4'/0/0": null,
-      "44'/60'/5'/0/0": null
-    };
-
-    const paths = Object.keys(derivationMap);
-    for (let i = 0; i < paths.length; i++) {
-      const path = paths[i];
-      const { address } = await eth.getAddress(path);
-      derivationMap[path] = address;
+    let result;
+    for (let i = 0; i < 10; i++) {
+      const derivationPath = `44'/60'/${i}'/0/0`;
+      const { address } = await eth.getAddress(derivationPath);
+      if (address.toLowerCase() === this.account.toLowerCase()) {
+        result = {
+          path: derivationPath,
+          address: address.toLowerCase()
+        };
+        break;
+      }
     }
-
-    return derivationMap;
+    if (!result) {
+      throw Error('Web3 account not one of first 10 derivation paths.');
+    }
+    return result;
   }
 
   async getLedgerConfiguration () {
     try {
       const transport = await Transport.create();
       const eth = new Eth(transport);
+      // dummy fetch address to make sure we are connected and ETH app is open
+      await eth.getAddress("44'/60'/1'/0/0");
       const { version, arbitraryDataEnabled } = await eth.getAppConfiguration();
       return {
         connected: true,

@@ -22,7 +22,8 @@ function Select ({
   options,
   onSelect,
   loading,
-  error = ''
+  error = '',
+  className
 }) {
   const selected = options.find(i => i.value === value);
 
@@ -70,7 +71,12 @@ function Select ({
   );
 
   return (
-    <div className={styles.Select}>
+    <div
+      className={[
+        styles.Select,
+        className
+      ].join(' ')}
+    >
       {label && <div className={styles.label}>{label}</div>}
       <div className={styles.field}>
         {loading ? renderLoading : renderSelect}

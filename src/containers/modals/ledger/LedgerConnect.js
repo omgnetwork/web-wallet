@@ -41,30 +41,31 @@ const steps = {
 function LedgerConnect ({ submit, open }) {
   const dispatch = useDispatch();
   const [ loading, setLoading ] = useState(false);
-  const [ derivationMapLoading, setDerivationMapLoading ] = useState(false);
+  const [ getConnectedAddressLoading, setGetConnectedAddressLoading ] = useState(false);
 
   const [ derivationMap, setDerivationMap ] = useState({});
   const [ step, setStep ] = useState(steps.usingLedger);
 
-  const [ selectedAddress, setSelectedAddress ] = useState('');
-  const [ selectedPath, setSelectedPath ] = useState('');
+  const [ selectedAddress, setAddress ] = useState('');
+  const [ selectedPath, setPath ] = useState('');
 
   useEffect(() => {
-    async function fetchAddresses () {
-      setDerivationMapLoading(true);
+    async function fetchConnectedAddress () {
+      setGetConnectedAddressLoading(true);
       try {
-        const derivationMap = await networkService.getLedgerAddresses();
-        setDerivationMap(derivationMap);
-        setSelectedAddress(Object.values(derivationMap)[0]);
-        setSelectedPath(Object.keys(derivationMap)[0]);
-        setDerivationMapLoading(false);
+        const { path, address } = await networkService.getConnectedLedgerAddress();
+        setAddress(address);
+        setPath(path);
+        setGetConnectedAddressLoading(false);
       } catch (error) {
+        console.log(error.message);
+        dispatch(openError('Configured Web3 account not one of the first 10 derivation paths on your Ledger. Please make sure your Web3 provider is pointing to the Ledger.'));
         setStep(steps.usingLedger);
       }
     }
 
     if (step === steps.selectAddress) {
-      fetchAddresses();
+      fetchConnectedAddress();
     }
   }, [ step ]);
 
@@ -73,9 +74,6 @@ function LedgerConnect ({ submit, open }) {
   }
 
   async function handleAddressConfirm () {
-    if (networkService.account.toLowerCase() !== selectedAddress.toLowerCase() ) {
-      return dispatch(openError('Your Web3 provider is not pointing to your Ledger address. Please make sure your Web3 provider is pointing to the selected Ledger address.'));
-    }
     dispatch(ledgerConnect(selectedPath));
     dispatch(closeModal('ledgerConnectModal'));
   }
@@ -160,24 +158,20 @@ function LedgerConnect ({ submit, open }) {
       )}
 
       {step === steps.selectAddress && (
-        <>
-          <div className={styles.title}>Select Address</div>
-          <div className={styles.description}>Select the address you will use with the Ledger. Make sure your Web3 provider is pointing to the same address selected.</div>
+        <div className={styles.selectAddressContainer}>
+          <div className={styles.title}>Confirm Address</div>
+          <div className={styles.description}>Confirm the Ledger address you will use with this wallet.</div>
 
-          {derivationMapLoading && (
-            <p>Fetching Ledger Addresses...</p>
+          {getConnectedAddressLoading && (
+            <p>Verifying Web3 connected to Ledger...</p>
           )}
-          {!derivationMapLoading && (
+
+          {!getConnectedAddressLoading && (
             <>
-              <Select
-                label='Address'
-                value={selectedPath}
-                options={Object.keys(derivationMap).map(i => ({ title: derivationMap[i], subTitle: i, value: i }))}
-                onSelect={i => {
-                  setSelectedPath(i.target.value);
-                  setSelectedAddress(derivationMap[i.target.value]);
-                }}
-              />
+              <div className={styles.addressSelect}>
+                {selectedAddress}
+              </div>
+
               <div className={styles.buttons}>
                 <Button onClick={() => setStep(steps.usingLedger)} type='outline' className={styles.button}>
                   CANCEL
@@ -187,12 +181,12 @@ function LedgerConnect ({ submit, open }) {
                   onClick={handleAddressConfirm}
                   type='primary'
                 >
-                  CONTINUE
+                  CONFIRM
                 </Button>
               </div>
             </>
           )}
-        </>
+        </div>
       )}
     </Modal>
   );
