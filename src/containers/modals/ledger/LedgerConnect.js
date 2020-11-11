@@ -72,7 +72,7 @@ function LedgerConnect ({ submit, open }) {
     dispatch(closeModal('ledgerConnectModal'));
   }
 
-  async function handleAddessConfirm () {
+  async function handleAddressConfirm () {
     if (networkService.account.toLowerCase() !== selectedAddress.toLowerCase() ) {
       return dispatch(openError('Your Web3 provider is not pointing to your Ledger address. Please make sure your Web3 provider is pointing to the selected Ledger address.'));
     }
@@ -168,15 +168,29 @@ function LedgerConnect ({ submit, open }) {
             <p>Fetching Ledger Addresses...</p>
           )}
           {!derivationMapLoading && (
-            <Select
-              label='Address'
-              value={selectedPath}
-              options={Object.keys(derivationMap).map(i => ({ title: derivationMap[i], subTitle: i, value: i }))}
-              onSelect={i => {
-                setSelectedPath(i.target.value);
-                setSelectedAddress(derivationMap[i.target.value]);
-              }}
-            />
+            <>
+              <Select
+                label='Address'
+                value={selectedPath}
+                options={Object.keys(derivationMap).map(i => ({ title: derivationMap[i], subTitle: i, value: i }))}
+                onSelect={i => {
+                  setSelectedPath(i.target.value);
+                  setSelectedAddress(derivationMap[i.target.value]);
+                }}
+              />
+              <div className={styles.buttons}>
+                <Button onClick={() => setStep(steps.usingLedger)} type='outline' className={styles.button}>
+                  CANCEL
+                </Button>
+                <Button
+                  className={styles.button}
+                  onClick={handleAddressConfirm}
+                  type='primary'
+                >
+                  CONTINUE
+                </Button>
+              </div>
+            </>
           )}
         </>
       )}
