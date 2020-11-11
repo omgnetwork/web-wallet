@@ -376,22 +376,42 @@ class NetworkService {
     }
   }
 
-  async getLedgerConfiguration (derivation) {
+  async getLedgerAddresses () {
+    const transport = await Transport.create();
+    const eth = new Eth(transport);
+
+    const derivationMap = {
+      "44'/60'/0'/0/0": null,
+      "44'/60'/1'/0/0": null,
+      "44'/60'/2'/0/0": null,
+      "44'/60'/3'/0/0": null,
+      "44'/60'/4'/0/0": null,
+      "44'/60'/5'/0/0": null
+    };
+
+    const paths = Object.keys(derivationMap);
+    for (let i = 0; i < paths.length; i++) {
+      const path = paths[i];
+      const { address } = await eth.getAddress(path);
+      derivationMap[path] = address;
+    }
+
+    return derivationMap;
+  }
+
+  async getLedgerConfiguration () {
     try {
       const transport = await Transport.create();
       const eth = new Eth(transport);
-      const { address } = await eth.getAddress(derivation);
       const { version, arbitraryDataEnabled } = await eth.getAppConfiguration();
       return {
         connected: true,
-        addressMatch: address.toLowerCase() === this.account.toLowerCase(),
         version,
         dataEnabled: arbitraryDataEnabled
       };
     } catch (error) {
       return {
-        connected: false,
-        addressMatch: false
+        connected: false
       };
     }
   }
