@@ -24,7 +24,7 @@ import { selectFees } from 'selectors/feeSelector';
 import { selectLedger } from 'selectors/uiSelector';
 import { transfer, getTransferTypedData } from 'actions/networkAction';
 import { getToken } from 'actions/tokenAction';
-import { closeModal, openAlert } from 'actions/uiAction';
+import { closeModal, openAlert, setActiveHistoryTab } from 'actions/uiAction';
 
 import LedgerPrompt from 'containers/modals/ledger/LedgerPrompt';
 
@@ -122,6 +122,7 @@ function TransferModal ({ open }) {
           typedData
         }));
         if (res) {
+          dispatch(setActiveHistoryTab('Transactions'));
           dispatch(openAlert('Transfer submitted. You will be blocked from making further transactions until the transfer is confirmed.'));
           handleClose();
         }

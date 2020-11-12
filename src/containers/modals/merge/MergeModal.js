@@ -21,7 +21,7 @@ import { Check } from '@material-ui/icons';
 import { selectLoading } from 'selectors/loadingSelector';
 import { selectLedger } from 'selectors/uiSelector';
 import { mergeUtxos } from 'actions/networkAction';
-import { closeModal, openAlert } from 'actions/uiAction';
+import { closeModal, openAlert, setActiveHistoryTab } from 'actions/uiAction';
 
 import Button from 'components/button/Button';
 import Modal from 'components/modal/Modal';
@@ -71,6 +71,7 @@ function MergeModal ({ open }) {
     if (selectedUTXOs.length > 1 && selectedUTXOs.length < 5) {
       const res = await dispatch(mergeUtxos(useLedgerSign, selectedUTXOs));
       if (res) {
+        dispatch(setActiveHistoryTab('Transactions'));
         dispatch(openAlert('Merge submitted. You will be blocked from making further transactions until the merge is confirmed.'));
         handleClose();
       }
