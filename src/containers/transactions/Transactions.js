@@ -14,12 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { orderBy, isEqual } from 'lodash';
 import { useSelector } from 'react-redux';
 import BN from 'bn.js';
 import moment from 'moment';
 import truncate from 'truncate-middle';
 
+import { setActiveHistoryTab } from 'actions/uiAction';
+
+import { selectActiveHistoryTab } from 'selectors/uiSelector';
 import { selectChildchainTransactions } from 'selectors/transactionSelector';
 import { selectLoading } from 'selectors/loadingSelector';
 import networkService from 'services/networkService';
@@ -38,11 +42,12 @@ import * as styles from './Transactions.module.scss';
 const PER_PAGE = 10;
 
 function Transactions () {
+  const dispatch = useDispatch();
   const [ page, setPage ] = useState(1);
   const [ searchHistory, setSearchHistory ] = useState('');
-  const [ activeTab, setActiveTab ] = useState('Transactions');
 
   const loading = useSelector(selectLoading([ 'TRANSACTION/GETALL' ]));
+  const activeTab = useSelector(selectActiveHistoryTab, isEqual);
   const unorderedTransactions = useSelector(selectChildchainTransactions, isEqual);
   const transactions = orderBy(unorderedTransactions, i => i.block.timestamp, 'desc');
 
@@ -88,7 +93,7 @@ function Transactions () {
           <Tabs
             onClick={tab => {
               setPage(1);
-              setActiveTab(tab);
+              dispatch(setActiveHistoryTab(tab));
             }}
             activeTab={activeTab}
             tabs={[ 'Transactions', 'Deposits' ]}

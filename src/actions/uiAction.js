@@ -54,3 +54,9 @@ export function ledgerConnect (connect) {
     return dispatch({ type: 'UI/LEDGER/UPDATE', payload: connect });
   };
 }
+
+export function setActiveHistoryTab (tab) {
+  return function (dispatch) {
+    return dispatch({ type: 'UI/HISTORYTAB/UPDATE', payload: tab });
+  };
+}
