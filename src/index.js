@@ -29,6 +29,10 @@ if (config.gtmId) {
   TagManager.initialize({ gtmId: config.gtmId });
 }
 
+// Disable warning
+// https://docs.metamask.io/guide/ethereum-provider.html#ethereum-autorefreshonnetworkchange
+window.ethereum.autoRefreshOnNetworkChange = false;
+
 ReactDOM.render(
   <Provider store={store}>
     <App />
