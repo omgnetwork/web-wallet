@@ -22,9 +22,22 @@ function Select ({
   options,
   onSelect,
   loading,
-  error = ''
+  error = '',
+  className
 }) {
   const selected = options.find(i => i.value === value);
+
+  function renderOption (i) {
+    if (i.title && i.subTitle) {
+      return `${i.title} - ${i.subTitle}`;
+    }
+    if (i.title && !i.subTitle) {
+      return i.title;
+    }
+    if (i.subTitle && !i.title) {
+      return i.subTitle;
+    }
+  }
 
   const renderLoading = (
     <div className={[ styles.selected, styles.loading ].join(' ')}>
@@ -44,7 +57,7 @@ function Select ({
             key={index}
             value={i.value}
           >
-            {i.title} - {i.subTitle}
+            {renderOption(i)}
           </option>
         ))}
       </select>
@@ -58,7 +71,12 @@ function Select ({
   );
 
   return (
-    <div className={styles.Select}>
+    <div
+      className={[
+        styles.Select,
+        className
+      ].join(' ')}
+    >
       {label && <div className={styles.label}>{label}</div>}
       <div className={styles.field}>
         {loading ? renderLoading : renderSelect}

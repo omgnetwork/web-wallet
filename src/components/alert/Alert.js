@@ -25,7 +25,7 @@ function _Alert ({ children, open, onClose, type = 'success', duration = 3000 })
   return (
     <Snackbar
       open={open}
-      autoHideDuration={duration}
+      autoHideDuration={duration ? duration : undefined}
       onClose={onClose}
       anchorOrigin={{
         vertical: 'top',
