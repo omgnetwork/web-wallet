@@ -16,6 +16,7 @@ limitations under the License. */
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { CircularProgress } from '@material-ui/core';
 import { closeModal, ledgerConnect } from 'actions/uiAction';
 
 import Button from 'components/button/Button';
@@ -41,6 +42,7 @@ function LedgerConnect ({ submit, open }) {
   const dispatch = useDispatch();
   const [ loading, setLoading ] = useState(false);
   const [ getConnectedAddressLoading, setGetConnectedAddressLoading ] = useState(false);
+  const [ contractDataError, setContractDataError ] = useState(false);
 
   const [ step, setStep ] = useState(steps.usingLedger);
 
@@ -56,7 +58,7 @@ function LedgerConnect ({ submit, open }) {
         setPath(path);
         setGetConnectedAddressLoading(false);
       } catch (error) {
-        console.log(error.message);
+        setGetConnectedAddressLoading(false);
         dispatch(openError('Configured Web3 account not one of the first 10 derivation paths on your Ledger. Please make sure your Web3 provider is pointing to the Ledger.'));
         setStep(steps.usingLedger);
       }
@@ -78,6 +80,7 @@ function LedgerConnect ({ submit, open }) {
 
   async function handleYes () {
     setLoading(true);
+    setContractDataError(false);
     const ledgerConfig = await networkService.getLedgerConfiguration();
     setLoading(false);
 
@@ -95,6 +98,7 @@ function LedgerConnect ({ submit, open }) {
     }
 
     if (!ledgerConfig.dataEnabled) {
+      setContractDataError(true);
       return dispatch(openError('Contract Data is not configured correctly. Please follow the steps outlined to allow Contract Data.'));
     }
 
@@ -103,45 +107,60 @@ function LedgerConnect ({ submit, open }) {
 
   return (
     <Modal open={open} onClose={handleClose}>
-      <div className={styles.logoContainer}>
-        <img src={ledger} className={styles.logo} alt='ledger_logo' />
+      <div className={styles.header}>
+        <div className={styles.logoContainer}>
+          <img src={ledger} className={styles.logo} alt='ledger_logo' />
+          {getConnectedAddressLoading && (
+            <div className={styles.spinner}>
+              <CircularProgress className={styles.spinnerGraphic} size={15} color='inherit' />
+            </div>
+          )}
+        </div>
       </div>
 
       {step === steps.usingLedger && (
         <>
-          <div className={styles.title}>Are you connecting with Ledger?</div>
-          <div className={styles.description}>If so, please check the following steps to make sure Contract Data is allowed in your Ledger&apos;s Ethereum application settings.</div>
-
-          <div className={styles.steps}>
-            <div className={styles.step}>
-              <div className={styles.iconWrapper}>
-                <img src={lock} alt='lock' />
-              </div>
-              <div className={styles.text}>1. Connect and unlock your Ledger device.</div>
-            </div>
-            <div className={styles.step}>
-              <div className={styles.iconWrapper}>
-                <img src={eth} alt='eth' />
-              </div>
-              <div className={styles.text}>2. Open the Ethereum application.</div>
-            </div>
-            <div className={styles.step}>
-              <div className={styles.iconWrapper}>
-                <img src={boxarrow} alt='boxarrow' />
-              </div>
-              <div className={styles.text}>3. Press the right button to navigate to Settings. Then press both buttons to validate.</div>
-            </div>
-            <div className={styles.step}>
-              <div className={styles.iconWrapper}>
-                <img src={key} alt='key' />
-              </div>
-              <div className={styles.text}>4. In the Contract data settings, press both buttons to allow contract data in transactions. The device displays Allowed.</div>
-            </div>
+          <div className={styles.title}>
+            {contractDataError ? 'Allow Contract Data' : 'Are you connecting with Ledger?'}
           </div>
+
+          {contractDataError && (
+            <>
+              <div className={styles.description}>
+                Please check the following steps to make sure Contract Data is allowed in your Ledger&apos;s Ethereum application settings.
+              </div>
+              <div className={styles.steps}>
+                <div className={styles.step}>
+                  <div className={styles.iconWrapper}>
+                    <img src={lock} alt='lock' />
+                  </div>
+                  <div className={styles.text}>1. Connect and unlock your Ledger device.</div>
+                </div>
+                <div className={styles.step}>
+                  <div className={styles.iconWrapper}>
+                    <img src={eth} alt='eth' />
+                  </div>
+                  <div className={styles.text}>2. Open the Ethereum application.</div>
+                </div>
+                <div className={styles.step}>
+                  <div className={styles.iconWrapper}>
+                    <img src={boxarrow} alt='boxarrow' />
+                  </div>
+                  <div className={styles.text}>3. Press the right button to navigate to Settings. Then press both buttons to validate.</div>
+                </div>
+                <div className={styles.step}>
+                  <div className={styles.iconWrapper}>
+                    <img src={key} alt='key' />
+                  </div>
+                  <div className={styles.text}>4. In the Contract data settings, press both buttons to allow contract data in transactions. The device displays Allowed.</div>
+                </div>
+              </div>
+            </>
+          )}
 
           <div className={styles.buttons}>
             <Button onClick={handleClose} type='outline' className={styles.button}>
-              NO
+              {contractDataError ? 'CANCEL' : 'NO'}
             </Button>
             <Button
               className={styles.button}
@@ -149,7 +168,7 @@ function LedgerConnect ({ submit, open }) {
               type='primary'
               loading={loading}
             >
-              YES
+              {contractDataError ? 'CONTINUE' : 'YES'}
             </Button>
           </div>
         </>
@@ -160,15 +179,31 @@ function LedgerConnect ({ submit, open }) {
           <div className={styles.title}>Confirm Address</div>
 
           {getConnectedAddressLoading && (
-            <p>Verifying Web3 connected to Ledger...</p>
+            <div className={styles.steps}>
+              <div className={styles.step}>
+                <div className={styles.iconWrapper}>
+                  <img src={eth} alt='eth' />
+                </div>
+                <div className={styles.text}>
+                  Verifying Web3 connected to Ledger...
+                </div>
+              </div>
+            </div>
           )}
 
           {!getConnectedAddressLoading && (
             <>
               <div className={styles.description}>Confirm the Ledger address you will use with this wallet.</div>
 
-              <div className={styles.addressSelect}>
-                {selectedAddress}
+              <div className={styles.steps}>
+                <div className={styles.step}>
+                  <div className={styles.iconWrapper}>
+                    <img src={eth} alt='eth' />
+                  </div>
+                  <div className={styles.text}>
+                    {selectedAddress}
+                  </div>
+                </div>
               </div>
 
               <div className={styles.buttons}>

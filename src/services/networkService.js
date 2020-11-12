@@ -402,8 +402,8 @@ class NetworkService {
     try {
       const transport = await Transport.create();
       const eth = new Eth(transport);
-      // dummy fetch address to make sure we are connected and ETH app is open
-      await eth.getAddress("44'/60'/1'/0/0");
+      // dummy ledger api call to check if we are connected and the ETH app is open
+      await eth.getAddress("44'/60'/0'/0/0");
       const { version, arbitraryDataEnabled } = await eth.getAppConfiguration();
       return {
         connected: true,
