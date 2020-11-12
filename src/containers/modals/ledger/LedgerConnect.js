@@ -56,11 +56,11 @@ function LedgerConnect ({ submit, open }) {
         const { path, address } = await networkService.getConnectedLedgerAddress();
         setAddress(address);
         setPath(path);
-        setGetConnectedAddressLoading(false);
       } catch (error) {
-        setGetConnectedAddressLoading(false);
         dispatch(openError('Configured Web3 account not one of the first 10 derivation paths on your Ledger. Please make sure your Web3 provider is pointing to the Ledger.'));
         setStep(steps.usingLedger);
+      } finally {
+        setGetConnectedAddressLoading(false);
       }
     }
 
