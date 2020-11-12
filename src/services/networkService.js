@@ -141,7 +141,7 @@ class NetworkService {
     }
     if (appRegisteredAcount.toLowerCase() !== providerRegisteredAccount.toLowerCase()) {
       try {
-        window.location.reload(false);
+        window.location.reload();
       } catch (error) {
         //
       }
@@ -155,7 +155,7 @@ class NetworkService {
           this.handleAccountsChanged(accounts);
         });
         window.ethereum.on('networkChanged', function () {
-          window.location.reload(false);
+          window.location.reload();
         });
       } catch (err) {
         console.log('Web3 event handling not available');
@@ -168,7 +168,7 @@ class NetworkService {
           this.handleAccountsChanged(accounts);
         });
         this.provider.on('stop', function () {
-          window.location.reload(false);
+          window.location.reload();
         });
       } catch (err) {
         console.log('WalletConnect event handling not available');
