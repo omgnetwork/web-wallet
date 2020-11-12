@@ -39,7 +39,7 @@ function App () {
     <div className={styles.App}>
       <Alert
         type='error'
-        duration={5000}
+        duration={0}
         open={!!errorMessage}
         onClose={handleErrorClose}
       >
@@ -48,7 +48,7 @@ function App () {
 
       <Alert
         type='success'
-        duration={20000}
+        duration={0}
         open={!!alertMessage}
         onClose={handleAlertClose}
       >
