@@ -144,7 +144,7 @@ function WalletPicker ({ onEnable }) {
     setAccountsEnabled(false);
   }
 
-  const browserEnabled = !!window.web3 || !!window.ethereum;
+  const browserEnabled = !!window.ethereum;
   const walletConnectEnabled = !!config.rpcProxy;
   const walletLinkEnabled = !!config.rpcProxy;
   // const ledgerEnabled = !!config.rpcProxy;
