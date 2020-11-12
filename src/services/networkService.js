@@ -107,7 +107,7 @@ class NetworkService {
     try {
       if (window.ethereum) {
         this.provider = window.ethereum;
-        await window.ethereum.enable();
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
       } else if (window.web3) {
         this.provider = window.web3.currentProvider;
       } else {
