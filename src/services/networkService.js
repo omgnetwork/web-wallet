@@ -376,22 +376,43 @@ class NetworkService {
     }
   }
 
+  async getConnectedLedgerAddress () {
+    const transport = await Transport.create();
+    const eth = new Eth(transport);
+
+    let result;
+    for (let i = 0; i < 10; i++) {
+      const derivationPath = `44'/60'/${i}'/0/0`;
+      const { address } = await eth.getAddress(derivationPath);
+      if (address.toLowerCase() === this.account.toLowerCase()) {
+        result = {
+          path: derivationPath,
+          address: address.toLowerCase()
+        };
+        break;
+      }
+    }
+    if (!result) {
+      throw Error('Web3 account not one of first 10 derivation paths.');
+    }
+    return result;
+  }
+
   async getLedgerConfiguration () {
     try {
       const transport = await Transport.create();
       const eth = new Eth(transport);
-      const { address } = await eth.getAddress("44'/60'/0'/0/0");
+      // dummy ledger api call to check if we are connected and the ETH app is open
+      await eth.getAddress("44'/60'/0'/0/0");
       const { version, arbitraryDataEnabled } = await eth.getAppConfiguration();
       return {
         connected: true,
-        addressMatch: address.toLowerCase() === this.account.toLowerCase(),
         version,
         dataEnabled: arbitraryDataEnabled
       };
     } catch (error) {
       return {
-        connected: false,
-        addressMatch: false
+        connected: false
       };
     }
   }
@@ -411,10 +432,12 @@ class NetworkService {
     }
 
     try {
+      const state = store.getState();
+      const derivationPath = get(state, 'ui.ledger');
       const messageHash = hashTypedDataMessage(typedData);
       const domainSeperatorHash = hashTypedDataDomain(typedData);
       const { v: _v, r, s } = await transporter.signEIP712HashedMessage(
-        "44'/60'/0'/0/0",
+        derivationPath,
         domainSeperatorHash,
         messageHash
       );
