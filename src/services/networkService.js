@@ -107,7 +107,6 @@ class NetworkService {
     try {
       if (window.ethereum) {
         this.provider = window.ethereum;
-        window.ethereum.autoRefreshOnNetworkChange = false;
         await window.ethereum.enable();
       } else if (window.web3) {
         this.provider = window.web3.currentProvider;
@@ -154,7 +153,7 @@ class NetworkService {
         window.ethereum.on('accountsChanged', (accounts) => {
           this.handleAccountsChanged(accounts);
         });
-        window.ethereum.on('networkChanged', function () {
+        window.ethereum.on('chainChanged', function () {
           window.location.reload();
         });
       } catch (err) {
