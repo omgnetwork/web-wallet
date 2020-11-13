@@ -147,12 +147,10 @@ function TransferModal ({ open }) {
     if (!transferingBalanceObject) {
       return;
     }
-
     if (currency.toLowerCase() === feeToken.toLowerCase()) {
       const availableAmount = new BN(transferingBalanceObject.amount).minus(new BN(fees[feeToken.toLowerCase()].amount));
       return logAmount(availableAmount, transferingBalanceObject.decimals);
     }
-
     return logAmount(transferingBalanceObject.amount, transferingBalanceObject.decimals);
   }
 
