@@ -595,23 +595,25 @@ class NetworkService {
   }
 
   async getTransferTypedData ({
+    utxos,
     recipient,
     value,
     currency,
     feeToken,
     metadata
   }) {
-    let utxos;
-    try {
-      const _utxos = await this.childChain.getUtxos(this.account);
-      utxos = orderBy(_utxos, i => i.amount, 'desc');
-    } catch (error) {
-      throw new WebWalletError({
-        originalError: error,
-        customErrorMessage: 'Could not fetch account utxos. Please try transfer again.',
-        reportToSentry: false,
-        reportToUi: true
-      });
+    if (!utxos || !utxos.length) {
+      try {
+        const _utxos = await this.childChain.getUtxos(this.account);
+        utxos = orderBy(_utxos, i => i.amount, 'desc');
+      } catch (error) {
+        throw new WebWalletError({
+          originalError: error,
+          customErrorMessage: 'Could not fetch account utxos. Please try transfer again.',
+          reportToSentry: false,
+          reportToUi: true
+        });
+      }
     }
 
     const allFees = await this.fetchFees();

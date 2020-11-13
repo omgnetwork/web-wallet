@@ -15,8 +15,9 @@ limitations under the License. */
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { isEqual } from 'lodash';
+import { isEqual, orderBy } from 'lodash';
 import BN from 'bignumber.js';
+import { Check } from '@material-ui/icons';
 
 import { selectChildchainBalance } from 'selectors/balanceSelector';
 import { selectLoading } from 'selectors/loadingSelector';
@@ -51,12 +52,27 @@ function TransferModal ({ open }) {
   const [ ledgerModal, setLedgerModal ] = useState(false);
   const [ typedData, setTypedData ] = useState({});
 
+  const [ utxoPicker, setUtxoPicker ] = useState(false);
+  const [ utxos, setUtxos ] = useState([]);
+  const [ selectedUtxos, setSelectedUtxos ] = useState([]);
+
   const balances = useSelector(selectChildchainBalance, isEqual);
   const fees = useSelector(selectFees, isEqual);
   const ledgerConnect = useSelector(selectLedger);
 
   const feesLoading = useSelector(selectLoading([ 'FEE/GET' ]));
   const loading = useSelector(selectLoading([ 'TRANSFER/CREATE' ]));
+
+  useEffect(() => {
+    async function fetchUTXOS () {
+      const _utxos = await networkService.getUtxos();
+      const utxos = orderBy(_utxos, i => i.currency, 'desc');
+      setUtxos(utxos);
+    }
+    if (open) {
+      fetchUTXOS();
+    }
+  }, [ open ]);
 
   useEffect(() => {
     if (Object.keys(fees).length) {
@@ -109,6 +125,7 @@ function TransferModal ({ open }) {
       try {
         const valueTokenInfo = await getToken(currency);
         const { txBody, typedData } = await dispatch(getTransferTypedData({
+          utxos: selectedUtxos,
           recipient,
           value: powAmount(value, valueTokenInfo.decimals),
           currency,
@@ -137,10 +154,19 @@ function TransferModal ({ open }) {
     setValue('');
     setFeeToken('');
     setRecipient('');
+    setSelectedUtxos([]);
+    setUtxos([]);
+    setUtxoPicker(false);
     setMetadata('');
     setLedgerModal(false);
     dispatch(closeModal('transferModal'));
   }
+
+  const disabledTransfer = value <= 0 ||
+    !currency ||
+    !feeToken ||
+    !recipient ||
+    new BN(value).gt(new BN(getMaxTransferValue()));
 
   function getMaxTransferValue () {
     const transferingBalanceObject = balances.find(i => i.currency.toLowerCase() === currency.toLowerCase());
@@ -154,11 +180,100 @@ function TransferModal ({ open }) {
     return logAmount(transferingBalanceObject.amount, transferingBalanceObject.decimals);
   }
 
-  const disabledTransfer = value <= 0 ||
-    !currency ||
-    !feeToken ||
-    !recipient ||
-    new BN(value).gt(new BN(getMaxTransferValue()));
+  function handleUtxoClick (utxo) {
+    const isSelected = selectedUtxos.some(i => i.utxo_pos === utxo.utxo_pos);
+    if (isSelected) {
+      setSelectedUtxos(selectedUtxos.filter(i => i.utxo_pos !== utxo.utxo_pos));
+    }
+    if (!isSelected && selectedUtxos.length < 4) {
+      setSelectedUtxos([ ...selectedUtxos, utxo ]);
+    }
+  }
+
+  function handleUtxoPickerBack () {
+    setSelectedUtxos([]);
+    setUtxoPicker(false);
+  }
+
+  function renderUtxoPicker () {
+    const _utxos = utxos
+      .filter(i => i.currency.toLowerCase() === currency.toLowerCase())
+      .filter(i => !!i);
+
+    const selectedAmount = selectedUtxos.reduce((acc, cur) => {
+      return acc.plus(new BN(cur.amount.toString()));
+    }, new BN(0));
+
+    const valueObject = balances.find(i => i.currency.toLowerCase() === currency.toLowerCase());
+    const _coverAmount = powAmount(value.toString(), valueObject.decimals);
+    const coverAmount = new BN(_coverAmount.toString());
+    const utxoPickerDisabled = selectedAmount.lt(new BN(coverAmount.toString()));
+
+    return (
+      <>
+        <h2>Select UTXOs</h2>
+        <div className={styles.description}>
+          By default, this wallet will automatically pick UTXOs to cover your transaction amount. However, if you are a more advanced user, you can pick the UTXOs you would like to spend in this transaction manually.
+        </div>
+
+        <div className={styles.description}>
+          Amount to cover: {value}
+        </div>
+
+        <div className={styles.list}>
+          {!_utxos.length && (
+            <div className={styles.disclaimer}>You do not have any UTXOs for this token on the OMG Network.</div>
+          )}
+          {_utxos.map((i, index) => {
+            const selected = selectedUtxos.some(selected => selected.utxo_pos === i.utxo_pos);
+            return (
+              <div
+                key={index}
+                onClick={() => handleUtxoClick(i)}
+                className={[
+                  styles.utxo,
+                  selected ? styles.selected : ''
+                ].join(' ')}
+              >
+                <div className={styles.title}>
+                  {i.tokenInfo.name}
+                </div>
+
+                <div className={styles.value}>
+                  <div className={styles.amount}>
+                    {logAmount(i.amount.toString(), i.tokenInfo.decimals)}
+                  </div>
+
+                  <div className={styles.check}>
+                    {selected && <Check />}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className={styles.buttons}>
+          <Button
+            onClick={handleUtxoPickerBack}
+            type='outline'
+            className={styles.button}
+          >
+            CANCEL
+          </Button>
+
+          <Button
+            className={styles.button}
+            onClick={() => setUtxoPicker(false)}
+            type='primary'
+            disabled={utxoPickerDisabled}
+          >
+            SELECT UTXOS
+          </Button>
+        </div>
+      </>
+    );
+  }
 
   function renderTransferScreen () {
     return (
@@ -187,6 +302,15 @@ function TransferModal ({ open }) {
           maxValue={getMaxTransferValue()}
         />
 
+        {value > 0 && (
+          <div
+            className={styles.utxoPickLink}
+            onClick={() => setUtxoPicker(true)}
+          >
+            Select UTXOs
+          </div>
+        )}
+
         <Select
           loading={feesLoading}
           label='Fee'
@@ -212,30 +336,20 @@ function TransferModal ({ open }) {
             CANCEL
           </Button>
 
-          {ledgerConnect ?
-            (
-              <Button
-                onClick={() => setLedgerModal(true)}
-                type='primary'
-                className={styles.button}
-                loading={loading}
-                tooltip='Your transfer transaction is still pending. Please wait for confirmation.'
-                disabled={disabledTransfer}
-              >
-                TRANSFER WITH LEDGER
-              </Button>)
-            :
-            (<Button
-              className={styles.button}
-              onClick={() => submit({ useLedgerSign: false })}
-              type='primary'
-              loading={loading}
-              tooltip='Your transfer transaction is still pending. Please wait for confirmation.'
-              disabled={disabledTransfer}
-            >
-              TRANSFER
-            </Button>)
-          }
+          <Button
+            className={styles.button}
+            onClick={() => {
+              ledgerConnect
+                ? setLedgerModal(true)
+                : submit({ useLedgerSign: false });
+            }}
+            type='primary'
+            loading={loading}
+            tooltip='Your transfer transaction is still pending. Please wait for confirmation.'
+            disabled={disabledTransfer}
+          >
+            {ledgerConnect ? 'TRANSFER WITH LEDGER' : 'TRANSFER'}
+          </Button>
         </div>
       </>
     );
@@ -243,7 +357,8 @@ function TransferModal ({ open }) {
 
   return (
     <Modal open={open}>
-      {!ledgerModal && renderTransferScreen()}
+      {!ledgerModal && !utxoPicker && renderTransferScreen()}
+      {!ledgerModal && utxoPicker && renderUtxoPicker()}
       {ledgerModal && (
         <LedgerPrompt
           loading={loading}
