@@ -107,10 +107,7 @@ class NetworkService {
     try {
       if (window.ethereum) {
         this.provider = window.ethereum;
-        window.ethereum.autoRefreshOnNetworkChange = false;
-        await window.ethereum.enable();
-      } else if (window.web3) {
-        this.provider = window.web3.currentProvider;
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
       } else {
         return false;
       }
@@ -141,7 +138,7 @@ class NetworkService {
     }
     if (appRegisteredAcount.toLowerCase() !== providerRegisteredAccount.toLowerCase()) {
       try {
-        window.location.reload(false);
+        window.location.reload();
       } catch (error) {
         //
       }
@@ -154,8 +151,8 @@ class NetworkService {
         window.ethereum.on('accountsChanged', (accounts) => {
           this.handleAccountsChanged(accounts);
         });
-        window.ethereum.on('networkChanged', function () {
-          window.location.reload(false);
+        window.ethereum.on('chainChanged', function () {
+          window.location.reload();
         });
       } catch (err) {
         console.log('Web3 event handling not available');
@@ -168,7 +165,7 @@ class NetworkService {
           this.handleAccountsChanged(accounts);
         });
         this.provider.on('stop', function () {
-          window.location.reload(false);
+          window.location.reload();
         });
       } catch (err) {
         console.log('WalletConnect event handling not available');
