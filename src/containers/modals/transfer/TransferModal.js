@@ -154,7 +154,11 @@ function TransferModal ({ open }) {
     return logAmount(transferingBalanceObject.amount, transferingBalanceObject.decimals);
   }
 
-  const disabledTransfer = value <= 0 || !currency || !feeToken || !recipient;
+  const disabledTransfer = value <= 0 ||
+    !currency ||
+    !feeToken ||
+    !recipient ||
+    new BN(value).gt(new BN(getMaxTransferValue()));
 
   function renderTransferScreen () {
     return (
