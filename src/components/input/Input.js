@@ -15,6 +15,7 @@ limitations under the License. */
 
 import React from 'react';
 import { Search } from '@material-ui/icons';
+import BN from 'bignumber.js';
 
 import * as styles from './Input.module.scss';
 
@@ -27,7 +28,8 @@ function Input ({
   value,
   onChange,
   paste,
-  className
+  className,
+  maxValue
 }) {
   async function handlePaste () {
     try {
@@ -40,10 +42,21 @@ function Input ({
     }
   }
 
+  function handleMaxClick () {
+    onChange({ target: { value: maxValue } });
+  }
+
+  const overMax = new BN(value).gt(new BN(maxValue));
+
   return (
     <div className={[ styles.Input, className ].join(' ')}>
       {label && <div className={styles.label}>{label}</div>}
-      <div className={styles.field}>
+      <div
+        className={[
+          styles.field,
+          overMax ? styles.error : ''
+        ].join(' ')}
+      >
         {icon && <Search className={styles.icon} />}
         <input
           className={styles.input}
@@ -52,7 +65,19 @@ function Input ({
           value={value}
           onChange={onChange}
         />
-        {unit && <div className={styles.unit}>{unit}</div>}
+        {unit && (
+          <div className={styles.unit}>
+            {maxValue && (value !== maxValue) && (
+              <div
+                onClick={handleMaxClick}
+                className={styles.maxValue}
+              >
+                MAX
+              </div>
+            )}
+            {unit}
+          </div>
+        )}
         {paste && (
           <div onClick={handlePaste} className={styles.paste}>
             Paste

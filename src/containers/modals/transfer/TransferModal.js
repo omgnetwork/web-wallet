@@ -142,6 +142,20 @@ function TransferModal ({ open }) {
     dispatch(closeModal('transferModal'));
   }
 
+  function getMaxTransferValue () {
+    const transferingBalanceObject = balances.find(i => i.currency.toLowerCase() === currency.toLowerCase());
+    if (!transferingBalanceObject) {
+      return;
+    }
+
+    if (currency.toLowerCase() === feeToken.toLowerCase()) {
+      const availableAmount = new BN(transferingBalanceObject.amount).minus(new BN(fees[feeToken.toLowerCase()].amount));
+      return logAmount(availableAmount, transferingBalanceObject.decimals);
+    }
+
+    return logAmount(transferingBalanceObject.amount, transferingBalanceObject.decimals);
+  }
+
   const disabledTransfer = value <= 0 || !currency || !feeToken || !recipient;
 
   function renderTransferScreen () {
@@ -168,6 +182,7 @@ function TransferModal ({ open }) {
           selectOptions={selectOptions}
           onSelect={i => setCurrency(i.target.value)}
           selectValue={currency}
+          maxValue={getMaxTransferValue()}
         />
 
         <Select
