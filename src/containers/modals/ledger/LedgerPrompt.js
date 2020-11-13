@@ -90,7 +90,7 @@ function LedgerPrompt ({
             <div className={styles.logoContainer}>
               <img src={ledger} className={styles.logo} alt='ledger_logo' />
               <div className={styles.spinner}>
-                <CircularProgress className={styles.spinnerGraphic} size={15} color='white' />
+                <CircularProgress className={styles.spinnerGraphic} size={15} color='inherit' />
               </div>
             </div>
             <div className={styles.title}>Processing...</div>
