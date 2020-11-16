@@ -1,5 +1,9 @@
 @import 'index.scss';
 
+.disclaimer {
+  font-family: 'Messina';
+}
+
 .buttons {
   display: flex;
   flex-direction: row;
@@ -75,4 +79,8 @@
     background-color: $gray2;
     color: $gray6;
   }
+}
+
+.doubleList {
+  height: 150px;
 }

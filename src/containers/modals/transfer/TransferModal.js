@@ -55,6 +55,7 @@ function TransferModal ({ open }) {
   const [ utxoPicker, setUtxoPicker ] = useState(false);
   const [ utxos, setUtxos ] = useState([]);
   const [ selectedUtxos, setSelectedUtxos ] = useState([]);
+  const [ selectedFeeUtxos, setSelectedFeeUtxos ] = useState([]);
 
   const balances = useSelector(selectChildchainBalance, isEqual);
   const fees = useSelector(selectFees, isEqual);
@@ -125,7 +126,7 @@ function TransferModal ({ open }) {
       try {
         const valueTokenInfo = await getToken(currency);
         const { txBody, typedData } = await dispatch(getTransferTypedData({
-          utxos: selectedUtxos,
+          utxos: [ ...selectedUtxos, ...selectedFeeUtxos ],
           recipient,
           value: powAmount(value, valueTokenInfo.decimals),
           currency,
@@ -185,29 +186,144 @@ function TransferModal ({ open }) {
     if (isSelected) {
       setSelectedUtxos(selectedUtxos.filter(i => i.utxo_pos !== utxo.utxo_pos));
     }
-    if (!isSelected && selectedUtxos.length < 4) {
+    if (!isSelected && (selectedUtxos.length + selectedFeeUtxos.length) < 4) {
       setSelectedUtxos([ ...selectedUtxos, utxo ]);
+    }
+  }
+
+  function handleFeeUtxoClick (utxo) {
+    const isSelected = selectedFeeUtxos.some(i => i.utxo_pos === utxo.utxo_pos);
+    if (isSelected) {
+      setSelectedFeeUtxos(selectedFeeUtxos.filter(i => i.utxo_pos !== utxo.utxo_pos));
+    }
+    if (!isSelected && (selectedUtxos.length + selectedFeeUtxos.length) < 4) {
+      setSelectedFeeUtxos([ ...selectedFeeUtxos, utxo ]);
     }
   }
 
   function handleUtxoPickerBack () {
     setSelectedUtxos([]);
+    setSelectedFeeUtxos([]);
     setUtxoPicker(false);
   }
 
   function renderUtxoPicker () {
-    const _utxos = utxos
+    const currencyUtxos = utxos
       .filter(i => i.currency.toLowerCase() === currency.toLowerCase())
       .filter(i => !!i);
 
-    const selectedAmount = selectedUtxos.reduce((acc, cur) => {
+    const feeUtxos = utxos
+      .filter(i => i.currency.toLowerCase() === feeToken.toLowerCase())
+      .filter(i => !!i);
+
+    const selectedCurrencyAmount = selectedUtxos.reduce((acc, cur) => {
       return acc.plus(new BN(cur.amount.toString()));
     }, new BN(0));
 
-    const valueObject = balances.find(i => i.currency.toLowerCase() === currency.toLowerCase());
-    const _coverAmount = powAmount(value.toString(), valueObject.decimals);
-    const coverAmount = new BN(_coverAmount.toString());
-    const utxoPickerDisabled = selectedAmount.lt(new BN(coverAmount.toString()));
+    const selectedFeeAmount = selectedFeeUtxos.reduce((acc, cur) => {
+      return acc.plus(new BN(cur.amount.toString()));
+    }, new BN(0));
+
+    const currencyObject = balances.find(i => i.currency.toLowerCase() === currency.toLowerCase());
+    const currencyCoverAmount = new BN(powAmount(value.toString(), currencyObject.decimals));
+
+    const feeObject = fees[feeToken.toLowerCase()];
+    const feeCoverAmount = new BN(feeObject.amount.toString());
+
+    const sameCurrency = feeToken.toLowerCase() === currency.toLowerCase();
+    const utxoPickerDisabled = sameCurrency
+      ? currencyCoverAmount.plus(feeCoverAmount).gt(selectedCurrencyAmount)
+      : currencyCoverAmount.gt(selectedCurrencyAmount) || feeCoverAmount.gt(selectedFeeAmount);
+
+    function renderCurrencyPick () {
+      return (
+        <>
+          <div className={styles.description}>
+            Transfer amount to cover: {sameCurrency
+              ? logAmount(currencyCoverAmount.plus(feeCoverAmount), currencyObject.decimals)
+              : logAmount(currencyCoverAmount, currencyObject.decimals)}
+          </div>
+
+          <div className={[ styles.list, !sameCurrency ? styles.doubleList : '' ].join(' ')}>
+            {!currencyUtxos.length && (
+              <div className={styles.disclaimer}>You do not have any UTXOs for this token on the OMG Network.</div>
+            )}
+            {currencyUtxos.map((i, index) => {
+              const selected = selectedUtxos.some(selected => selected.utxo_pos === i.utxo_pos);
+              return (
+                <div
+                  key={index}
+                  onClick={() => handleUtxoClick(i)}
+                  className={[
+                    styles.utxo,
+                    selected ? styles.selected : ''
+                  ].join(' ')}
+                >
+                  <div className={styles.title}>
+                    {i.tokenInfo.name}
+                  </div>
+
+                  <div className={styles.value}>
+                    <div className={styles.amount}>
+                      {logAmount(i.amount.toString(), i.tokenInfo.decimals)}
+                    </div>
+
+                    <div className={styles.check}>
+                      {selected && <Check />}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      );
+    }
+
+    function renderFeePick () {
+      const logFeeAmount = new BN(feeObject.amount.toString()).div(new BN(feeObject.subunit_to_unit.toString()));
+
+      return (
+        <>
+          <div className={styles.description}>
+            Fee amount to cover: {logFeeAmount.toString()}
+          </div>
+
+          <div className={[ styles.list, !sameCurrency ? styles.doubleList : '' ].join(' ')}>
+            {!feeUtxos.length && (
+              <div className={styles.disclaimer}>You do not have any fee UTXOs on the OMG Network.</div>
+            )}
+            {feeUtxos.map((i, index) => {
+              const selected = selectedFeeUtxos.some(selected => selected.utxo_pos === i.utxo_pos);
+              return (
+                <div
+                  key={index}
+                  onClick={() => handleFeeUtxoClick(i)}
+                  className={[
+                    styles.utxo,
+                    selected ? styles.selected : ''
+                  ].join(' ')}
+                >
+                  <div className={styles.title}>
+                    {i.tokenInfo.name}
+                  </div>
+
+                  <div className={styles.value}>
+                    <div className={styles.amount}>
+                      {logAmount(i.amount.toString(), i.tokenInfo.decimals)}
+                    </div>
+
+                    <div className={styles.check}>
+                      {selected && <Check />}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      );
+    }
 
     return (
       <>
@@ -216,42 +332,10 @@ function TransferModal ({ open }) {
           By default, this wallet will automatically pick UTXOs to cover your transaction amount. However, if you are a more advanced user, you can pick the UTXOs you would like to spend in this transaction manually.
         </div>
 
-        <div className={styles.description}>
-          Amount to cover: {value}
-        </div>
+        {renderCurrencyPick()}
+        {!sameCurrency && renderFeePick()}
 
-        <div className={styles.list}>
-          {!_utxos.length && (
-            <div className={styles.disclaimer}>You do not have any UTXOs for this token on the OMG Network.</div>
-          )}
-          {_utxos.map((i, index) => {
-            const selected = selectedUtxos.some(selected => selected.utxo_pos === i.utxo_pos);
-            return (
-              <div
-                key={index}
-                onClick={() => handleUtxoClick(i)}
-                className={[
-                  styles.utxo,
-                  selected ? styles.selected : ''
-                ].join(' ')}
-              >
-                <div className={styles.title}>
-                  {i.tokenInfo.name}
-                </div>
-
-                <div className={styles.value}>
-                  <div className={styles.amount}>
-                    {logAmount(i.amount.toString(), i.tokenInfo.decimals)}
-                  </div>
-
-                  <div className={styles.check}>
-                    {selected && <Check />}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <div className={styles.disclaimer}>You can select a maximum of 4 UTXOs.</div>
 
         <div className={styles.buttons}>
           <Button
@@ -259,7 +343,7 @@ function TransferModal ({ open }) {
             type='outline'
             className={styles.button}
           >
-            CANCEL
+            USE DEFAULT
           </Button>
 
           <Button
@@ -307,7 +391,7 @@ function TransferModal ({ open }) {
             className={styles.utxoPickLink}
             onClick={() => setUtxoPicker(true)}
           >
-            Select UTXOs
+            {selectedUtxos.length ? 'Change Selected UTXOs' : 'Advanced UTXO Select'}
           </div>
         )}
 
