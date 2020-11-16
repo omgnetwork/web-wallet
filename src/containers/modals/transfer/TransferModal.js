@@ -184,20 +184,20 @@ function TransferModal ({ open }) {
   function handleUtxoClick (utxo) {
     const isSelected = selectedUtxos.some(i => i.utxo_pos === utxo.utxo_pos);
     if (isSelected) {
-      setSelectedUtxos(selectedUtxos.filter(i => i.utxo_pos !== utxo.utxo_pos));
+      return setSelectedUtxos(selectedUtxos.filter(i => i.utxo_pos !== utxo.utxo_pos));
     }
-    if (!isSelected && (selectedUtxos.length + selectedFeeUtxos.length) < 4) {
-      setSelectedUtxos([ ...selectedUtxos, utxo ]);
+    if ((selectedUtxos.length + selectedFeeUtxos.length) < 4) {
+      return setSelectedUtxos([ ...selectedUtxos, utxo ]);
     }
   }
 
   function handleFeeUtxoClick (utxo) {
     const isSelected = selectedFeeUtxos.some(i => i.utxo_pos === utxo.utxo_pos);
     if (isSelected) {
-      setSelectedFeeUtxos(selectedFeeUtxos.filter(i => i.utxo_pos !== utxo.utxo_pos));
+      return setSelectedFeeUtxos(selectedFeeUtxos.filter(i => i.utxo_pos !== utxo.utxo_pos));
     }
-    if (!isSelected && (selectedUtxos.length + selectedFeeUtxos.length) < 4) {
-      setSelectedFeeUtxos([ ...selectedFeeUtxos, utxo ]);
+    if ((selectedUtxos.length + selectedFeeUtxos.length) < 4) {
+      return setSelectedFeeUtxos([ ...selectedFeeUtxos, utxo ]);
     }
   }
 
@@ -236,6 +236,10 @@ function TransferModal ({ open }) {
       : currencyCoverAmount.gt(selectedCurrencyAmount) || feeCoverAmount.gt(selectedFeeAmount);
 
     function renderCurrencyPick () {
+      const enough = sameCurrency
+        ? currencyCoverAmount.plus(feeCoverAmount).lte(selectedCurrencyAmount)
+        : currencyCoverAmount.lte(selectedCurrencyAmount);
+
       return (
         <>
           <div className={styles.description}>
@@ -253,7 +257,11 @@ function TransferModal ({ open }) {
               return (
                 <div
                   key={index}
-                  onClick={() => handleUtxoClick(i)}
+                  onClick={() => {
+                    if (!enough || selected) {
+                      handleUtxoClick(i);
+                    }
+                  }}
                   className={[
                     styles.utxo,
                     selected ? styles.selected : ''
@@ -282,7 +290,7 @@ function TransferModal ({ open }) {
 
     function renderFeePick () {
       const logFeeAmount = new BN(feeObject.amount.toString()).div(new BN(feeObject.subunit_to_unit.toString()));
-
+      const enough = selectedFeeAmount.gte(feeCoverAmount);
       return (
         <>
           <div className={styles.description}>
@@ -298,7 +306,11 @@ function TransferModal ({ open }) {
               return (
                 <div
                   key={index}
-                  onClick={() => handleFeeUtxoClick(i)}
+                  onClick={() => {
+                    if (!enough || selected) {
+                      handleFeeUtxoClick(i);
+                    }
+                  }}
                   className={[
                     styles.utxo,
                     selected ? styles.selected : ''
