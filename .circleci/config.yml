@@ -1,63 +1,85 @@
-version: 2
-
-workflows:
-  version: 2
-  build-master:
-    jobs:
-      - test:
-          filters:
-            branches:
-              only: master
-      - build-and-deploy:
-          requires:
-            - test
-      - increase_chart_version:
-          requires:
-            - build-and-deploy
-  build-other-branches:
-    jobs:
-      - test:
-          filters:
-            branches:
-              ignore: master
-
 jobs:
-  test:
-    docker:
-      - image: node:12.16.1-alpine3.11
-    steps:
-      - checkout
-      - run: |
-          apk update && apk upgrade
-          apk add --no-cache git openssh make gcc g++ python
-      - run: npm install --unsafe-perm
-      - run: npm run audit-check
-      - run: npm run lint
-      - run: npm run test
-      - run: npm run build
-
-  build-and-deploy:
-    docker:
-      - image: google/cloud-sdk
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run: |
-          export SHORT_GIT_HASH=$(echo $CIRCLE_SHA1 | cut -c -7)
-          export DOCKER_TAG=$(echo $DOCKER_REPO_URL:$SHORT_GIT_HASH)
-          echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
-          gcloud auth configure-docker
-          docker build -t $DOCKER_IMAGE_NAME .
-          docker tag $DOCKER_IMAGE_NAME $DOCKER_TAG
-          docker push $DOCKER_TAG
-  
   increase_chart_version:
     docker:
-      - image: cimg/base:2020.01
+    - image: cimg/base:2020.01
     environment:
       CHART_NAME: webwallet
       HELM_CHART_REPO: helm-development
       UPDATE_DEV: true
     steps:
-      - checkout
-      - run: APP_VERSION="$(echo "$CIRCLE_SHA1" | head -c 7)" sh .circleci/ci_increase_chart_version.sh
+    - checkout
+    - run: APP_VERSION="${CIRCLE_TAG}" sh .circleci/ci_increase_chart_version.sh
+
+  release:
+    docker:
+    - image: node:15.2.1
+    steps:
+    - checkout
+    - run: npx -y semantic-release@17.2.3
+  test:
+    docker:
+    - image: node:12.16.1-alpine3.11
+    steps:
+    - checkout
+    - run: |
+        apk update && apk upgrade
+        apk add --no-cache git openssh make gcc g++ python
+    - run: npm install --unsafe-perm
+    - run: npm run audit-check
+    - run: npm run lint
+    - run: npm run test
+    - run: npm run build
+orbs:
+  gcp-gcr: circleci/gcp-gcr@0.8.0
+version: 2.1
+workflows:
+  tagged:
+    jobs:
+    - gcp-gcr/add-image-tag:
+        context:
+        - production-docker-push
+        filters:
+          tags:
+            only: /.*/
+          branches:
+            ignore: /.*/
+        gcloud-service-key: PRODUCTION_DOCKER_GCLOUD_KEY
+        image: $CIRCLE_PROJECT_REPONAME
+        source-tag: $CIRCLE_SHA1
+        target-tag: $CIRCLE_TAG
+    - increase_chart_version:
+        filters:
+          tags:
+            only: /.*/
+          branches:
+            ignore: /.*/
+        requires:
+        - gcp-gcr/add-image-tag
+  untagged:
+    jobs:
+    - test:
+        filters:
+          tags:
+            ignore: /.*/
+    - gcp-gcr/build-and-push-image:
+        context:
+        - production-docker-push
+        filters:
+          branches:
+            only: /^master$/
+          tags:
+            ignore: /.*/
+        gcloud-service-key: PRODUCTION_DOCKER_GCLOUD_KEY
+        image: $CIRCLE_PROJECT_REPONAME
+        requires:
+        - test
+        tag: $CIRCLE_SHA1
+    - release:
+        filters:
+          branches:
+            only: /^master$/
+          tags:
+            ignore: /.*/
+        requires:
+        - gcp-gcr/build-and-push-image
+  version: 2
