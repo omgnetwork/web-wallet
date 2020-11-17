@@ -30,7 +30,9 @@ if (config.gtmId) {
 }
 
 // https://docs.metamask.io/guide/ethereum-provider.html#ethereum-autorefreshonnetworkchange
-window.ethereum.autoRefreshOnNetworkChange = false;
+if(window.ethereum){
+  window.ethereum.autoRefreshOnNetworkChange = false;
+}
 
 ReactDOM.render(
   <Provider store={store}>
