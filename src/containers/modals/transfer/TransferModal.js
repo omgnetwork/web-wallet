@@ -294,7 +294,7 @@ function TransferModal ({ open }) {
       return (
         <>
           <div className={styles.description}>
-            Fee amount to cover: {logFeeAmount.toString()}
+            Fee amount to cover: {logFeeAmount.toFixed()}
           </div>
 
           <div className={[ styles.list, !sameCurrency ? styles.doubleList : '' ].join(' ')}>
