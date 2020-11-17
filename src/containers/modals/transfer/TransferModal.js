@@ -15,8 +15,9 @@ limitations under the License. */
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { isEqual } from 'lodash';
+import { isEqual, orderBy } from 'lodash';
 import BN from 'bignumber.js';
+import { Check } from '@material-ui/icons';
 
 import { selectChildchainBalance } from 'selectors/balanceSelector';
 import { selectLoading } from 'selectors/loadingSelector';
@@ -24,7 +25,7 @@ import { selectFees } from 'selectors/feeSelector';
 import { selectLedger } from 'selectors/uiSelector';
 import { transfer, getTransferTypedData } from 'actions/networkAction';
 import { getToken } from 'actions/tokenAction';
-import { closeModal, openAlert } from 'actions/uiAction';
+import { closeModal, openAlert, setActiveHistoryTab } from 'actions/uiAction';
 
 import LedgerPrompt from 'containers/modals/ledger/LedgerPrompt';
 
@@ -51,12 +52,28 @@ function TransferModal ({ open }) {
   const [ ledgerModal, setLedgerModal ] = useState(false);
   const [ typedData, setTypedData ] = useState({});
 
+  const [ utxoPicker, setUtxoPicker ] = useState(false);
+  const [ utxos, setUtxos ] = useState([]);
+  const [ selectedUtxos, setSelectedUtxos ] = useState([]);
+  const [ selectedFeeUtxos, setSelectedFeeUtxos ] = useState([]);
+
   const balances = useSelector(selectChildchainBalance, isEqual);
   const fees = useSelector(selectFees, isEqual);
   const ledgerConnect = useSelector(selectLedger);
 
   const feesLoading = useSelector(selectLoading([ 'FEE/GET' ]));
   const loading = useSelector(selectLoading([ 'TRANSFER/CREATE' ]));
+
+  useEffect(() => {
+    async function fetchUTXOS () {
+      const _utxos = await networkService.getUtxos();
+      const utxos = orderBy(_utxos, i => i.currency, 'desc');
+      setUtxos(utxos);
+    }
+    if (open) {
+      fetchUTXOS();
+    }
+  }, [ open ]);
 
   useEffect(() => {
     if (Object.keys(fees).length) {
@@ -109,6 +126,7 @@ function TransferModal ({ open }) {
       try {
         const valueTokenInfo = await getToken(currency);
         const { txBody, typedData } = await dispatch(getTransferTypedData({
+          utxos: [ ...selectedUtxos, ...selectedFeeUtxos ],
           recipient,
           value: powAmount(value, valueTokenInfo.decimals),
           currency,
@@ -122,6 +140,7 @@ function TransferModal ({ open }) {
           typedData
         }));
         if (res) {
+          dispatch(setActiveHistoryTab('Transactions'));
           dispatch(openAlert('Transfer submitted. You will be blocked from making further transactions until the transfer is confirmed.'));
           handleClose();
         }
@@ -136,12 +155,221 @@ function TransferModal ({ open }) {
     setValue('');
     setFeeToken('');
     setRecipient('');
+    setSelectedUtxos([]);
+    setUtxos([]);
+    setUtxoPicker(false);
     setMetadata('');
     setLedgerModal(false);
     dispatch(closeModal('transferModal'));
   }
 
-  const disabledTransfer = value <= 0 || !currency || !feeToken || !recipient;
+  const disabledTransfer = value <= 0 ||
+    !currency ||
+    !feeToken ||
+    !recipient ||
+    new BN(value).gt(new BN(getMaxTransferValue()));
+
+  function getMaxTransferValue () {
+    const transferingBalanceObject = balances.find(i => i.currency.toLowerCase() === currency.toLowerCase());
+    if (!transferingBalanceObject) {
+      return;
+    }
+    if (currency.toLowerCase() === feeToken.toLowerCase()) {
+      const availableAmount = new BN(transferingBalanceObject.amount).minus(new BN(fees[feeToken.toLowerCase()].amount));
+      return logAmount(availableAmount, transferingBalanceObject.decimals);
+    }
+    return logAmount(transferingBalanceObject.amount, transferingBalanceObject.decimals);
+  }
+
+  function handleUtxoClick (utxo) {
+    const isSelected = selectedUtxos.some(i => i.utxo_pos === utxo.utxo_pos);
+    if (isSelected) {
+      return setSelectedUtxos(selectedUtxos.filter(i => i.utxo_pos !== utxo.utxo_pos));
+    }
+    if ((selectedUtxos.length + selectedFeeUtxos.length) < 4) {
+      return setSelectedUtxos([ ...selectedUtxos, utxo ]);
+    }
+  }
+
+  function handleFeeUtxoClick (utxo) {
+    const isSelected = selectedFeeUtxos.some(i => i.utxo_pos === utxo.utxo_pos);
+    if (isSelected) {
+      return setSelectedFeeUtxos(selectedFeeUtxos.filter(i => i.utxo_pos !== utxo.utxo_pos));
+    }
+    if ((selectedUtxos.length + selectedFeeUtxos.length) < 4) {
+      return setSelectedFeeUtxos([ ...selectedFeeUtxos, utxo ]);
+    }
+  }
+
+  function handleUtxoPickerBack () {
+    setSelectedUtxos([]);
+    setSelectedFeeUtxos([]);
+    setUtxoPicker(false);
+  }
+
+  function renderUtxoPicker () {
+    const currencyUtxos = utxos
+      .filter(i => i.currency.toLowerCase() === currency.toLowerCase())
+      .filter(i => !!i);
+
+    const feeUtxos = utxos
+      .filter(i => i.currency.toLowerCase() === feeToken.toLowerCase())
+      .filter(i => !!i);
+
+    const selectedCurrencyAmount = selectedUtxos.reduce((acc, cur) => {
+      return acc.plus(new BN(cur.amount.toString()));
+    }, new BN(0));
+
+    const selectedFeeAmount = selectedFeeUtxos.reduce((acc, cur) => {
+      return acc.plus(new BN(cur.amount.toString()));
+    }, new BN(0));
+
+    const currencyObject = balances.find(i => i.currency.toLowerCase() === currency.toLowerCase());
+    const currencyCoverAmount = new BN(powAmount(value.toString(), currencyObject.decimals));
+
+    const feeObject = fees[feeToken.toLowerCase()];
+    const feeCoverAmount = new BN(feeObject.amount.toString());
+
+    const sameCurrency = feeToken.toLowerCase() === currency.toLowerCase();
+    const utxoPickerDisabled = sameCurrency
+      ? currencyCoverAmount.plus(feeCoverAmount).gt(selectedCurrencyAmount)
+      : currencyCoverAmount.gt(selectedCurrencyAmount) || feeCoverAmount.gt(selectedFeeAmount);
+
+    function renderCurrencyPick () {
+      const enough = sameCurrency
+        ? currencyCoverAmount.plus(feeCoverAmount).lte(selectedCurrencyAmount)
+        : currencyCoverAmount.lte(selectedCurrencyAmount);
+
+      return (
+        <>
+          <div className={styles.description}>
+            Transfer amount to cover: {sameCurrency
+              ? logAmount(currencyCoverAmount.plus(feeCoverAmount), currencyObject.decimals)
+              : logAmount(currencyCoverAmount, currencyObject.decimals)}
+          </div>
+
+          <div className={[ styles.list, !sameCurrency ? styles.doubleList : '' ].join(' ')}>
+            {!currencyUtxos.length && (
+              <div className={styles.disclaimer}>You do not have any UTXOs for this token on the OMG Network.</div>
+            )}
+            {currencyUtxos.map((i, index) => {
+              const selected = selectedUtxos.some(selected => selected.utxo_pos === i.utxo_pos);
+              return (
+                <div
+                  key={index}
+                  onClick={() => {
+                    if (!enough || selected) {
+                      handleUtxoClick(i);
+                    }
+                  }}
+                  className={[
+                    styles.utxo,
+                    selected ? styles.selected : ''
+                  ].join(' ')}
+                >
+                  <div className={styles.title}>
+                    {i.tokenInfo.name}
+                  </div>
+
+                  <div className={styles.value}>
+                    <div className={styles.amount}>
+                      {logAmount(i.amount.toString(), i.tokenInfo.decimals)}
+                    </div>
+
+                    <div className={styles.check}>
+                      {selected && <Check />}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      );
+    }
+
+    function renderFeePick () {
+      const logFeeAmount = new BN(feeObject.amount.toString()).div(new BN(feeObject.subunit_to_unit.toString()));
+      const enough = selectedFeeAmount.gte(feeCoverAmount);
+      return (
+        <>
+          <div className={styles.description}>
+            Fee amount to cover: {logFeeAmount.toFixed()}
+          </div>
+
+          <div className={[ styles.list, !sameCurrency ? styles.doubleList : '' ].join(' ')}>
+            {!feeUtxos.length && (
+              <div className={styles.disclaimer}>You do not have any fee UTXOs on the OMG Network.</div>
+            )}
+            {feeUtxos.map((i, index) => {
+              const selected = selectedFeeUtxos.some(selected => selected.utxo_pos === i.utxo_pos);
+              return (
+                <div
+                  key={index}
+                  onClick={() => {
+                    if (!enough || selected) {
+                      handleFeeUtxoClick(i);
+                    }
+                  }}
+                  className={[
+                    styles.utxo,
+                    selected ? styles.selected : ''
+                  ].join(' ')}
+                >
+                  <div className={styles.title}>
+                    {i.tokenInfo.name}
+                  </div>
+
+                  <div className={styles.value}>
+                    <div className={styles.amount}>
+                      {logAmount(i.amount.toString(), i.tokenInfo.decimals)}
+                    </div>
+
+                    <div className={styles.check}>
+                      {selected && <Check />}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      );
+    }
+
+    return (
+      <>
+        <h2>Select UTXOs</h2>
+        <div className={styles.description}>
+          By default, this wallet will automatically pick UTXOs to cover your transaction amount. However, if you are a more advanced user, you can pick the UTXOs you would like to spend in this transaction manually.
+        </div>
+
+        {renderCurrencyPick()}
+        {!sameCurrency && renderFeePick()}
+
+        <div className={styles.disclaimer}>You can select a maximum of 4 UTXOs.</div>
+
+        <div className={styles.buttons}>
+          <Button
+            onClick={handleUtxoPickerBack}
+            type='outline'
+            className={styles.button}
+          >
+            USE DEFAULT
+          </Button>
+
+          <Button
+            className={styles.button}
+            onClick={() => setUtxoPicker(false)}
+            type='primary'
+            disabled={utxoPickerDisabled}
+          >
+            SELECT UTXOS
+          </Button>
+        </div>
+      </>
+    );
+  }
 
   function renderTransferScreen () {
     return (
@@ -167,7 +395,17 @@ function TransferModal ({ open }) {
           selectOptions={selectOptions}
           onSelect={i => setCurrency(i.target.value)}
           selectValue={currency}
+          maxValue={getMaxTransferValue()}
         />
+
+        {value > 0 && (
+          <div
+            className={styles.utxoPickLink}
+            onClick={() => setUtxoPicker(true)}
+          >
+            {selectedUtxos.length ? 'Change Selected UTXOs' : 'Advanced UTXO Select'}
+          </div>
+        )}
 
         <Select
           loading={feesLoading}
@@ -194,30 +432,20 @@ function TransferModal ({ open }) {
             CANCEL
           </Button>
 
-          {ledgerConnect ?
-            (
-              <Button
-                onClick={() => setLedgerModal(true)}
-                type='primary'
-                className={styles.button}
-                loading={loading}
-                tooltip='Your transfer transaction is still pending. Please wait for confirmation.'
-                disabled={disabledTransfer}
-              >
-                TRANSFER WITH LEDGER
-              </Button>)
-            :
-            (<Button
-              className={styles.button}
-              onClick={() => submit({ useLedgerSign: false })}
-              type='primary'
-              loading={loading}
-              tooltip='Your transfer transaction is still pending. Please wait for confirmation.'
-              disabled={disabledTransfer}
-            >
-              TRANSFER
-            </Button>)
-          }
+          <Button
+            className={styles.button}
+            onClick={() => {
+              ledgerConnect
+                ? setLedgerModal(true)
+                : submit({ useLedgerSign: false });
+            }}
+            type='primary'
+            loading={loading}
+            tooltip='Your transfer transaction is still pending. Please wait for confirmation.'
+            disabled={disabledTransfer}
+          >
+            {ledgerConnect ? 'TRANSFER WITH LEDGER' : 'TRANSFER'}
+          </Button>
         </div>
       </>
     );
@@ -225,7 +453,8 @@ function TransferModal ({ open }) {
 
   return (
     <Modal open={open}>
-      {!ledgerModal && renderTransferScreen()}
+      {!ledgerModal && !utxoPicker && renderTransferScreen()}
+      {!ledgerModal && utxoPicker && renderUtxoPicker()}
       {ledgerModal && (
         <LedgerPrompt
           loading={loading}

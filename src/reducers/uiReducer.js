@@ -22,7 +22,8 @@ const initialState = {
   ledgerConnectModal: true,
   ledger: false,
   alert: null,
-  error: null
+  error: null,
+  activeHistoryTab: 'Transactions'
 };
 
 function uiReducer (state = initialState, action) {
@@ -37,6 +38,8 @@ function uiReducer (state = initialState, action) {
       return { ...state, error: action.payload };
     case 'UI/LEDGER/UPDATE':
       return { ...state, ledger: action.payload };
+    case 'UI/HISTORYTAB/UPDATE':
+      return { ...state, activeHistoryTab: action.payload };
     default:
       return state;
   }

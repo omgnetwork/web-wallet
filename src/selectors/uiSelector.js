@@ -30,3 +30,7 @@ export function selectError (state) {
 export function selectLedger (state) {
   return state.ui.ledger;
 }
+
+export function selectActiveHistoryTab (state) {
+  return state.ui.activeHistoryTab;
+}

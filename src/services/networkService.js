@@ -595,23 +595,25 @@ class NetworkService {
   }
 
   async getTransferTypedData ({
+    utxos,
     recipient,
     value,
     currency,
     feeToken,
     metadata
   }) {
-    let utxos;
-    try {
-      const _utxos = await this.childChain.getUtxos(this.account);
-      utxos = orderBy(_utxos, i => i.amount, 'desc');
-    } catch (error) {
-      throw new WebWalletError({
-        originalError: error,
-        customErrorMessage: 'Could not fetch account utxos. Please try transfer again.',
-        reportToSentry: false,
-        reportToUi: true
-      });
+    if (!utxos || !utxos.length) {
+      try {
+        const _utxos = await this.childChain.getUtxos(this.account);
+        utxos = orderBy(_utxos, i => i.amount, 'desc');
+      } catch (error) {
+        throw new WebWalletError({
+          originalError: error,
+          customErrorMessage: 'Could not fetch account utxos. Please try transfer again.',
+          reportToSentry: false,
+          reportToUi: true
+        });
+      }
     }
 
     const allFees = await this.fetchFees();
@@ -658,6 +660,15 @@ class NetworkService {
       const typedData = OmgUtil.transaction.getTypedData(txBody, this.plasmaContractAddress);
       return { txBody, typedData };
     } catch (error) {
+      if (error.message.includes('Insufficient funds')) {
+        throw new WebWalletError({
+          originalError: error,
+          customErrorMessage: error.message,
+          reportToSentry: false,
+          reportToUi: true
+        });
+      }
+
       throw new WebWalletError({
         originalError: error,
         customErrorMessage: 'Could not create the transaction. Please try again.',
@@ -693,6 +704,16 @@ class NetworkService {
       if (error instanceof WebWalletError) {
         throw error;
       }
+
+      if (error.message.includes('utxo_not_found')) {
+        throw new WebWalletError({
+          originalError: error,
+          customErrorMessage: 'Failed to submit the transaction. UTXO not found. Please contact support.',
+          reportToSentry: false,
+          reportToUi: true
+        });
+      }
+
       throw new WebWalletError({
         originalError: error,
         customErrorMessage: 'Failed to submit the transaction. Please try again.',

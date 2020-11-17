@@ -6,7 +6,7 @@ import Button from 'components/button/Button';
 import GasPicker from 'components/gaspicker/GasPicker';
 
 import { approveErc20, depositErc20, resetApprove } from 'actions/networkAction';
-import { openAlert } from 'actions/uiAction';
+import { openAlert, setActiveHistoryTab } from 'actions/uiAction';
 import networkService from 'services/networkService';
 import { selectLoading } from 'selectors/loadingSelector';
 import { powAmount, logAmount } from 'util/amountConvert';
@@ -74,7 +74,8 @@ function ApproveStep ({
   async function doDeposit () {
     const res = await dispatch(depositErc20(weiAmount, currency, gasPrice));
     if (res) {
-      dispatch(openAlert('ERC20 deposit submitted. Check the Deposits tab to see the status of your deposit.'));
+      dispatch(setActiveHistoryTab('Deposits'));
+      dispatch(openAlert('ERC20 deposit submitted.'));
       handleClose();
     }
   }

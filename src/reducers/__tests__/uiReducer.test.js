@@ -23,6 +23,7 @@ const initialState = {
   wrongNetworkModal: false,
   ledger: false,
   ledgerConnectModal: true,
+  activeHistoryTab: 'Transactions',
   alert: null,
   error: null
 };

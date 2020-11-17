@@ -26,7 +26,8 @@ function InputSelect ({
   onChange,
   selectOptions,
   onSelect,
-  selectValue
+  selectValue,
+  maxValue
 }) {
   const selected = selectOptions.find(i => i.value === selectValue);
 
@@ -62,6 +63,7 @@ function InputSelect ({
       label={label}
       type='number'
       unit={renderUnit}
+      maxValue={maxValue}
       value={value}
       onChange={onChange}
     />

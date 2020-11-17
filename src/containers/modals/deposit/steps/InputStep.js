@@ -7,7 +7,7 @@ import Input from 'components/input/Input';
 import Tabs from 'components/tabs/Tabs';
 
 import { depositEth } from 'actions/networkAction';
-import { openAlert } from 'actions/uiAction';
+import { openAlert, setActiveHistoryTab } from 'actions/uiAction';
 import { powAmount } from 'util/amountConvert';
 import networkService from 'services/networkService';
 import { selectLoading } from 'selectors/loadingSelector';
@@ -42,7 +42,8 @@ function InputStep ({
       const amount = powAmount(value, tokenInfo.decimals);
       const res = await dispatch(depositEth(amount, gasPrice));
       if (res) {
-        dispatch(openAlert('ETH deposit submitted. Check the Deposits tab to see the status of your deposit.'));
+        dispatch(setActiveHistoryTab('Deposits'));
+        dispatch(openAlert('ETH deposit submitted.'));
         handleClose();
       }
     }
