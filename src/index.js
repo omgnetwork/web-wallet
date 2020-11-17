@@ -30,7 +30,7 @@ if (config.gtmId) {
 }
 
 // https://docs.metamask.io/guide/ethereum-provider.html#ethereum-autorefreshonnetworkchange
-if(window.ethereum){
+if (window.ethereum) {
   window.ethereum.autoRefreshOnNetworkChange = false;
 }
 
