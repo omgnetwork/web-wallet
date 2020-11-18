@@ -669,6 +669,15 @@ class NetworkService {
         });
       }
 
+      if (error.message.includes('Inputs must be an array of size')) {
+        throw new WebWalletError({
+          originalError: error,
+          customErrorMessage: 'This transaction will require more than 4 UTXOs. Please merge some UTXOs then try again.',
+          reportToSentry: false,
+          reportToUi: true
+        });
+      }
+
       throw new WebWalletError({
         originalError: error,
         customErrorMessage: 'Could not create the transaction. Please try again.',
