@@ -391,9 +391,17 @@ function TransferModal ({ open }) {
           label='Amount to transfer'
           placeholder={0}
           value={value}
-          onChange={i => setValue(i.target.value)}
+          onChange={i => {
+            setValue(i.target.value);
+            setSelectedUtxos([]);
+            setSelectedFeeUtxos([]);
+          }}
           selectOptions={selectOptions}
-          onSelect={i => setCurrency(i.target.value)}
+          onSelect={i => {
+            setCurrency(i.target.value);
+            setSelectedUtxos([]);
+            setSelectedFeeUtxos([]);
+          }}
           selectValue={currency}
           maxValue={getMaxTransferValue()}
         />
@@ -412,7 +420,11 @@ function TransferModal ({ open }) {
           label='Fee'
           value={feeToken}
           options={usableFees}
-          onSelect={i => setFeeToken(i.target.value)}
+          onSelect={i => {
+            setFeeToken(i.target.value);
+            setSelectedUtxos([]);
+            setSelectedFeeUtxos([]);
+          }}
           error="No balance to pay fees"
         />
 
