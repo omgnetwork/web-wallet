@@ -163,7 +163,7 @@ function WalletPicker ({ onEnable }) {
           <img src={logo} alt='logo' />
           <div className={styles.menu}>
             <a
-              href='https://docs.omg.network/wallet/quick-start-webwallet'
+              href='https://docs.omg.network/wallet/web-wallet-quick-start'
               target='_blank'
               rel='noopener noreferrer'
             >
