@@ -812,8 +812,6 @@ class NetworkService {
   async depositEth (value, gasPrice) {
     try {
       const valueBN = new BN(value.toString());
-      console.log("trying to deposit ETH")
-      console.log("Gasprice:", gasPrice.toString())
       const result = await this.rootChain.deposit({
         amount: valueBN,
         txOptions: {
