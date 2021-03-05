@@ -19,7 +19,11 @@ import { uniq, flatten, isEqual } from 'lodash';
 
 import { selectWalletMethod } from 'selectors/setupSelector';
 import { selectModalState } from 'selectors/uiSelector';
-import { selectChildchainTransactions } from 'selectors/transactionSelector';
+import {
+  selectChildchainTransactions,
+  selectErc20Deposits,
+  selectEthDeposits
+} from 'selectors/transactionSelector';
 import config from 'util/config';
 import useInterval from 'util/useInterval';
 import {
@@ -53,6 +57,7 @@ import logo from 'images/omg_logo.svg';
 import * as styles from './Home.module.scss';
 
 const POLL_INTERVAL = config.pollInterval * 1000;
+const eth = '0x0000000000000000000000000000000000000000';
 
 function Home () {
   const dispatch = useDispatch();
@@ -66,12 +71,20 @@ function Home () {
   const walletMethod = useSelector(selectWalletMethod());
 
   const transactions = useSelector(selectChildchainTransactions, isEqual);
+  const ethDeposits = useSelector(selectEthDeposits, isEqual);
+  const erc20Deposits = useSelector(selectErc20Deposits, isEqual);
+
   const transactedTokens = useMemo(() => {
-    const inputs = flatten(transactions
+    const depositedTokens = erc20Deposits.map(e => e.tokenInfo.currency);
+    if (ethDeposits.length !== 0) {
+      depositedTokens.push(eth);
+    }
+    const xputs = flatten(transactions
       .filter(i => i.status !== 'Pending')
-      .map(i => i.inputs)
+      .map(i => [ ...i.inputs, ...i.outputs ])
     );
-    return uniq(inputs.map(i => i.currency));
+    const txTokens = xputs.map(i => i.currency);
+    return uniq([ ...txTokens, ...depositedTokens ]);
   }, [ transactions ]);
 
   useEffect(() => {
@@ -92,7 +105,7 @@ function Home () {
     window.scrollTo(0, 0);
     dispatch(fetchDeposits());
     dispatch(fetchExits());
-  }, [ dispatch ]);
+  }, [ dispatch, transactedTokens ]);
 
   useInterval(() => {
     batch(() => {
