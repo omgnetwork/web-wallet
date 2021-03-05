@@ -29,6 +29,7 @@ import { bufferToHex } from 'ethereumjs-util';
 import erc20abi from 'human-standard-token-abi';
 
 import Web3 from 'web3';
+import '@metamask/legacy-web3'
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import WalletLink from 'walletlink';
 
@@ -818,6 +819,7 @@ class NetworkService {
           gasPrice: gasPrice.toString()
         }
       });
+
       // normalize against deposits from pastevents
       const deposit = {
         ...result,
@@ -831,7 +833,7 @@ class NetworkService {
     } catch (error) {
       throw new WebWalletError({
         originalError: error,
-        customErrorMessage: 'Could not deposit ETH. Please try again.',
+        customErrorMessage: 'Could not deposit ETH. Please check to make sure you have enough ETH to cover both the amount you want to deposit and the associated gas fees.',
         reportToSentry: false,
         reportToUi: true
       });
@@ -861,7 +863,7 @@ class NetworkService {
     } catch (error) {
       throw new WebWalletError({
         originalError: error,
-        customErrorMessage: 'Could not deposit ERC20. Please try again.',
+        customErrorMessage: 'Could not deposit ERC20. Please check to make sure you have sufficient funds to cover both the amount you want to deposit and the associated gas fees.',
         reportToSentry: false,
         reportToUi: true
       });
