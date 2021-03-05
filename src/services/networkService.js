@@ -29,7 +29,7 @@ import { bufferToHex } from 'ethereumjs-util';
 import erc20abi from 'human-standard-token-abi';
 
 import Web3 from 'web3';
-import '@metamask/legacy-web3'
+import '@metamask/legacy-web3';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import WalletLink from 'walletlink';
 
