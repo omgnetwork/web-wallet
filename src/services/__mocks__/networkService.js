@@ -16,34 +16,35 @@ const networkService = {
   },
   web3: {
     eth: {
-      Contract: jest.fn(() => ({
-        methods: {
-          symbol: () => ({
-            call: jest.fn(() => Promise.resolve('OMG'))
-          }),
-          decimals: () => ({
-            call: jest.fn(() => Promise.resolve(18))
-          })
-
-        }
-      }))
+      Contract: function () {
+        return {
+          methods: {
+            symbol: () => ({
+              call: jest.fn(() => Promise.resolve('OMG'))
+            }),
+            decimals: () => ({
+              call: jest.fn(() => Promise.resolve(18))
+            })
+          }
+        };
+      }
     }
   },
-  checkStatus: jest.fn(() => Promise.resolve('toto')),
-  getBalances: jest.fn(() => Promise.resolve('toto')),
-  getAllTransactions: jest.fn(() => Promise.resolve('toto')),
-  getDeposits: jest.fn(() => Promise.resolve('toto')),
-  getExits: jest.fn(() => Promise.resolve('toto')),
-  checkForExitQueue: jest.fn(() => Promise.resolve(true)),
-  getExitQueue: jest.fn(() => Promise.resolve('toto')),
-  addExitQueue: jest.fn(() => Promise.resolve('toto')),
-  exitUtxo: jest.fn(() => Promise.resolve('toto')),
-  depositEth: jest.fn(() => Promise.resolve('toto')),
-  processExits: jest.fn(() => Promise.resolve('toto')),
-  transfer: jest.fn(() => Promise.resolve('toto')),
-  mergeUtxos: jest.fn(() => Promise.resolve('toto')),
-  getGasPrice: jest.fn(() => Promise.resolve('toto')),
-  fetchFees: jest.fn(() => Promise.resolve([ 1, 2, 3 ]))
+  checkStatus: () => Promise.resolve('toto'),
+  getBalances: () => Promise.resolve('toto'),
+  getAllTransactions: () => Promise.resolve('toto'),
+  getDeposits: () => Promise.resolve('toto'),
+  getExits: () => Promise.resolve('toto'),
+  checkForExitQueue: () => Promise.resolve(true),
+  getExitQueue: () => Promise.resolve('toto'),
+  addExitQueue: () => Promise.resolve('toto'),
+  exitUtxo: () => Promise.resolve('toto'),
+  depositEth: () => Promise.resolve('toto'),
+  processExits: () => Promise.resolve('toto'),
+  transfer: () => Promise.resolve('toto'),
+  mergeUtxos: () => Promise.resolve('toto'),
+  getGasPrice: () => Promise.resolve('toto'),
+  fetchFees: () => Promise.resolve([ 1, 2, 3 ])
 };
 
 export default networkService;
