@@ -928,7 +928,7 @@ class NetworkService {
       const rawQueues = get(state, 'queue', {});
       const queues = flatten(Object.values(rawQueues));
 
-      const exitId = networkService.web3.utils.hexToNumberString(exit.returnValues.exitId._hex);
+      const exitId = exit.returnValues.exitId.toString();
       const queuedExit = queues.find(i => i.exitId === exitId);
       let queuePosition;
       let queueLength;
