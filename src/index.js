@@ -23,7 +23,8 @@ import store from 'store';
 
 import App from 'containers/app/App';
 
-import './index.scss';
+// Renamed due to https://github.com/facebook/create-react-app/issues/10047
+import './index.module.scss';
 
 if (config.gtmId) {
   TagManager.initialize({ gtmId: config.gtmId });
