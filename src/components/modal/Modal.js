@@ -21,7 +21,7 @@ import {
   Fade
 } from '@material-ui/core';
 
-import { gray6, gray3, gray1 } from 'index.scss';
+import { gray6, gray3, gray1 } from 'index.module.scss';
 
 const useStyles = makeStyles({
   modal: {
