@@ -556,7 +556,7 @@ class NetworkService {
         ? await this.ledgerSign(typedData)
         : await this.signTypedData(typedData);
 
-      const signatures = new Array(txBody.inputs.length).fill(signature);
+      const signatures = new Array(txBody.inputs.length).fill(signature.result);
       const signedTxn = this.childChain.buildSignedTransaction(typedData, signatures);
       const submittedTransaction = await this.childChain.submitTransaction(signedTxn);
       return {
@@ -698,7 +698,7 @@ class NetworkService {
         ? await this.ledgerSign(typedData)
         : await this.signTypedData(typedData);
 
-      const signatures = new Array(txBody.inputs.length).fill(signature);
+      const signatures = new Array(txBody.inputs.length).fill(signature.result);
       const signedTxn = this.childChain.buildSignedTransaction(typedData, signatures);
       const submittedTransaction = await this.childChain.submitTransaction(signedTxn);
       return {
