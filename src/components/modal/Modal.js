@@ -21,7 +21,8 @@ import {
   Fade
 } from '@material-ui/core';
 
-import { gray6, gray3, gray1 } from 'index.scss';
+// Renamed due to https://github.com/facebook/create-react-app/issues/10047
+import { gray6, gray3, gray1 } from 'index.module.scss';
 
 const useStyles = makeStyles({
   modal: {
