@@ -27,7 +27,7 @@
     "json5": "^2.1.2",
     "lodash": "^4.17.20",
     "moment": "^2.24.0",
-    "node-sass": "^4.13.0",
+    "node-sass": "^7.0.0",
     "numbro": "^2.1.2",
     "omg-json-bigint": "^1.0.0",
     "react": "^16.12.0",
